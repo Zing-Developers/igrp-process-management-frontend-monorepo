@@ -1,5 +1,5 @@
-export type Process = {
-  id: string;
-  name: string;
-  status: 'active' | 'inactive';
-};
+export * from './user';
+export * from './process';
+export * from './task';
+export * from './response';
+export * from './area';
