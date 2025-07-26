@@ -19,7 +19,7 @@ import { AreasList } from '@/components/configuration/components/areas-list'
 import { AreaModal } from '@/components/configuration/components/area-modal'
 import { ProjectModal } from '@/components/configuration/components/project-modal'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { SearchInput } from '@/components/tasks/search-input'
+import { SearchInput } from '@/components/ui/search-input'
 
 interface ExtendedArea extends Area {
   subareas?: Area[]
