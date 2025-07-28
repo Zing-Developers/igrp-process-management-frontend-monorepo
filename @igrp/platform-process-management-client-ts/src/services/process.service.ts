@@ -25,7 +25,7 @@ export const getProcesses = async (
     );
     return response;
   } catch (error) {
-    console.log(apiConfig.endpoints.processes);
+    console.log("config:"+apiConfig.endpoints.processes);
     console.error('Failed to fetch processes, returning dummy data.', error);
     return {
       content: processes,

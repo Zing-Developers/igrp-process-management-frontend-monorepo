@@ -354,6 +354,9 @@ export const createDummyAreaProject = (associationData: any): AreaProject => ({
 export const getDummyAreaProjects = (areaId: string): AreaProject[] => 
   dummyAreaProjects.filter(ap => ap.area_fk === areaId);
 
+// Add this new function to get all area projects at once
+export const getAllDummyAreaProjects = (): AreaProject[] => dummyAreaProjects;
+
 export const getDummyAreaWithProjects = (areaId: string): AreaWithProjects => {
   const area = dummyAreas.find(a => a.id === areaId);
   if (!area) {

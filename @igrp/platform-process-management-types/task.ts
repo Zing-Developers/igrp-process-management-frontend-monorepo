@@ -1,3 +1,5 @@
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+
 export type Task = {
   id: string;
   name: string;
@@ -8,7 +10,7 @@ export type Task = {
   processName: string;
   createdDate: string;
   dueDate?: string;
-  priority?: number;
+  priority?: TaskPriority;
   assignee?: string;
   formKey?: string;
   status: 'CREATED' | 'ASSIGNED' | 'COMPLETED';

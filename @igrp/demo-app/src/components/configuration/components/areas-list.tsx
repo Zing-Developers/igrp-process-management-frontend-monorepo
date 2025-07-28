@@ -1,9 +1,8 @@
 import { Area, Project, AreaProject } from '@igrp/platform-process-management-types'
 import { AreaCard } from './area-card'
 
-
 interface ExtendedArea extends Area {
-  subareas?: Area[]
+  subareas?: ExtendedArea[]
 }
 
 interface ExpandedAreas {
@@ -35,7 +34,10 @@ export function AreasList({
   onAddProject,
   onRemoveProject,
 }: AreasListProps) {
-  if (areas.length === 0) {
+  // Filter to show only top-level areas (areas without parent)
+  const topLevelAreas = areas.filter(area => !area.area_fk)
+
+  if (topLevelAreas.length === 0) {
     return (
       <div className="text-center py-8">
         <p className="text-gray-500">Nenhuma área encontrada</p>
@@ -45,19 +47,20 @@ export function AreasList({
 
   return (
     <div className="space-y-4">
-      {areas.map((area) => (
+      {topLevelAreas.map((area) => (
         <AreaCard
           key={area.id}
           area={area}
           isExpanded={expandedAreas[area.id] || false}
-          onToggleExpansion={() => onToggleExpansion(area.id)}
-          onEdit={() => onEdit(area)}
-          onDelete={() => onDelete(area.id)}
-          onAddSubarea={() => onAddSubarea(area.id)}
-          onAddProject={() => onAddProject(area.id)}
-          onRemoveProject={(projectId) => onRemoveProject(area.id, projectId)}
-          areaProjects={areaProjects[area.id] || []}
+          expandedAreas={expandedAreas}
+          allAreaProjects={areaProjects}
           projects={projects}
+          onToggleExpansion={onToggleExpansion}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onAddSubarea={onAddSubarea}
+          onAddProject={onAddProject}
+          onRemoveProject={onRemoveProject}
         />
       ))}
     </div>

@@ -1,88 +1,85 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Plus, Search } from 'lucide-react'
-import { 
-  getAreas, 
-  getAllProjects,
-} from '@igrp/platform-process-management-client-ts'
-import { 
-  Area, 
-  Project, 
-  AreaProject,
-} from '@igrp/platform-process-management-types'
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
 
-// Try using absolute imports with @ alias
-import { useAreaManagement } from '@/components/configuration/hooks/use-area-management'
-import { useProjectManagement } from '@/components/configuration/hooks/use-project-management'
-import { AreasList } from '@/components/configuration/components/areas-list'
-import { AreaModal } from '@/components/configuration/components/area-modal'
-import { ProjectModal } from '@/components/configuration/components/project-modal'
+// Hooks
+import { useConfiguration } from './hooks/use-configuration'
+import { useAreaForm } from './hooks/areas/use-area-form'
+import { useAreaOperations } from './hooks/areas/use-area-operations'
+import { useProjectForm } from './hooks/projects/use-project-form'
+import { useProjectOperations } from './hooks/projects/use-project-operations'
+import { useExpansion } from './hooks/shared/use-expansion'
+
+// Components
+import { AreasList } from './components/areas-list'
+import { AreaModal } from './components/area-modal'
+import { ProjectModal } from './components/project-modal'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { SearchInput } from '@/components/ui/search-input'
 
-interface ExtendedArea extends Area {
-  subareas?: Area[]
-}
+// Utils
+import { filterAreasRecursively, getAllAreasFlat } from './utils/area-hierarchy'
 
 export function ProcessConfigurationContent() {
-  const [areas, setAreas] = useState<ExtendedArea[]>([])
-  const [projects, setProjects] = useState<Project[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
+  // Main data management
   const {
-    areaForm,
-    editingArea,
-    showAreaModal,
-    setAreaForm,
-    openAreaModal,
-    closeAreaModal,
-    handleCreateArea,
-    handleUpdateArea,
-    handleDeleteArea,
-  } = useAreaManagement(areas, setAreas)
-
-  const {
+    areas,
+    setAreas,
+    projects,
     areaProjects,
-    expandedAreas,
-    showProjectModal,
-    selectedAreaForProject,
-    toggleAreaExpansion,
-    openProjectModal,
-    closeProjectModal,
-    handleAssociateProject,
-    handleRemoveProject,
-    loadAreaProjects,
-    loadSubareas,
-  } = useProjectManagement(areas, setAreas, projects)
+    setAreaProjects,
+    loading,
+  } = useConfiguration()
 
-  useEffect(() => {
-    loadInitialData()
-  }, [])
+  // Area management
+  const areaForm = useAreaForm()
+  const areaOperations = useAreaOperations(areas, setAreas)
 
-  const loadInitialData = async () => {
-    setLoading(true)
+  // Project management
+  const projectForm = useProjectForm()
+  const projectOperations = useProjectOperations(areaProjects, setAreaProjects)
+
+  // UI state
+  const expansion = useExpansion(areas)
+
+  // Handlers
+  const handleCreateArea = async () => {
     try {
-      const [areasResponse, projectsResponse] = await Promise.all([
-        getAreas(0, 100),
-        getAllProjects(0, 100)
-      ])
-      setAreas(areasResponse?.content || [])
-      setProjects(projectsResponse?.content || [])
+      await areaOperations.handleCreateArea(areaForm.formData)
+      areaForm.closeModal()
     } catch (error) {
-      console.error('Error loading initial data:', error)
-      setAreas([])
-      setProjects([])
-    } finally {
-      setLoading(false)
+      // Handle error (could show toast notification)
     }
   }
 
-  const filteredAreas = (areas || []).filter(area => 
-    area.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    area.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleUpdateArea = async () => {
+    if (!areaForm.modalState.editingArea) return
+    
+    try {
+      await areaOperations.handleUpdateArea(areaForm.modalState.editingArea.id, areaForm.formData)
+      areaForm.closeModal()
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  const handleAssociateProject = async (projectId: string) => {
+    if (!projectForm.modalState.selectedAreaId) return
+    
+    try {
+      await projectOperations.handleAssociateProject(projectForm.modalState.selectedAreaId, projectId)
+      projectForm.closeModal()
+    } catch (error) {
+      // Handle error
+    }
+  }
+
+  // Computed values
+  const filteredAreas = filterAreasRecursively(areas, searchTerm)
+  const allAreasFlat = getAllAreasFlat(areas)
 
   const getAvailableProjects = (areaId: string) => {
     const associatedProjectIds = areaProjects[areaId]?.map(ap => ap.project_id) || []
@@ -109,7 +106,7 @@ export function ProcessConfigurationContent() {
           className="flex-1 max-w-md"
         />
         <button
-          onClick={() => openAreaModal()}
+          onClick={() => areaForm.openModal()}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
@@ -120,34 +117,34 @@ export function ProcessConfigurationContent() {
       {/* Areas List */}
       <AreasList
         areas={filteredAreas}
-        expandedAreas={expandedAreas}
+        expandedAreas={expansion.expandedAreas}
         areaProjects={areaProjects}
         projects={projects}
-        onToggleExpansion={(areaId) => toggleAreaExpansion(areaId, loadSubareas, loadAreaProjects)}
-        onEdit={openAreaModal}
-        onDelete={handleDeleteArea}
-        onAddSubarea={(parentAreaId) => openAreaModal(undefined, parentAreaId)}
-        onAddProject={openProjectModal}
-        onRemoveProject={handleRemoveProject}
+        onToggleExpansion={(areaId) => expansion.toggleAreaExpansion(areaId, areaOperations.loadSubareas)}
+        onEdit={areaForm.openModal}
+        onDelete={areaOperations.handleDeleteArea}
+        onAddSubarea={(parentAreaId) => areaForm.openModal(undefined, parentAreaId)}
+        onAddProject={projectForm.openModal}
+        onRemoveProject={projectOperations.handleRemoveProject}
       />
 
       {/* Modals */}
-      {showAreaModal && (
+      {areaForm.modalState.isOpen && (
         <AreaModal
-          isEditing={!!editingArea}
-          formData={areaForm}
-          areas={areas}
-          onFormChange={setAreaForm}
-          onSave={editingArea ? handleUpdateArea : handleCreateArea}
-          onClose={closeAreaModal}
+          isEditing={!!areaForm.modalState.editingArea}
+          formData={areaForm.formData}
+          areas={allAreasFlat}
+          onFormChange={areaForm.setFormData}
+          onSave={areaForm.modalState.editingArea ? handleUpdateArea : handleCreateArea}
+          onClose={areaForm.closeModal}
         />
       )}
 
-      {showProjectModal && selectedAreaForProject && (
+      {projectForm.modalState.isOpen && projectForm.modalState.selectedAreaId && (
         <ProjectModal
-          availableProjects={getAvailableProjects(selectedAreaForProject)}
+          availableProjects={getAvailableProjects(projectForm.modalState.selectedAreaId)}
           onAssociate={handleAssociateProject}
-          onClose={closeProjectModal}
+          onClose={projectForm.closeModal}
         />
       )}
     </div>

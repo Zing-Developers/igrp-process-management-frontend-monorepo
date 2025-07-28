@@ -56,11 +56,47 @@ export const getTaskById = async (id: string): Promise<Task | undefined> => {
 };
 
 /**
+ * Fetches all tasks assigned to the current user with pagination.
+ * @param page The page number to fetch.
+ * @param size The number of items per page.
+ * @returns A promise that resolves to a paginated response of tasks.
+ */
+export const getMyTasks = async (
+  page = 0,
+  size = 10
+): Promise<PaginatedResponse<Task>> => {
+  try {
+    const response = await httpClient.get<PaginatedResponse<Task>>(
+      `${apiConfig.endpoints.tasks}/my?page=${page}&size=${size}`
+    );
+    return response;
+  } catch (error) {
+    console.error('Failed to fetch my tasks, returning dummy data.', error);
+    // For dummy data, simulate pagination
+    const myTasks = tasks.filter((t) => t.assignee === 'current-user');
+    const startIndex = page * size;
+    const endIndex = startIndex + size;
+    const paginatedTasks = myTasks.slice(startIndex, endIndex);
+    
+    return {
+      content: paginatedTasks,
+      pageNumber: page,
+      pageSize: size,
+      totalElements: myTasks.length,
+      totalPages: Math.ceil(myTasks.length / size),
+      first: page === 0,
+      last: endIndex >= myTasks.length,
+      empty: myTasks.length === 0,
+    };
+  }
+};
+
+/**
  * Fetches all tasks assigned to a specific user.
  * @param userId The ID of the user.
  * @returns A promise that resolves to a list of tasks.
  */
-export const getMyTasks = async (userId: string): Promise<Task[]> => {
+export const getTasksByUser = async (userId: string): Promise<Task[]> => {
   try {
     const response = await httpClient.get<Task[]>(`${apiConfig.endpoints.tasks}/user/${userId}`);
     return response;
@@ -74,20 +110,38 @@ export const getMyTasks = async (userId: string): Promise<Task[]> => {
 };
 
 /**
- * Fetches all available tasks for a user.
- * @param userId The ID of the user.
- * @returns A promise that resolves to a list of tasks.
+ * Fetches all available tasks for a user with pagination.
+ * @param page The page number to fetch.
+ * @param size The number of items per page.
+ * @returns A promise that resolves to a paginated response of tasks.
  */
-export const getAvailableTasks = async (userId: string): Promise<Task[]> => {
+export const getAvailableTasks = async (
+  page = 0,
+  size = 10
+): Promise<PaginatedResponse<Task>> => {
   try {
-    const response = await httpClient.get<Task[]>(`${apiConfig.endpoints.tasks}/available/${userId}`);
+    const response = await httpClient.get<PaginatedResponse<Task>>(
+      `${apiConfig.endpoints.tasks}/available?page=${page}&size=${size}`
+    );
     return response;
   } catch (error) {
-    console.error(
-      `Failed to fetch available tasks for user ${userId}, returning dummy data.`,
-      error
-    );
-    return tasks.filter((t) => t.assignee !== userId && t.status == 'CREATED');
+    console.error('Failed to fetch available tasks, returning dummy data.', error);
+    // For dummy data, simulate pagination
+    const availableTasks = tasks.filter((t) => !t.assignee && t.status === 'CREATED');
+    const startIndex = page * size;
+    const endIndex = startIndex + size;
+    const paginatedTasks = availableTasks.slice(startIndex, endIndex);
+    
+    return {
+      content: paginatedTasks,
+      pageNumber: page,
+      pageSize: size,
+      totalElements: availableTasks.length,
+      totalPages: Math.ceil(availableTasks.length / size),
+      first: page === 0,
+      last: endIndex >= availableTasks.length,
+      empty: availableTasks.length === 0,
+    };
   }
 };
 

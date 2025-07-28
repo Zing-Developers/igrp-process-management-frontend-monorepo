@@ -32,8 +32,8 @@ export function AvailableTasksContent() {
   const fetchAvailableTasks = async () => {
     try {
       setLoading(true)
-      const data = await getAvailableTasks(currentUserId)
-      setTasks(data)
+      const data = await getAvailableTasks(0, 10)
+      setTasks(data.content)
     } catch (error) {
       console.error('Error fetching available tasks:', error)
     } finally {
