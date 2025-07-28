@@ -8,6 +8,7 @@ import {
 } from '@igrp/platform-process-management-client-ts'
 import { 
   Task, 
+  TaskPriority,
   PaginatedResponse 
 } from '@igrp/platform-process-management-types'
 import { 
@@ -65,7 +66,7 @@ export function MyTasksContent() {
     }
   }
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority?: TaskPriority) => {
     switch (priority) {
       case 'HIGH':
         return 'bg-red-100 text-red-800'
@@ -75,6 +76,19 @@ export function MyTasksContent() {
         return 'bg-green-100 text-green-800'
       default:
         return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const getPriorityLabel = (priority?: TaskPriority) => {
+    switch (priority) {
+      case 'HIGH':
+        return 'Alta'
+      case 'MEDIUM':
+        return 'Média'
+      case 'LOW':
+        return 'Baixa'
+      default:
+        return 'Normal'
     }
   }
 
@@ -139,7 +153,7 @@ export function MyTasksContent() {
                   <div className="flex items-center space-x-3 mb-2">
                     <h3 className="text-lg font-semibold text-gray-900">{task.name}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                      {task.priority}
+                      {getPriorityLabel(task.priority)}
                     </span>
                   </div>
                   
@@ -150,7 +164,7 @@ export function MyTasksContent() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Calendar className="w-4 h-4" />
-                      <span>Criada: {new Date(task.createTime).toLocaleDateString()}</span>
+                      <span>Criada: {new Date(task.createdDate).toLocaleDateString()}</span>
                     </div>
                     {task.dueDate && (
                       <div className="flex items-center space-x-2">

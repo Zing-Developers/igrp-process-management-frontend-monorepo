@@ -41,6 +41,7 @@ export function useProjectManagement(
         }
         return updated
       })
+      // No need to load projects here since they're already loaded
     } catch (error) {
       console.error('Error loading subareas:', error)
     }
@@ -55,6 +56,7 @@ export function useProjectManagement(
     }
   }
 
+  // Simplified toggle - no need to load data since everything is already loaded
   const toggleAreaExpansion = async (
     areaId: string, 
     loadSubareasCallback: (areaId: string) => Promise<void>,
@@ -63,12 +65,27 @@ export function useProjectManagement(
     const isExpanded = expandedAreas[areaId]
     setExpandedAreas(prev => ({ ...prev, [areaId]: !isExpanded }))
     
+    // Only load subareas if not expanded and they don't exist yet
     if (!isExpanded) {
-      await Promise.all([
-        loadSubareasCallback(areaId),
-        loadAreaProjectsCallback(areaId)
-      ])
+      const area = findAreaById(areas, areaId)
+      if (area && !area.subareas) {
+        await loadSubareasCallback(areaId)
+      }
     }
+  }
+
+  // Helper function to find area by ID in the hierarchical structure
+  const findAreaById = (areas: ExtendedArea[], areaId: string): ExtendedArea | null => {
+    for (const area of areas) {
+      if (area.id === areaId) {
+        return area
+      }
+      if (area.subareas) {
+        const found = findAreaById(area.subareas, areaId)
+        if (found) return found
+      }
+    }
+    return null
   }
 
   const openProjectModal = (areaId: string) => {
@@ -122,5 +139,6 @@ export function useProjectManagement(
     handleRemoveProject,
     loadAreaProjects,
     loadSubareas,
+    setAreaProjects, // Export this so the parent can set initial data
   }
 }

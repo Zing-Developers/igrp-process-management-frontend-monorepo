@@ -17,6 +17,7 @@ import {
   getDummyProjectsByAppCode,
   createDummyAreaProject,
   getDummyAreaProjects,
+  getAllDummyAreaProjects, // Add this import
   getDummyAreaWithProjects,
   getDummyAreasPaginated,
   getDummyProjectsPaginated
@@ -131,5 +132,15 @@ export const getAreaWithProjects = async (areaId: string): Promise<AreaWithProje
   } catch (error) {
     console.warn('API call failed, using fallback data for getAreaWithProjects');
     return getDummyAreaWithProjects(areaId);
+  }
+};
+
+// Add this new function to get all area projects at once
+export const getAllAreaProjects = async (): Promise<AreaProject[]> => {
+  try {
+    return await httpClient.get<AreaProject[]>(`${apiConfig.endpoints.areaProjects}`);
+  } catch (error) {
+    console.warn('API call failed, using fallback data for getAllAreaProjects');
+    return getAllDummyAreaProjects();
   }
 };
