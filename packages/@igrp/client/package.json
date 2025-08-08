@@ -1,0 +1,43 @@
+{
+  "name": "@igrp/platform-process-management-client-ts",
+  "version": "0.1.0-beta.1",
+  "type": "module",
+  "main": "./dist/index.umd.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "deploy": "npm publish --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest",
+    "build:types": "tsc --emitDeclarationOnly",
+    "release": "npm run build && npm run deploy",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^22.2.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.55.0",
+    "happy-dom": "^12.10.3",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.0",
+    "vite-plugin-dts": "4.5.4"
+  },
+  "dependencies": {
+    "vite": "^6.3.5",
+    "@igrp/platform-process-management-types": "0.1.0-beta.1"
+
+  }
+}

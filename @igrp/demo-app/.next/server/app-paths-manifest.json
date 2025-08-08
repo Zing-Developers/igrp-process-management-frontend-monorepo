@@ -1,6 +1,0 @@
-{
-  "/(dashboard)/configuration/page": "app/(dashboard)/configuration/page.js",
-  "/(dashboard)/page": "app/(dashboard)/page.js",
-  "/(dashboard)/processes/page": "app/(dashboard)/processes/page.js",
-  "/(dashboard)/tasks/my-tasks/page": "app/(dashboard)/tasks/my-tasks/page.js"
-}
