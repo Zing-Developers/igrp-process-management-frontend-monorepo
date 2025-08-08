@@ -2,8 +2,16 @@
   "name": "igrp-process-manager-frontend-monorepo",
   "private": true,
   "version": "1.0.0",
+  "scripts": {
+    "build:client": "pnpm --filter @igrp/platform-process-management-client-ts build",
+    "build:types": "pnpm --filter @igrp/platform-process-management-types build",
+    "build:all": " pnpm build:types && pnpm build:client",
+    "build": "pnpm build:all",
+    "deploy:types": "pnpm --filter @igrp/platform-process-management-types release",
+    "deploy:client": "pnpm --filter @igrp/platform-process-management-client-ts release",
+    "release": "pnpm deploy:types && pnpm deploy:client"
+  },
   "workspaces": [
     "@igrp/*"
-  ],
-  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
+  ]
 }
