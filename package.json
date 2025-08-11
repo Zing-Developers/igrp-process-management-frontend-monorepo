@@ -9,7 +9,7 @@
     "build": "pnpm build:all",
     "deploy:types": "pnpm --filter @igrp/platform-process-management-types release",
     "deploy:client": "pnpm --filter @igrp/platform-process-management-client-ts release",
-    "release": "pnpm deploy:types && pnpm deploy:client"
+    "release": "pnpm run build && pnpm deploy:types && pnpm deploy:client"
   },
   "workspaces": [
     "@igrp/*"
