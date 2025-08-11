@@ -2,12 +2,12 @@ import { PaginatedResponse, PostResponse } from '@igrp/platform-process-manageme
 import { BaseApiClient } from './base-client';
 import {
     ApiResponse,
-    Task,
-    TaskForm
+    Task
 } from '@igrp/platform-process-management-types';
 
 // Shared interfaces for parameter types
 interface TaskQueryParams {
+    processInstanceId?: string;
     processNumber?: string;
     processKey?: string;
     user?: string;
@@ -131,7 +131,7 @@ export class TaskClient extends BaseApiClient {
         processInstanceId: string,
         params?: PaginationParams
     ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-        return this.getTasks({ ...params, processNumber: processInstanceId });
+        return this.getTasks({ ...params, processInstanceId: processInstanceId });
     }
 
     /**
