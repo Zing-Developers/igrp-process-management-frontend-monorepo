@@ -3,7 +3,6 @@ import { BaseApiClient } from './base-client';
 import {
     ApiResponse,
     Area,
-    AreaWithProcesses,
     CreateAreaRequest,
     Process,
     UpdateAreaRequest,

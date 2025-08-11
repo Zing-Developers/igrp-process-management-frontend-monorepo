@@ -21,13 +21,7 @@ export type ProcessInstance = {
   procReleaseKey: string;
   procReleaseId: string;
   number: string;
-  status:
-    | "CREATED"
-    | "RUNNING"
-    | "SUSPENDED"
-    | "CANCELLED"
-    | "COMPLETED"
-    | "TERMINATED";
+  status: "CREATED" | "RUNNING" | "SUSPENDED" | "CANCELLED" | "COMPLETED" | "TERMINATED";
   statusDesc: string;
   businessKey?: string;
   version: string;
@@ -39,6 +33,7 @@ export type ProcessInstance = {
   canceledBy: string;
   obsCancel: string;
   applicationBase: string;
+  name: string;
 };
 
 export interface CreateProcessInstanceRequest {
