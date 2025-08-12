@@ -6,6 +6,7 @@ export type Task = {
   processInstanceId: string;
   processNumber: string;
   processName: string;
+  processKey: string;
   assignedBy: string;
   status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELLED" | "DELETED";
   statusDesc?: string;
