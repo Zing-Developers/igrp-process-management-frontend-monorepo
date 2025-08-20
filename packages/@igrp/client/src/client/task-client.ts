@@ -10,6 +10,7 @@ interface TaskQueryParams {
     processInstanceId?: string;
     processNumber?: string;
     processKey?: string;
+    processName?: string;
     user?: string;
     status?: string;
     dateFrom?: string;

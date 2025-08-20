@@ -49,3 +49,17 @@ export interface CreateProcessInstanceRequest {
   businessKey?: string;
   variables?: Array<{ name: string; value: string }>;
 }
+
+export interface CreateProcessArtifactRequest {
+  name: string;
+  key: string;
+  formKey: string;
+}
+
+export interface ProcessArtifact {
+  id: string;
+  name: string;
+  key: string;
+  processDefinitionId: string;
+  formKey: string;
+}

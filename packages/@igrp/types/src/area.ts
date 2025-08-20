@@ -4,13 +4,16 @@ export interface Area {
   id: string;
   code: string;
   name: string;
-  description?: string;
+  applicationBase: string;
   areaId?: string; // Parent area ID for subareas
+  status: string;
+  statusDesc: string;
   process?: Process[]; // Array of processes associated with this area
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
   updatedBy?: string;
+  description?: string;
 }
 
 export interface CreateAreaRequest {

@@ -9,9 +9,18 @@
     "build": "pnpm build:all",
     "deploy:types": "pnpm --filter @igrp/platform-process-management-types release",
     "deploy:client": "pnpm --filter @igrp/platform-process-management-client-ts release",
-    "release": "pnpm run build && pnpm deploy:types && pnpm deploy:client"
+    "release": "pnpm deploy:types && pnpm deploy:client",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "workspaces": [
-    "@igrp/*"
-  ]
+    "packages/@igrp/*"
+  ],
+  "devDependencies": {
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "happy-dom": "^12.10.3",
+    "typescript": "^5.2.2"
+  }
 }
