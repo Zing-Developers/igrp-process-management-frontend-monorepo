@@ -4,6 +4,8 @@ import {
     Process,
     ProcessInstance,
     CreateProcessInstanceRequest,
+    CreateProcessArtifactRequest,
+    ProcessArtifact,
     PaginatedResponse
 } from '@igrp/platform-process-management-types';
 
@@ -25,6 +27,34 @@ export class ProcessClient extends BaseApiClient {
      */
     async getProcessById(id: string): Promise<ApiResponse<Process>> {
         return this.get<Process>(`/process-definitions/${id}`);
+    }
+
+    /**
+     * POST /process-definitions/{processDefinitionId}/artifacts - Create a new process artifact
+     */
+    async createProcessArtifact(
+        processDefinitionId: string,
+        artifact: CreateProcessArtifactRequest
+    ): Promise<ApiResponse<ProcessArtifact>> {
+        return this.post<ProcessArtifact>(`/process-definitions/${processDefinitionId}/artifacts`, artifact);
+    }
+
+    /**
+     * GET /process-definitions/{processDefinitionId}/artifacts - Get artifacts for a process definition
+     */
+    async getProcessArtifacts(
+        processDefinitionId: string
+    ): Promise<ApiResponse<ProcessArtifact[]>> {
+        return this.get<ProcessArtifact[]>(`/process-definitions/${processDefinitionId}/artifacts`);
+    }
+
+    /**
+     * DELETE /process-definitions/artifacts/{artifactId} - Delete a specific process artifact
+     */
+    async deleteProcessArtifact(
+        artifactId: string
+    ): Promise<ApiResponse<void>> {
+        return this.delete<void>(`/process-definitions/artifacts/${artifactId}`);
     }
 
     /**
