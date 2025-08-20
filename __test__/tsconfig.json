@@ -1,22 +1,14 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "ES2023",
-    "module": "commonjs",
-    "lib": [
-      "es2023"
-    ],
-    "strict": true,
+    "types": ["vitest/globals"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "declaration": true,
-    "declarationMap": true,
-    "isolatedModules": true,
-    "sourceMap": true,
+    "baseUrl": "../",
     "composite": true,
-    "baseUrl": ".",
+    "outDir": "./dist",
     "paths": {
       "@igrp/platform-process-management-client-ts": ["packages/@igrp/client/src/index.ts"],
       "@igrp/platform-process-management-client-ts/*": ["packages/@igrp/client/src/*"],
@@ -25,21 +17,16 @@
     }
   },
   "include": [
-    "packages/@igrp/*/src/**/*.ts",
-    "__test__/**/*.ts"
+    "./**/*.ts"
   ],
   "exclude": [
-    "apps/**/*",
     "node_modules",
     "dist",
     "**/*.d.ts",
-    "**/*.js",
-    "**/*.js.map",
-    "**/*.d.ts.map"
+    "**/*.js"
   ],
   "references": [
-    { "path": "./packages/@igrp/types" },
-    { "path": "./packages/@igrp/client" },
-    { "path": "./__test__" }
+    { "path": "../packages/@igrp/types" },
+    { "path": "../packages/@igrp/client" }
   ]
 }
