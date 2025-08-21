@@ -15,31 +15,10 @@
     "declarationMap": true,
     "isolatedModules": true,
     "sourceMap": true,
-    "composite": true,
-    "baseUrl": ".",
-    "paths": {
-      "@igrp/platform-process-management-client-ts": ["packages/@igrp/client/src/index.ts"],
-      "@igrp/platform-process-management-client-ts/*": ["packages/@igrp/client/src/*"],
-      "@igrp/platform-process-management-types": ["packages/@igrp/types/src/index.ts"],
-      "@igrp/platform-process-management-types/*": ["packages/@igrp/types/src/*"]
-    }
+    "composite": true
   },
-  "include": [
-    "packages/@igrp/*/src/**/*.ts",
-    "__test__/**/*.ts"
+  "references": [ 
+    { "path": "./packages/types" },
+    { "path": "./packages/client" }
   ],
-  "exclude": [
-    "apps/**/*",
-    "node_modules",
-    "dist",
-    "**/*.d.ts",
-    "**/*.js",
-    "**/*.js.map",
-    "**/*.d.ts.map"
-  ],
-  "references": [
-    { "path": "./packages/@igrp/types" },
-    { "path": "./packages/@igrp/client" },
-    { "path": "./__test__" }
-  ]
 }

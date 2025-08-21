@@ -1,6 +1,6 @@
 {
   "name": "@igrp/platform-process-management-types",
-  "version": "0.0.1-beta.9",
+  "version": "0.0.1-beta.1",
   "type": "module",
   "description": "IGRP Process Management Frontend | Types",
   "keywords": [
@@ -21,7 +21,6 @@
   "scripts": {
     "dev": "tsc --watch",
     "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "format": "prettier --write .",
     "release": "pnpm build && yarn publish --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
   },
