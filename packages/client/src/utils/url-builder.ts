@@ -1,7 +1,10 @@
 /**
  * Type for URL query parameters
  */
-export type QueryParams = Record<string, string | number | boolean | undefined | null>;
+export type QueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
 
 /**
  * Safely joins a base URL with an endpoint, handling "/" characters properly
@@ -11,11 +14,11 @@ export type QueryParams = Record<string, string | number | boolean | undefined |
  */
 export function joinUrl(baseUrl: string, endpoint: string): string {
   // Remove trailing slash from baseUrl if it exists
-  const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  
+  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
   // Ensure endpoint starts with slash if it doesn't already
-  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  
+  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+
   return `${cleanBaseUrl}${cleanEndpoint}`;
 }
 
@@ -25,17 +28,22 @@ export function joinUrl(baseUrl: string, endpoint: string): string {
  * @param params Object containing query parameters
  * @returns Complete URL with query string
  */
-export function buildUrlWithParams(baseUrl: string, params: QueryParams = {}): string {
-  const url = new URL(baseUrl, 'http://localhost'); // Use dummy base for relative URLs
-  
+export function buildUrlWithParams(
+  baseUrl: string,
+  params: QueryParams = {},
+): string {
+  const url = new URL(baseUrl, "http://localhost"); // Use dummy base for relative URLs
+
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       url.searchParams.append(key, String(value));
     }
   });
-  
+
   // Return the pathname + search for relative URLs, or full URL for absolute URLs
-  return baseUrl.startsWith('http') ? url.toString() : `${url.pathname}${url.search}`;
+  return baseUrl.startsWith("http")
+    ? url.toString()
+    : `${url.pathname}${url.search}`;
 }
 
 /**
@@ -45,13 +53,13 @@ export function buildUrlWithParams(baseUrl: string, params: QueryParams = {}): s
  */
 export function buildQueryString(params: QueryParams = {}): string {
   const searchParams = new URLSearchParams();
-  
+
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== '') {
+    if (value !== undefined && value !== null && value !== "") {
       searchParams.append(key, String(value));
     }
   });
-  
+
   return searchParams.toString();
 }
 
@@ -65,20 +73,20 @@ export function buildQueryString(params: QueryParams = {}): string {
 export function buildUrlWithPathAndQuery(
   baseUrl: string,
   pathParams: Record<string, string | number> = {},
-  queryParams: QueryParams = {}
+  queryParams: QueryParams = {},
 ): string {
   let url = baseUrl;
-  
+
   // Replace path parameters
   Object.entries(pathParams).forEach(([key, value]) => {
     url = url.replace(`:${key}`, String(value));
   });
-  
+
   // Add query parameters
   const queryString = buildQueryString(queryParams);
   if (queryString) {
     url += `?${queryString}`;
   }
-  
+
   return url;
 }
