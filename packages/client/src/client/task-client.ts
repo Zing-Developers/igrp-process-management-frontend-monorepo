@@ -3,7 +3,11 @@ import {
   PostResponse,
 } from "@igrp/platform-process-management-types/dist/response";
 import { BaseApiClient } from "./base-client";
-import { ApiResponse, Task } from "@igrp/platform-process-management-types";
+import {
+  ApiResponse,
+  Task,
+  TaskVariables,
+} from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
 interface TaskQueryParams {
@@ -46,6 +50,12 @@ export class TaskClient extends BaseApiClient {
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.get<PaginatedResponse<Task>>("/tasks-instances", params);
   }
+  /**
+   * GET /tasks-instances/{id}/variables - Get variables for a specific task instance by ID
+   */
+  async getTaskVariablesById(id: string): Promise<ApiResponse<TaskVariables>> {
+    return this.get<TaskVariables>(`/tasks-instances/${id}/variables`);
+  }
 
   /**
    * GET /tasks-instances/status - Get task instance status options
@@ -60,6 +70,11 @@ export class TaskClient extends BaseApiClient {
   async getMyTasks(
     params?: TaskQueryParams,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
+    // Add current user to filters
+    params = {
+      ...params,
+      status: "ASSIGNED",
+    };
     return this.get<PaginatedResponse<Task>>("/tasks-instances/me", params);
   }
 
@@ -77,7 +92,9 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     variables?: Array<{ name: string; value: string }>,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}`, { variables });
+    return this.post<PostResponse>(`/tasks-instances/${taskId}`, {
+      variables: variables,
+    });
   }
 
   /**
@@ -85,24 +102,11 @@ export class TaskClient extends BaseApiClient {
    */
   async unclaimTask(
     taskId: string,
-    params: TaskActionParams,
+    note?: string,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(
       `/tasks-instances/${taskId}/unclaim`,
-      params,
-    );
-  }
-
-  /**
-   * POST /tasks-instances/{id}/unassign - Unassign a task
-   */
-  async unassignTask(
-    taskId: string,
-    params: TaskActionParams,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(
-      `/tasks-instances/${taskId}/unassign`,
-      params,
+      note,
     );
   }
 
@@ -133,7 +137,11 @@ export class TaskClient extends BaseApiClient {
     params?: TaskQueryParams,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     // Filter for unassigned tasks
-    return this.getTasks({ ...params, user: "" });
+    params = {
+      ...params,
+      status: "CREATED",
+    };
+    return this.getTasks(params);
   }
 
   /**
