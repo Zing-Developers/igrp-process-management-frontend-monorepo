@@ -34,6 +34,11 @@ interface PaginationParams {
   size?: number;
 }
 
+interface TaskCompletionBody {
+  variables?: Array<{ name: string; value: string }>;
+  forms?: Array<{ name: string; value: string }>;
+}
+
 export class TaskClient extends BaseApiClient {
   /**
    * GET /tasks-instances/{id} - Get a specific task instance by ID
@@ -90,11 +95,9 @@ export class TaskClient extends BaseApiClient {
    */
   async completeTask(
     taskId: string,
-    variables?: Array<{ name: string; value: string }>,
+    body?: TaskCompletionBody,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}`, {
-      variables: variables,
-    });
+    return this.post<PostResponse>(`/tasks-instances/${taskId}/complete`, body);
   }
 
   /**
@@ -104,10 +107,7 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     note?: string,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(
-      `/tasks-instances/${taskId}/unclaim`,
-      note,
-    );
+    return this.post<PostResponse>(`/tasks-instances/${taskId}/unclaim`, note);
   }
 
   /**
