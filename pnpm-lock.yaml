@@ -79,8 +79,8 @@ importers:
   packages/client:
     dependencies:
       '@igrp/platform-process-management-types':
-        specifier: workspace:*
-        version: link:../types
+        specifier: 0.0.1-beta.4
+        version: 0.0.1-beta.4
     devDependencies:
       '@types/node':
         specifier: ^24.1.0
@@ -327,6 +327,10 @@ packages:
   '@humanwhocodes/object-schema@2.0.3':
     resolution: {integrity: sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==}
     deprecated: Use @eslint/object-schema instead
+
+  '@igrp/platform-process-management-types@0.0.1-beta.4':
+    resolution: {integrity: sha512-MlDDcjkVOF5wkgVJe8aeI/zDsbueqycfZG49BxvLkbg71+71ohaW4DkrgdbbAEoPohy2xZRYMo+vxaDz69UrcA==}
+    engines: {node: '>=20.x.x'}
 
   '@isaacs/balanced-match@4.0.1':
     resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
@@ -2668,6 +2672,8 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/object-schema@2.0.3': {}
+
+  '@igrp/platform-process-management-types@0.0.1-beta.4': {}
 
   '@isaacs/balanced-match@4.0.1': {}
 
