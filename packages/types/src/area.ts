@@ -36,3 +36,11 @@ export interface AreaWithProcesses extends Area {
   process?: Process[];
   subareas?: AreaWithProcesses[];
 }
+
+// New type for process data structure used in area-client
+export interface ProcessData {
+  processKey: string;
+  releaseId: string;
+  version: string;
+  name: string;
+}

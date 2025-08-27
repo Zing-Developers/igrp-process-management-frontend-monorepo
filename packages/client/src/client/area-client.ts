@@ -9,6 +9,7 @@ import {
   CreateAreaRequest,
   Process,
   UpdateAreaRequest,
+  ProcessData,
 } from "@igrp/platform-process-management-types";
 
 export class AreaClient extends BaseApiClient {
@@ -89,12 +90,7 @@ export class AreaClient extends BaseApiClient {
    */
   async associateProcessToArea(
     areaId: string,
-    processData: {
-      processKey: string;
-      releaseId: string;
-      version: string;
-      name: string;
-    },
+    processData: ProcessData,
   ): Promise<ApiResponse<Process>> {
     return this.post<Process>(
       `/areas/${areaId}/process-definitions`,

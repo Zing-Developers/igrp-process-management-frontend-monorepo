@@ -54,6 +54,17 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
+   * GET /process-definitions/{processDefinitionId}/deployed-artifacts - Get deployed artifacts for a process definition
+   */
+  async getProcessDeployedArtifacts(
+    processDefinitionId: string,
+  ): Promise<ApiResponse<ProcessArtifact[]>> {
+    return this.get<ProcessArtifact[]>(
+      `/process-definitions/${processDefinitionId}/deployed-artifacts`,
+    );
+  }
+
+  /**
    * DELETE /process-definitions/artifacts/{artifactId} - Delete a specific process artifact
    */
   async deleteProcessArtifact(artifactId: string): Promise<ApiResponse<void>> {
