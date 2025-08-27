@@ -1,10 +1,6 @@
 {
   "name": "@igrp/platform-process-management-client-ts",
-<<<<<<< HEAD
-  "version": "0.0.1-beta.3",
-=======
-  "version": "0.0.1-beta.5",
->>>>>>> c3fc33d5b58e4edba4b11998e98cd90374fce9e8
+  "version": "0.0.1-beta.6",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
