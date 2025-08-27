@@ -28,6 +28,14 @@ export class BaseApiClient {
     const queryString = params ? this.buildQueryString(params) : "";
     const url = `${this.baseUrl}${endpoint}${queryString ? `?${queryString}` : ""}`;
 
+    console.debug('[API Request]', {
+      url,
+      method,
+      headers: this.defaultHeaders,
+      body,
+      params
+    });
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -39,16 +47,24 @@ export class BaseApiClient {
       signal: controller.signal,
       body: body ? JSON.stringify(body) : undefined,
     };
-
+    
     try {
       const response = await fetch(url, requestOptions);
       clearTimeout(timeoutId);
+
+      console.debug('[API Response]', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries())
+      });
 
       if (!response.ok) {
         await this.handleErrorResponse(response);
       }
 
       const data = await this.parseResponse<T>(response);
+
+      console.debug('[API Response Data]', data);
 
       return {
         data,
@@ -57,6 +73,8 @@ export class BaseApiClient {
       };
     } catch (error) {
       clearTimeout(timeoutId);
+
+      console.error('[API Error]', error);
 
       if (error instanceof ApiClientError) {
         throw error;

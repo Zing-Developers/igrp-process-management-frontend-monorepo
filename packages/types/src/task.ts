@@ -13,3 +13,8 @@ export type Task = {
   startedAt: string;
   businessKey: string;
 };
+
+export type TaskVariables = {
+  name: string;
+  value: string;
+};
