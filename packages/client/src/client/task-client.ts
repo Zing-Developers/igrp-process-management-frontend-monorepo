@@ -7,6 +7,7 @@ import {
   ApiResponse,
   Task,
   TaskVariables,
+  TaskStats,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
@@ -107,7 +108,11 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     note?: string,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/unclaim`, note);
+    return this.post<PostResponse>(
+      `/tasks-instances/${taskId}/unclaim`,
+      undefined,
+      { note },
+    );
   }
 
   /**
@@ -117,7 +122,11 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     params: TaskActionParams,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/claim`, params);
+    return this.post<PostResponse>(
+      `/tasks-instances/${taskId}/claim`,
+      undefined,
+      params,
+    );
   }
 
   /**
@@ -127,7 +136,11 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     params: TaskActionParams,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/assign`, params);
+    return this.post<PostResponse>(
+      `/tasks-instances/${taskId}/assign`,
+      undefined,
+      params,
+    );
   }
 
   /**
@@ -152,6 +165,20 @@ export class TaskClient extends BaseApiClient {
     params?: PaginationParams,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.getTasks({ ...params, processInstanceId: processInstanceId });
+  }
+
+  /**
+   * GET /tasks-instances/stats - Get general task statistics
+   */
+  async getTaskStats(): Promise<ApiResponse<TaskStats>> {
+    return this.get<TaskStats>("/tasks-instances/stats");
+  }
+
+  /**
+   * GET /tasks-instances/stats/me - Get task statistics for current user
+   */
+  async getMyTaskStats(): Promise<ApiResponse<TaskStats>> {
+    return this.get<TaskStats>("/tasks-instances/stats/me");
   }
 
   /**
