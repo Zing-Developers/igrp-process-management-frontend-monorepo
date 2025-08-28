@@ -18,3 +18,12 @@ export type TaskVariables = {
   name: string;
   value: string;
 };
+
+export type TaskStats = {
+  totalTaskInstances: number;
+  totalAvailableTasks: number;
+  totalAssignedTasks: number;
+  totalSuspendedTasks: number;
+  totalCompletedTasks: number;
+  totalCanceledTasks: number;
+};
