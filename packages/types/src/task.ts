@@ -7,11 +7,16 @@ export type Task = {
   processNumber: string;
   processName: string;
   processKey: string;
+  priority: number;
+  businessKey: string;
   assignedBy: string;
+  assignedAt: string;
+  startedBy: string;
+  startedAt: string;
+  endedBy: string;
+  endAt: string;
   status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELLED" | "DELETED";
   statusDesc?: string;
-  startedAt: string;
-  businessKey: string;
 };
 
 export type TaskVariables = {

@@ -6,6 +6,9 @@ import {
   CreateProcessInstanceRequest,
   CreateProcessArtifactRequest,
   ProcessArtifact,
+  ProcessStats,
+  ProcessSequence,
+  CreateProcessSequenceRequest,
   PaginatedResponse,
 } from "@igrp/platform-process-management-types";
 
@@ -120,22 +123,42 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
+   * GET /process-definitions/{processDefinitionId}/sequence - Get sequence configuration for a process definition
+   */
+  async getProcessSequence(
+    processDefinitionId: string,
+  ): Promise<ApiResponse<ProcessSequence>> {
+    return this.get<ProcessSequence>(
+      `/process-definitions/${processDefinitionId}/sequence`,
+    );
+  }
+
+  /**
+   * POST /process-definitions/{processDefinitionId}/sequence - Create sequence configuration for a process definition
+   */
+  async createProcessSequence(
+    processDefinitionId: string,
+    sequence: CreateProcessSequenceRequest,
+  ): Promise<ApiResponse<ProcessSequence>> {
+    return this.post<ProcessSequence>(
+      `/process-definitions/${processDefinitionId}/sequence`,
+      sequence,
+    );
+  }
+
+  /**
+   * GET /process-instances/stats - Get process instances statistics
+   */
+  async getProcessStats(): Promise<ApiResponse<ProcessStats>> {
+    return this.get<ProcessStats>("/process-instances/stats");
+  }
+
+  /**
    * POST /process-instances - Start a new process instance
    */
   async startProcess(
-    processDefinitionId: string,
-    processKey: string,
-    applicationBase: string,
-    businessKey?: string,
-    variables?: Array<{ name: string; value: string }>,
+    body: CreateProcessInstanceRequest,
   ): Promise<ApiResponse<ProcessInstance>> {
-    const body: CreateProcessInstanceRequest = {
-      processDefinitionId,
-      processKey,
-      applicationBase,
-      businessKey,
-      variables,
-    };
     return this.post<ProcessInstance>("/process-instances", body);
   }
 }
