@@ -134,12 +134,13 @@ export class TaskClient extends BaseApiClient {
    */
   async assignTask(
     taskId: string,
+    priority: number,
     params: TaskActionParams,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(
       `/tasks-instances/${taskId}/assign`,
       undefined,
-      params,
+      { ...params, priority },
     );
   }
 
