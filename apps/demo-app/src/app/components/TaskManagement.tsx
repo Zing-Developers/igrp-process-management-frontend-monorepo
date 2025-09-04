@@ -240,7 +240,7 @@ export function TaskManagement() {
             <option value="CREATED">Criada</option>
             <option value="ASSIGNED">Atribuída</option>
             <option value="COMPLETED">Concluída</option>
-            <option value="CANCELLED">Cancelada</option>
+            <option value="CANCELED">Cancelada</option>
           </select>
         </div>
       </div>

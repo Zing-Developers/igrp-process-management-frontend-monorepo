@@ -85,7 +85,7 @@ export class ProcessClient extends BaseApiClient {
       | "CREATED"
       | "RUNNING"
       | "SUSPENDED"
-      | "CANCELLED"
+      | "CANCELED"
       | "COMPLETED"
       | "TERMINATED";
     searchTerms?: string;

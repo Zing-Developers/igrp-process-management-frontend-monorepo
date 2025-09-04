@@ -15,7 +15,7 @@ export type Task = {
   startedAt: string;
   endedBy: string;
   endAt: string;
-  status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELLED" | "DELETED";
+  status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
   statusDesc?: string;
 };
 
