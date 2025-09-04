@@ -25,7 +25,7 @@ export type ProcessInstance = {
     | "CREATED"
     | "RUNNING"
     | "SUSPENDED"
-    | "CANCELLED"
+    | "CANCELED"
     | "COMPLETED"
     | "TERMINATED";
   statusDesc: string;
