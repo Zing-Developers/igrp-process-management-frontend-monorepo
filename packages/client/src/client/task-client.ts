@@ -26,7 +26,13 @@ interface TaskQueryParams {
 }
 
 interface TaskActionParams {
+  user?: string;
+  note?: string;
+}
+
+interface TaskActionBody {
   user: string;
+  priority?: number;
   note?: string;
 }
 
@@ -134,14 +140,9 @@ export class TaskClient extends BaseApiClient {
    */
   async assignTask(
     taskId: string,
-    priority: number,
-    params: TaskActionParams,
+    body: TaskActionBody,
   ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(
-      `/tasks-instances/${taskId}/assign`,
-      undefined,
-      { ...params, priority },
-    );
+    return this.post<PostResponse>(`/tasks-instances/${taskId}/assign`, body);
   }
 
   /**
