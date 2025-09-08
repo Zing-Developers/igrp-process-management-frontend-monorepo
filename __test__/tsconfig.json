@@ -1,0 +1,32 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"],
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "../",
+    "composite": true,
+    "outDir": "./dist",
+    "paths": {
+      "@igrp/platform-process-management-client-ts": ["packages/@igrp/client/src/index.ts"],
+      "@igrp/platform-process-management-client-ts/*": ["packages/@igrp/client/src/*"],
+      "@igrp/platform-process-management-types": ["packages/@igrp/types/src/index.ts"],
+      "@igrp/platform-process-management-types/*": ["packages/@igrp/types/src/*"]
+    }
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.d.ts",
+    "**/*.js"
+  ],
+  "references": [
+    { "path": "../packages/@igrp/types" },
+    { "path": "../packages/@igrp/client" }
+  ]
+}
