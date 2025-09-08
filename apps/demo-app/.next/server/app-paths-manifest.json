@@ -1,0 +1,7 @@
+{
+  "/(dashboard)/tasks/management/page": "app/(dashboard)/tasks/management/page.js",
+  "/(dashboard)/tasks/my-tasks/page": "app/(dashboard)/tasks/my-tasks/page.js",
+  "/(dashboard)/processes/page": "app/(dashboard)/processes/page.js",
+  "/(dashboard)/configuration/page": "app/(dashboard)/configuration/page.js",
+  "/(dashboard)/tasks/available/page": "app/(dashboard)/tasks/available/page.js"
+}

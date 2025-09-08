@@ -1,0 +1,1 @@
+{"c":["app/(dashboard)/page","app/(dashboard)/processes/page","app/(dashboard)/tasks/my-tasks/page","app/(dashboard)/tasks/available/page","app/(dashboard)/tasks/management/page","app/(dashboard)/configuration/page","webpack"],"r":[],"m":["(app-pages-browser)/../platform-process-management-client-ts/src/dummy-data/processes.ts"]}

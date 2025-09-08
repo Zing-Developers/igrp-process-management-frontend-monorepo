@@ -1,0 +1,99 @@
+export type Process = {
+  id: string;
+  processKey: string;
+  name?: string; // Add this for compatibility
+  description?: string; // Add this for compatibility
+  releaseId: string;
+  areaId: string;
+  status: string;
+  statusDesc: string;
+  version: string;
+  createdAt: string;
+  updatedAt?: string;
+  createdBy: string;
+  updatedBy?: string;
+  removedAt?: string | null;
+  removedBy?: string | null;
+};
+
+export type ProcessInstance = {
+  id: string;
+  procReleaseKey: string;
+  procReleaseId: string;
+  number: string;
+  status:
+    | "CREATED"
+    | "RUNNING"
+    | "SUSPENDED"
+    | "CANCELED"
+    | "COMPLETED"
+    | "TERMINATED";
+  statusDesc: string;
+  businessKey?: string;
+  version: string;
+  startedAt: string;
+  startedBy: string;
+  endedAt: string;
+  endedBy: string;
+  canceledAt: string;
+  canceledBy: string;
+  priority: number;
+  obsCancel: string;
+  applicationBase: string;
+  name: string;
+  progress: string;
+  variables: Map<string, string>;
+};
+
+export interface CreateProcessInstanceRequest {
+  processDefinitionId: string;
+  processKey: string;
+  applicationBase: string;
+  priority: number;
+  businessKey?: string;
+  variables?: Array<{ name: string; value: string }>;
+}
+
+export interface CreateProcessArtifactRequest {
+  name: string;
+  key: string;
+  formKey: string;
+}
+
+export interface ProcessArtifact {
+  id: string;
+  name: string;
+  key: string;
+  processDefinitionId: string;
+  formKey: string;
+}
+
+export interface ProcessSequence {
+  id: string;
+  name: string;
+  prefix: string;
+  checkDigitSize: number;
+  padding: number;
+  dateFormat: string;
+  nextNumber: number;
+  numberIncrement: number;
+  processDefinitionId: string;
+}
+
+export interface CreateProcessSequenceRequest {
+  name: string;
+  prefix: string;
+  dateFormat: string;
+  checkDigitSize: number;
+  padding: number;
+  numberIncrement: number;
+}
+
+export type ProcessStats = {
+  totalProcessInstances: number;
+  totalCreatedProcess: number;
+  totalRunningProcess: number;
+  totalCompletedProcess: number;
+  totalSuspendedProcess: number;
+  totalCanceledProcess: number;
+};
