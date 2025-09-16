@@ -14,6 +14,7 @@ export type Process = {
   updatedBy?: string;
   removedAt?: string | null;
   removedBy?: string | null;
+  applicationBase?: string;
 };
 
 export type ProcessInstance = {
@@ -42,7 +43,7 @@ export type ProcessInstance = {
   applicationBase: string;
   name: string;
   progress: string;
-  variables: Map<string, string>;
+  variables: Array<{ name: string; value: string }>;
 };
 
 export interface CreateProcessInstanceRequest {
