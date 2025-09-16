@@ -138,11 +138,10 @@ export class ProcessClient extends BaseApiClient {
    */
   async createProcessSequence(
     processDefinitionId: string,
-    processApplicationBase: string,
     sequence: CreateProcessSequenceRequest,
   ): Promise<ApiResponse<ProcessSequence>> {
     return this.post<ProcessSequence>(
-      `/process-definitions/${processDefinitionId}/applications/${processApplicationBase}/sequence`,
+      `/process-definitions/${processDefinitionId}/sequence`,
       sequence,
     );
   }
