@@ -1,3 +1,5 @@
+import { TaskVariables } from "./task";
+
 export type Process = {
   id: string;
   processKey: string;
@@ -43,7 +45,7 @@ export type ProcessInstance = {
   applicationBase: string;
   name: string;
   progress: string;
-  variables: Array<{ name: string; value: string }>;
+  variables: Array<TaskVariables>;
 };
 
 export interface CreateProcessInstanceRequest {
