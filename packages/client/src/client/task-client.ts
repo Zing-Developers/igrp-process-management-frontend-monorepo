@@ -108,6 +108,16 @@ export class TaskClient extends BaseApiClient {
   }
 
   /**
+   * POST /tasks-instances/{id} - Save a task
+   */
+  async saveTask(
+    taskId: string,
+    body?: TaskCompletionBody,
+  ): Promise<ApiResponse<PostResponse>> {
+    return this.post<PostResponse>(`/tasks-instances/${taskId}/save`, body);
+  }
+
+  /**
    * POST /tasks-instances/{id}/unclaim - Release/unclaim a task
    */
   async unclaimTask(
