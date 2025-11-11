@@ -18,6 +18,7 @@ export type Task = {
   status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
   statusDesc?: string;
   variables?: Array<TaskVariables>;
+  applicationBase?: string;
 };
 
 export type TaskVariables = {
