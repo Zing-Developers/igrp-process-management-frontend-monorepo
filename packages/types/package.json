@@ -1,6 +1,6 @@
 {
   "name": "@igrp/platform-process-management-types",
-  "version": "0.0.1-beta.21",
+  "version": "0.0.1-beta.22.1",
   "type": "module",
   "description": "IGRP Process Management Frontend | Types",
   "keywords": [
