@@ -1,6 +1,6 @@
 {
   "name": "@igrp/platform-process-management-client-ts",
-  "version": "0.0.1-beta.22.4",
+  "version": "0.0.1-beta.22.5",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -30,6 +30,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@igrp/platform-process-management-types": "0.0.1-beta.22"
+    "@igrp/platform-process-management-types": "0.0.1-beta.22.1"
   }
 }
