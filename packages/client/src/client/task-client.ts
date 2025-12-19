@@ -8,6 +8,7 @@ import {
   Task,
   TaskVariables,
   TaskStats,
+  VariableParams,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
@@ -34,6 +35,7 @@ interface TaskActionBody {
   user: string;
   priority?: number;
   note?: string;
+  candidateGroups?: string;
 }
 
 interface PaginationParams {
@@ -59,8 +61,16 @@ export class TaskClient extends BaseApiClient {
    */
   async getTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-    return this.get<PaginatedResponse<Task>>("/tasks-instances", params);
+    const requestBody = body || {};
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/search",
+      requestBody,
+      params,
+    );
   }
   /**
    * GET /tasks-instances/{id}/variables - Get variables for a specific task instance by ID
