@@ -10,6 +10,8 @@ import {
   ProcessSequence,
   CreateProcessSequenceRequest,
   PaginatedResponse,
+  VariableParams,
+  StartProcessInstanceRequest,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
@@ -46,6 +48,20 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
+   * POST /process-definitions/{processDefinitionId}/artifacts - Create a new process artifact
+   */
+  async updateProcessArtifact(
+    processDefinitionId: string,
+    artifact: CreateProcessArtifactRequest,
+  ): Promise<ApiResponse<ProcessArtifact>> {
+    const { key, ...rest } = artifact;
+    return this.put<ProcessArtifact>(
+      `/process-definitions/${processDefinitionId}/artifacts/${key}`,
+      rest,
+    );
+  }
+
+  /**
    * GET /process-definitions/{processDefinitionId}/artifacts - Get artifacts for a process definition
    */
   async getProcessArtifacts(
@@ -77,24 +93,33 @@ export class ProcessClient extends BaseApiClient {
   /**
    * GET /process-instances - Get process instances with optional filters
    */
-  async getProcessInstances(params?: {
-    number?: string;
-    procReleaseKey?: string;
-    procReleaseId?: string;
-    status?:
-      | "CREATED"
-      | "RUNNING"
-      | "SUSPENDED"
-      | "CANCELED"
-      | "COMPLETED"
-      | "TERMINATED";
-    searchTerms?: string;
-    applicationBase?: string;
-    page?: number;
-    size?: number;
-  }): Promise<ApiResponse<PaginatedResponse<ProcessInstance>>> {
-    return this.get<PaginatedResponse<ProcessInstance>>(
-      "/process-instances",
+  async getProcessInstances(
+    params?: {
+      number?: string;
+      procReleaseKey?: string;
+      procReleaseId?: string;
+      status?:
+        | "CREATED"
+        | "RUNNING"
+        | "SUSPENDED"
+        | "CANCELED"
+        | "COMPLETED"
+        | "TERMINATED";
+      searchTerms?: string;
+      applicationBase?: string;
+      page?: number;
+      size?: number;
+    },
+    body?: {
+      variables?: VariableParams;
+    },
+  ): Promise<ApiResponse<PaginatedResponse<ProcessInstance>>> {
+    // Backend requires a request body, so send at least an empty object
+    const requestBody = body || {};
+
+    return this.post<PaginatedResponse<ProcessInstance>>(
+      "/process-instances/search",
+      requestBody,
       params,
     );
   }
@@ -155,11 +180,33 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
-   * POST /process-instances - Start a new process instance
+   * POST /process-instances/create - Create and start a new process instance
    */
-  async startProcess(
+  async createAndStartProcess(
     body: CreateProcessInstanceRequest,
   ): Promise<ApiResponse<ProcessInstance>> {
     return this.post<ProcessInstance>("/process-instances", body);
+  }
+
+  /**
+   * POST /process-instances/{processInstanceId}/create - Create a new process instance
+   */
+  async createProcessInstance(
+    body: CreateProcessInstanceRequest,
+  ): Promise<ApiResponse<ProcessInstance>> {
+    return this.post<ProcessInstance>("/process-instances/create", body);
+  }
+
+  /**
+   * POST /process-instances/{processInstanceId}/start - Start a new process instance
+   */
+  async startProcessInstance(
+    processInstanceId: string,
+    body: StartProcessInstanceRequest,
+  ): Promise<ApiResponse<ProcessInstance>> {
+    return this.post<ProcessInstance>(
+      `/process-instances/${processInstanceId}/start`,
+      body,
+    );
   }
 }
