@@ -57,10 +57,15 @@ export interface CreateProcessInstanceRequest {
   variables?: Array<{ name: string; value: string }>;
 }
 
+export interface StartProcessInstanceRequest {
+  variables?: Array<{ name: string; value: string }>;
+}
+
 export interface CreateProcessArtifactRequest {
   name: string;
   key: string;
   formKey: string;
+  candidateGroups?: string;
 }
 
 export interface ProcessArtifact {
@@ -69,6 +74,7 @@ export interface ProcessArtifact {
   key: string;
   processDefinitionId: string;
   formKey: string;
+  candidateGroups?: string;
 }
 
 export interface ProcessSequence {
