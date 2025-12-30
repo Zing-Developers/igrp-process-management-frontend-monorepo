@@ -91,13 +91,21 @@ export class TaskClient extends BaseApiClient {
    */
   async getMyTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     // Add current user to filters
+    const requestBody = body || {};
     params = {
       ...params,
       status: "ASSIGNED",
     };
-    return this.get<PaginatedResponse<Task>>("/tasks-instances/me", params);
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/me",
+      requestBody,
+      params,
+    );
   }
 
   /**
