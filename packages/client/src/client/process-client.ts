@@ -107,6 +107,8 @@ export class ProcessClient extends BaseApiClient {
         | "TERMINATED";
       searchTerms?: string;
       applicationBase?: string;
+      dateFrom?: string;
+      dateTo?: string;
       page?: number;
       size?: number;
     },
