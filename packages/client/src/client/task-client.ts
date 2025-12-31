@@ -48,6 +48,10 @@ interface TaskCompletionBody {
   forms?: Array<{ name: string; value: string }>;
 }
 
+interface TaskUnclaimBody {
+  note?: string;
+}
+
 export class TaskClient extends BaseApiClient {
   /**
    * GET /tasks-instances/{id} - Get a specific task instance by ID
@@ -140,12 +144,12 @@ export class TaskClient extends BaseApiClient {
    */
   async unclaimTask(
     taskId: string,
-    note?: string,
+    body?: TaskUnclaimBody,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(
       `/tasks-instances/${taskId}/unclaim`,
+      body,
       undefined,
-      { note },
     );
   }
 
