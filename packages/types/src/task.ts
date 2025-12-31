@@ -13,12 +13,24 @@ export type Task = {
   assignedAt: string;
   startedBy: string;
   startedAt: string;
+  endedAt: string;
   endedBy: string;
-  endAt: string;
+  candidateGroups: string;
   status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
   statusDesc?: string;
   variables?: Array<TaskVariables>;
   applicationBase?: string;
+  taskInstanceEvents?: TaskInstanceEvent[];
+};
+
+export type TaskInstanceEvent = {
+  id: string;
+  eventType: string;
+  status: string;
+  performedAt: string;
+  performedBy: string;
+  obs?: string;
+  taskInstanceId: string;
 };
 
 export type TaskVariables = {
