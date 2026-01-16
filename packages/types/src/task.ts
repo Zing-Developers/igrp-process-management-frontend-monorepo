@@ -19,6 +19,8 @@ export type Task = {
   status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
   statusDesc?: string;
   variables?: Array<TaskVariables>;
+  forms?: Array<TaskVariables>;
+  processVariables?: Array<TaskVariables>;
   applicationBase?: string;
   taskInstanceEvents?: TaskInstanceEvent[];
 };
@@ -35,7 +37,7 @@ export type TaskInstanceEvent = {
 
 export type TaskVariables = {
   name: string;
-  value: string;
+  value: string | number | boolean | object;
 };
 
 export type TaskStats = {
