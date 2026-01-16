@@ -1,3 +1,5 @@
+import { TaskVariables } from "./task";
+
 export interface ActivityEvent {
   id: string;
   name: string;
@@ -16,16 +18,21 @@ export interface ActivityEvent {
 }
 
 export interface ActivityProgress {
-  activityKey: string;
+  activityId: string;
   activityName: string;
+  activityInstanceId: string;
+  duration: number;
+  durationMillis: number;
+  startTime: Date;
+  endTime: Date;
+  executionId: string;
+  processInstanceId: string;
   status: string;
   type: string;
-  processInstanceId: string;
+  treeNumber: string;
   assignee: string;
   candidateUsers: string[];
   candidateGroups: string[];
-  startTime: Date;
-  endTime: Date;
-  durationMillis: number;
-  activityId: string;
+  variables?: TaskVariables[];
+  forms?: TaskVariables[];
 }
