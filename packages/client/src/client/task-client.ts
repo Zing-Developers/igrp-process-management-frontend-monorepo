@@ -24,6 +24,7 @@ interface TaskQueryParams {
   applicationBase?: string;
   page?: number;
   size?: number;
+  filterByCurrentUser?: boolean;
 }
 
 interface TaskActionParams {
