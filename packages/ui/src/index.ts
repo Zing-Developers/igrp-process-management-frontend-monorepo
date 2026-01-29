@@ -35,9 +35,5 @@ export { useIGRPProcess } from "./use-igrp-process";
 // Components
 export { IGRPProcessPage } from "./process-page";
 export { IGRPProcessPageRenderer } from "./process-page-renderer";
-export type { IGRPProcessPageRendererProps } from "./process-page-renderer";
 export { IGRPConfirmationDialog } from "./components/igrp-confirmation-dialog";
 export type { IGRPConfirmationDialogProps } from "./components/igrp-confirmation-dialog";
-
-// Utils
-export { cn } from "./utils";
