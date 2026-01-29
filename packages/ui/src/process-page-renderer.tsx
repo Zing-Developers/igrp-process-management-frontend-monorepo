@@ -10,52 +10,27 @@ import {
   type ReactNode,
 } from "react";
 import {
+  IGRPPageHeader,
   IGRPButton,
   IGRPCardDetails,
   IGRPIcon,
   IGRPLoadingSpinner,
   IGRPStepperProcess,
-  type IGRPStepProcessProps,
+  IGRPCardPrimitive,
+  IGRPCardContentPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
-import { IGRPPageHeader } from "@igrp/igrp-framework-react-design-system";
-import {
-  Card,
-  CardContent,
-} from "@igrp/igrp-framework-react-design-system/dist/components/primitives/card";
 import type {
   IGRPResolveStepComponent,
   IGRPResolveStepComponentParams,
   IGRPStepComponentConfig,
   IGRPStepComponentProps,
   IGRPStepMethods,
+  IGRPProcessPageRendererProps,
+  IGRPStepResult,
 } from "./types";
 import { IGRPConfirmationDialog } from "./components/igrp-confirmation-dialog";
 import { useIGRPProcessContext } from "./igrp-process-context";
-
-interface IGRPProcessPageRendererProps {
-  version: string;
-  stepData?: undefined;
-  processKey: string;
-  userTaskKey: string;
-  processName: string;
-  processInstanceId: string;
-  userTaskInstanceId: string;
-  statusDesc: string;
-  number: string;
-  steps: IGRPStepProcessProps[];
-  startedAt: string;
-  variables: Array<{ name: string; value: string }>;
-  resolveStepComponent?: IGRPResolveStepComponent | null;
-  getBackUrl?: () => string;
-}
-
-interface IGRPStepResult {
-  success: boolean;
-  error?: string;
-  variables?: Array<{ name: string; value: string }> | undefined;
-  forms?: Array<{ name: string; value: string }> | undefined;
-}
 
 const IGRPStepLoading = ({ userTaskKey }: { userTaskKey: string }) => (
   <div className="flex flex-col items-center justify-center h-full">
@@ -440,8 +415,8 @@ export default function IGRPProcessPageRenderer({
 
           if (!resolveStepComponent) {
             return (
-              <Card>
-                <CardContent>
+              <IGRPCardPrimitive>
+                <IGRPCardContentPrimitive>
                   <div className="flex flex-col items-center justify-center min-h-[120px] p-4 text-amber-600">
                     <p className="text-sm font-medium">
                       resolveStepComponent é obrigatório
@@ -451,14 +426,14 @@ export default function IGRPProcessPageRenderer({
                       dynamic import na app com prefixo estático).
                     </p>
                   </div>
-                </CardContent>
-              </Card>
+                </IGRPCardContentPrimitive>
+              </IGRPCardPrimitive>
             );
           }
 
           return (
-            <Card>
-              <CardContent>
+            <IGRPCardPrimitive>
+              <IGRPCardContentPrimitive>
                 <StepResolver
                   resolve={resolveStepComponent}
                   params={{ processKey, version, userTaskKey, processName }}
@@ -467,12 +442,12 @@ export default function IGRPProcessPageRenderer({
                     <IGRPStepLoading userTaskKey={processName} />
                   }
                 />
-              </CardContent>
-            </Card>
+              </IGRPCardContentPrimitive>
+            </IGRPCardPrimitive>
           );
         }}
       </IGRPStepperProcess>
     </div>
   );
 }
-export { IGRPProcessPageRenderer, type IGRPProcessPageRendererProps };
+export { IGRPProcessPageRenderer };

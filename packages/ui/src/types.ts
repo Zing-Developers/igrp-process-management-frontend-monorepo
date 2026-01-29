@@ -96,3 +96,27 @@ export interface IGRPProcessClientConfig {
   /** Base path do componente do step (ex: "/(igrp)/(generated)/process"). */
   basePathComponent?: string;
 }
+
+export interface IGRPProcessPageRendererProps {
+  version: string;
+  stepData?: undefined;
+  processKey: string;
+  userTaskKey: string;
+  processName: string;
+  processInstanceId: string;
+  userTaskInstanceId: string;
+  statusDesc: string;
+  number: string;
+  steps: IGRPStepProcessProps[];
+  startedAt: string;
+  variables: Array<{ name: string; value: string }>;
+  resolveStepComponent?: IGRPResolveStepComponent | null;
+  getBackUrl?: () => string;
+}
+
+export interface IGRPStepResult {
+  success: boolean;
+  error?: string;
+  variables?: Array<{ name: string; value: string }> | undefined;
+  forms?: Array<{ name: string; value: string }> | undefined;
+}
