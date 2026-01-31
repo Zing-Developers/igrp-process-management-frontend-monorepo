@@ -1,3 +1,10 @@
+export type TaskStatus =
+  | "CREATED"
+  | "ASSIGNED"
+  | "COMPLETED"
+  | "CANCELED"
+  | "DELETED";
+
 export type Task = {
   id: string;
   taskKey: string;
@@ -16,7 +23,7 @@ export type Task = {
   endedAt: string;
   endedBy: string;
   candidateGroups: string;
-  status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
+  status: TaskStatus;
   statusDesc?: string;
   variables?: Array<TaskVariables>;
   forms?: Array<TaskVariables>;
