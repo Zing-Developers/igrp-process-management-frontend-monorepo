@@ -1,5 +1,13 @@
 import { TaskVariables } from "./task";
 
+export type ProcessStatus =
+  | "CREATED"
+  | "RUNNING"
+  | "SUSPENDED"
+  | "CANCELED"
+  | "COMPLETED"
+  | "TERMINATED";
+
 export type Process = {
   id: string;
   processKey: string;
@@ -24,13 +32,7 @@ export type ProcessInstance = {
   procReleaseKey: string;
   procReleaseId: string;
   number: string;
-  status:
-    | "CREATED"
-    | "RUNNING"
-    | "SUSPENDED"
-    | "CANCELED"
-    | "COMPLETED"
-    | "TERMINATED";
+  status: ProcessStatus;
   statusDesc: string;
   businessKey?: string;
   version: string;
@@ -75,6 +77,16 @@ export interface ProcessArtifact {
   processDefinitionId: string;
   formKey: string;
   candidateGroups?: string;
+}
+
+export interface ProcessDefinition {
+  id: string;
+  processKey: string;
+  name: string;
+  description: string;
+  version: string;
+  deploymentId: string;
+  applicationBase: string;
 }
 
 export interface ProcessSequence {
