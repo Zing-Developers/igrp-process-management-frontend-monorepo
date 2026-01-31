@@ -91,6 +91,19 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
+   * process-definitions/er/assign-groups - Assign groups to a process definition
+   */
+  async assignGroupsToProcessDefinition(
+    processDefinitionId: string,
+    candidateGroups: string,
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(
+      `/process-definitions/${processDefinitionId}/assign`,
+      { candidateGroups },
+    );
+  }
+
+  /**
    * GET /process-instances - Get process instances with optional filters
    */
   async getProcessInstances(
