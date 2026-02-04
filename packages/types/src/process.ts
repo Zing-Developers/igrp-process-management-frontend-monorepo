@@ -87,6 +87,7 @@ export interface ProcessDefinition {
   version: string;
   deploymentId: string;
   applicationBase: string;
+  candidateGroups: string;
 }
 
 export interface ProcessSequence {
