@@ -68,6 +68,8 @@ export interface CreateProcessArtifactRequest {
   key: string;
   formKey: string;
   candidateGroups?: string;
+  dueDate: string;
+  priority: number;
 }
 
 export interface ProcessArtifact {
@@ -77,6 +79,8 @@ export interface ProcessArtifact {
   processDefinitionId: string;
   formKey: string;
   candidateGroups?: string;
+  dueDate: string;
+  priority: number;
 }
 
 export interface ProcessDefinition {
@@ -119,3 +123,15 @@ export type ProcessStats = {
   totalSuspendedProcess: number;
   totalCanceledProcess: number;
 };
+
+export interface ProcessDefinitionSchema {
+  processKey: string;
+  processName: string;
+  processVersion: string;
+  processDescription: string;
+  bpmnXml: string;
+  applicationBase: string;
+  artifacts: ProcessArtifact[];
+  sequence: ProcessSequence;
+  candidateGroups: string;
+}
