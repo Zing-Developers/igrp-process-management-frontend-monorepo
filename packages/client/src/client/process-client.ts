@@ -12,6 +12,7 @@ import {
   PaginatedResponse,
   VariableParams,
   StartProcessInstanceRequest,
+  ProcessDefinitionSchema,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
@@ -99,6 +100,19 @@ export class ProcessClient extends BaseApiClient {
   ): Promise<ApiResponse<void>> {
     return this.post<void>(
       `/process-definitions/${processDefinitionId}/assign`,
+      { candidateGroups },
+    );
+  }
+
+  /**
+   * /process-definitions/{id}/unassign- Assign groups to a process definition
+   */
+  async unassignGroupsToProcessDefinition(
+    processDefinitionId: string,
+    candidateGroups: string,
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(
+      `/process-definitions/${processDefinitionId}/unassign`,
       { candidateGroups },
     );
   }
@@ -222,5 +236,39 @@ export class ProcessClient extends BaseApiClient {
       `/process-instances/${processInstanceId}/start`,
       body,
     );
+  }
+
+  /**
+   * DELETE /process-definitions/{id}/archive - Archive a process definition
+   */
+  async archiveProcessDefinition(id: string): Promise<ApiResponse<void>> {
+    return this.delete<void>(`/process-definitions/${id}/archive`);
+  }
+
+  /**
+   * POST /process-definitions/{id}/unarchive - Unarchive a process definition
+   */
+  async unarchiveProcessDefinition(id: string): Promise<ApiResponse<void>> {
+    return this.post<void>(`/process-definitions/${id}/unarchive`);
+  }
+
+  /**
+   * GET /process-definitions/{id}/export - Export a process definition
+   */
+  async exportProcessDefinition(
+    id: string,
+  ): Promise<ApiResponse<ProcessDefinitionSchema>> {
+    return this.get<ProcessDefinitionSchema>(
+      `/process-definitions/${id}/export`,
+    );
+  }
+
+  /**
+   * GET /process-definitions/{id}/import - Import a process definition
+   */
+  async importProcessDefinition(
+    body: ProcessDefinitionSchema,
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(`/process-definitions/import`, body);
   }
 }
