@@ -25,6 +25,7 @@ export type Process = {
   removedAt?: string | null;
   removedBy?: string | null;
   applicationBase?: string;
+  deploymentId?: string;
 };
 
 export type ProcessInstance = {

@@ -3,6 +3,8 @@ import { IGRPLoadingSpinner } from "@igrp/igrp-framework-react-design-system/dis
 import { useIGRPProcessContext } from "./igrp-process-context";
 import { IGRPProcessPageRenderer } from "./process-page-renderer";
 
+const DEFAULT_FORM = { type: "shared" as const, page: "default", version: "1" };
+
 function IGRPProcessPage({ getBackUrl }: { getBackUrl?: () => string }) {
   const {
     stepConfig,
@@ -13,8 +15,16 @@ function IGRPProcessPage({ getBackUrl }: { getBackUrl?: () => string }) {
     userTaskInstanceId,
   } = useIGRPProcessContext();
 
-  const { version, statusDesc, number, steps, startedAt, name, variables } =
-    stepConfig || {};
+  const {
+    version,
+    statusDesc,
+    number,
+    steps,
+    startedAt,
+    name,
+    variables,
+    form,
+  } = stepConfig || {};
 
   if (isLoadingStepConfig || !stepConfig) {
     return (
@@ -39,6 +49,7 @@ function IGRPProcessPage({ getBackUrl }: { getBackUrl?: () => string }) {
       startedAt={startedAt || ""}
       variables={variables || []}
       getBackUrl={getBackUrl}
+      form={form ?? DEFAULT_FORM}
     />
   );
 }

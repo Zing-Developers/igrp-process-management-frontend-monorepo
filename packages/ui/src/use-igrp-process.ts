@@ -5,36 +5,15 @@ import {
   fetchStepConfig as fetchStepConfigAction,
   callCompleteTask as callCompleteTaskAction,
   callSaveTask as callSaveTaskAction,
-  type FetchStepConfigResult,
 } from "./process-actions";
-import type { IGRPProcessClientConfig } from "./types";
-
-export interface StepConfigParams {
-  processKey: string;
-  processInstanceId: string;
-  userTaskInstanceId: string;
-  userTaskKey: string;
-}
-
-export type StepConfigResult = FetchStepConfigResult;
-
-export interface TaskResult {
-  success: boolean;
-  title: string;
-  message: string;
-}
-
-interface CompleteTaskParams {
-  userTaskInstanceId: string;
-  variables?: Array<{ name: string; value: string }>;
-  forms?: Array<{ name: string; value: string }>;
-}
-
-interface SaveTaskParams {
-  userTaskInstanceId: string;
-  variables?: Array<{ name: string; value: string }>;
-  forms?: Array<{ name: string; value: string }>;
-}
+import type {
+  StepConfigResult,
+  IGRPProcessClientConfig,
+  StepConfigParams,
+  TaskResult,
+  SaveTaskParams,
+  CompleteTaskParams,
+} from "./types";
 
 /**
  * Unified hook for process management operations.
