@@ -1,5 +1,7 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { IGRPStepProcessProps } from "@igrp/igrp-framework-react-design-system";
+import type { FormKeyType } from "./lib/form-key-utils";
+import type { Task } from "@igrp/platform-process-management-types";
 
 export interface IGRPFetchStepConfigResult {
   name: string;
@@ -71,11 +73,18 @@ export interface IGRPStepMethods {
   }>;
 }
 
+export interface Form {
+  type: FormKeyType;
+  page: string;
+  version: string;
+}
+
 export interface IGRPResolveStepComponentParams {
   processKey: string;
   version: string;
   userTaskKey: string;
   processName: string;
+  form: Form;
 }
 
 export type IGRPStepComponentProps = {
@@ -99,6 +108,7 @@ export interface IGRPProcessClientConfig {
 
 export interface IGRPProcessPageRendererProps {
   version: string;
+  form: Form;
   stepData?: undefined;
   processKey: string;
   userTaskKey: string;
@@ -119,4 +129,51 @@ export interface IGRPStepResult {
   error?: string;
   variables?: Array<{ name: string; value: string }> | undefined;
   forms?: Array<{ name: string; value: string }> | undefined;
+}
+
+export interface StepResolverProps {
+  resolve:
+    | IGRPResolveStepComponent
+    | { default: ComponentType<IGRPStepComponentProps> };
+  params: IGRPResolveStepComponentParams;
+  config: IGRPStepComponentConfig;
+  loadingFallback: ReactNode;
+}
+
+export interface StepConfigResult {
+  task: Task;
+  name: string;
+  version: string;
+  statusDesc: string;
+  number: string;
+  startedAt: string;
+  variables: Array<{ name: string; value: any }>;
+  userTaskKey: string | null;
+  steps: IGRPStepProcessProps[];
+  form: Form;
+}
+
+export interface StepConfigParams {
+  processKey: string;
+  processInstanceId: string;
+  userTaskInstanceId: string;
+  userTaskKey: string;
+}
+
+export interface TaskResult {
+  success: boolean;
+  title: string;
+  message: string;
+}
+
+export interface CompleteTaskParams {
+  userTaskInstanceId: string;
+  variables?: Array<{ name: string; value: string }>;
+  forms?: Array<{ name: string; value: string }>;
+}
+
+export interface SaveTaskParams {
+  userTaskInstanceId: string;
+  variables?: Array<{ name: string; value: string }>;
+  forms?: Array<{ name: string; value: string }>;
 }

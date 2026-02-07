@@ -1,18 +1,5 @@
 // Types
-export type {
-  IGRPFetchStepConfigResult,
-  IGRPStepConfigParams,
-  IGRPTaskResult,
-  IGRPCompleteTaskParams,
-  IGRPSaveTaskParams,
-  IGRPProcessActions,
-  IGRPProcessClientConfig,
-  IGRPStepComponentConfig,
-  IGRPStepMethods,
-  IGRPResolveStepComponentParams,
-  IGRPResolveStepComponent,
-  IGRPStepComponentProps,
-} from "./types";
+export * from "./types";
 
 // Process actions (server actions – ficheiro tem "use server")
 export {
@@ -20,7 +7,6 @@ export {
   callCompleteTask,
   callSaveTask,
 } from "./process-actions";
-export type { FetchStepConfigResult } from "./process-actions";
 
 // Context & hook
 export {
