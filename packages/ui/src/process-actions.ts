@@ -1,24 +1,21 @@
 "use server";
 
-import type { IGRPStepProcessProps } from "@igrp/igrp-framework-react-design-system";
-import type { IGRPProcessClientConfig, IGRPStepConfigParams } from "./types";
+import type {
+  IGRPProcessClientConfig,
+  IGRPStepConfigParams,
+  StepConfigResult,
+} from "./types";
 import { getIGRPProcessClient } from "./lib/api-client";
-
-export interface FetchStepConfigResult {
-  name: string;
-  version: string;
-  statusDesc: string;
-  number: string;
-  startedAt: string;
-  variables: Array<{ name: string; value: any }>;
-  userTaskKey: string | null;
-  steps: IGRPStepProcessProps[];
-}
+import {
+  getFormKeyType,
+  getKeyFromFormKey,
+  getVersionFromFormKey,
+} from "./lib/form-key-utils";
 
 export async function fetchStepConfig(
   params: IGRPStepConfigParams,
   config: IGRPProcessClientConfig,
-): Promise<FetchStepConfigResult> {
+): Promise<StepConfigResult> {
   const processManagementClient = await getIGRPProcessClient(config);
 
   const processInstance =
@@ -34,6 +31,12 @@ export async function fetchStepConfig(
   const task = await processManagementClient.tasks.getTaskById(
     params.userTaskInstanceId,
   );
+
+  const formKey = task.data.formKey;
+
+  const page = getKeyFromFormKey(formKey);
+  const formType = getFormKeyType(formKey);
+  const formVersion = getVersionFromFormKey(formKey);
 
   const variables = [
     ...(task.data.variables || []),
@@ -75,6 +78,7 @@ export async function fetchStepConfig(
   );
 
   return {
+    task: task.data,
     name: processInstance.data.name || processInstance.data.procReleaseKey,
     version: `v${processInstance.data.version}`,
     statusDesc: processInstance.data.statusDesc,
@@ -83,6 +87,7 @@ export async function fetchStepConfig(
     variables: variables,
     userTaskKey,
     steps,
+    form: { type: formType, page, version: formVersion },
   };
 }
 

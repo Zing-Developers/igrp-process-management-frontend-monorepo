@@ -7,7 +7,6 @@ import {
   useMemo,
   useState,
   type ComponentType,
-  type ReactNode,
 } from "react";
 import {
   IGRPPageHeader,
@@ -21,13 +20,12 @@ import {
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
 import type {
-  IGRPResolveStepComponent,
-  IGRPResolveStepComponentParams,
   IGRPStepComponentConfig,
   IGRPStepComponentProps,
   IGRPStepMethods,
   IGRPProcessPageRendererProps,
   IGRPStepResult,
+  StepResolverProps,
 } from "./types";
 import { IGRPConfirmationDialog } from "./components/igrp-confirmation-dialog";
 import { useIGRPProcessContext } from "./igrp-process-context";
@@ -66,15 +64,6 @@ const StepLoadError = ({
     )}
   </div>
 );
-
-interface StepResolverProps {
-  resolve:
-    | IGRPResolveStepComponent
-    | { default: ComponentType<IGRPStepComponentProps> };
-  params: IGRPResolveStepComponentParams;
-  config: IGRPStepComponentConfig;
-  loadingFallback: ReactNode;
-}
 
 function StepResolver({
   resolve,
@@ -118,6 +107,7 @@ function StepResolver({
     params.version,
     params.userTaskKey,
     params.processName,
+    params.form,
   ]);
 
   if (error) {
@@ -146,6 +136,7 @@ export default function IGRPProcessPageRenderer({
   userTaskInstanceId,
   steps,
   variables,
+  form,
   getBackUrl,
   resolveStepComponent: resolveStepComponentProp,
 }: IGRPProcessPageRendererProps) {
@@ -306,7 +297,6 @@ export default function IGRPProcessPageRenderer({
           </IGRPButton>
           {statusDesc != "COMPLETED" && (
             <>
-              {" "}
               <IGRPButton
                 variant="outline"
                 onClick={() => {
@@ -436,7 +426,13 @@ export default function IGRPProcessPageRenderer({
               <IGRPCardContentPrimitive>
                 <StepResolver
                   resolve={resolveStepComponent}
-                  params={{ processKey, version, userTaskKey, processName }}
+                  params={{
+                    processKey,
+                    version,
+                    userTaskKey,
+                    processName,
+                    form,
+                  }}
                   config={stepComponentConfig}
                   loadingFallback={
                     <IGRPStepLoading userTaskKey={processName} />
