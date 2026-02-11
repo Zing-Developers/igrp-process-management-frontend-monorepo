@@ -136,3 +136,12 @@ export interface ProcessDefinitionSchema {
   sequence: ProcessSequence;
   candidateGroups: string;
 }
+
+export interface Priority {
+  code: string;
+  label: string;
+  weight: 0;
+  id: string;
+  processDefinitionKey: string;
+  color: string;
+}

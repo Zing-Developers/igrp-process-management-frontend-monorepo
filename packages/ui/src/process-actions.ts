@@ -169,6 +169,7 @@ function handleError(error: unknown): {
   title: string;
   message: string;
 } {
+  console.log("call completed with error", error);
   let details: Record<string, unknown> = {};
   if (error instanceof Error && "details" in error) {
     const errorDetails = (error as Error & { details: unknown }).details;
@@ -185,6 +186,9 @@ function handleError(error: unknown): {
   return {
     success: false,
     title: (details.title as string) || "Error",
-    message: (details.instance as string) || "Unknown error",
+    message:
+      (details.instance as string) ||
+      (details.message as string) ||
+      `Call completed with unknown error: ${JSON.stringify(details, null, 2)}`,
   };
 }
