@@ -13,6 +13,7 @@ import {
   VariableParams,
   StartProcessInstanceRequest,
   ProcessDefinitionSchema,
+  Priority,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
@@ -270,5 +271,38 @@ export class ProcessClient extends BaseApiClient {
     body: ProcessDefinitionSchema,
   ): Promise<ApiResponse<void>> {
     return this.post<void>(`/process-definitions/import`, body);
+  }
+
+  /**
+   * DELETE /process-definitions/priorities/{id} - Delete a priority for a process definition
+   */
+  async deleteProcessDefinitionPriority(
+    id: string,
+  ): Promise<ApiResponse<void>> {
+    return this.delete<void>(`/process-definitions/priorities/${id}`);
+  }
+
+  /**
+   * GET /process-definitions/{processKey}/priorities - Get all priorities for a process definition
+   */
+  async getProcessDefinitionPriorities(
+    processKey: string,
+  ): Promise<ApiResponse<Priority[]>> {
+    return this.get<Priority[]>(
+      `/process-definitions/${processKey}/priorities`,
+    );
+  }
+
+  /**
+   * POST /process-definitions/{processKey}/priorities - Create a new priority for a process definition
+   */
+  async createProcessDefinitionPriority(
+    processKey: string,
+    priority: Priority,
+  ): Promise<ApiResponse<Priority>> {
+    return this.put<Priority>(
+      `/process-definitions/${processKey}/priorities`,
+      priority,
+    );
   }
 }
