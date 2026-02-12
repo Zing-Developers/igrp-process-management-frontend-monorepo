@@ -20,7 +20,7 @@
     "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "format": "prettier --write .",
-    "release": "pnpm build && yarn publish --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
+    "release": "pnpm build && yarn publish --no-git-tag-version --non-interactive --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
