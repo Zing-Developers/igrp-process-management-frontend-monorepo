@@ -79,8 +79,8 @@ importers:
   packages/client:
     dependencies:
       '@igrp/platform-process-management-types':
-        specifier: 0.1.0-beta.6
-        version: 0.1.0-beta.6
+        specifier: 0.1.0-beta.10
+        version: 0.1.0-beta.10
     devDependencies:
       '@types/node':
         specifier: ^24.1.0
@@ -1036,6 +1036,10 @@ packages:
 
   '@igrp/platform-process-management-client-ts@0.1.0-beta.4':
     resolution: {integrity: sha512-thCbgVPXXGi8NpIKMFSkdTNT1IH46tG6CpjAGhyUlDj6I5O/vJ/Nsb8u0YgINZklZogyk2FLOIfml0GKxZ5HmA==}
+
+  '@igrp/platform-process-management-types@0.1.0-beta.10':
+    resolution: {integrity: sha512-zorf194VtG9w5uhI6wsIacvbEFaguhwQFP9583upAls0xSmiQ2ESTThRDpdpW+I2di6E18pKIuo8P3KFBZrmpQ==}
+    engines: {node: '>=20.x.x'}
 
   '@igrp/platform-process-management-types@0.1.0-beta.6':
     resolution: {integrity: sha512-kZcr338bXEGEYJNdKkibrMIP5cV+ikbyWJAFOtvEyON07ZkU4fRMB8GZrYl8buaRLg9chhTdGGXsQ8mIuoODbQ==}
@@ -6592,6 +6596,8 @@ snapshots:
   '@igrp/platform-process-management-client-ts@0.1.0-beta.4':
     dependencies:
       '@igrp/platform-process-management-types': 0.1.0-beta.6
+
+  '@igrp/platform-process-management-types@0.1.0-beta.10': {}
 
   '@igrp/platform-process-management-types@0.1.0-beta.6': {}
 
