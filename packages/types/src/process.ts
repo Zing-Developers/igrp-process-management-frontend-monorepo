@@ -140,8 +140,8 @@ export interface ProcessDefinitionSchema {
 export interface Priority {
   code: string;
   label: string;
-  weight: 0;
-  id: string;
+  weight: number;
+  id?: string;
   processDefinitionKey: string;
-  color: string;
+  color?: string;
 }
