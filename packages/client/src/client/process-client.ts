@@ -298,7 +298,7 @@ export class ProcessClient extends BaseApiClient {
    */
   async createProcessDefinitionPriority(
     processKey: string,
-    priority: Priority,
+    priority: Priority[],
   ): Promise<ApiResponse<Priority[]>> {
     return this.put<Priority[]>(
       `/process-definitions/${processKey}/priorities`,
