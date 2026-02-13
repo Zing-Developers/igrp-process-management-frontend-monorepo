@@ -1,6 +1,6 @@
 {
   "name": "@igrp/platform-process-management-client-ts",
-  "version": "0.1.0-beta.7",
+  "version": "0.1.0-beta.8",
   "type": "module",
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
@@ -20,7 +20,7 @@
     "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "format": "prettier --write .",
-    "release": "pnpm build && yarn publish --no-git-tag-version --non-interactive --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
+    "release": "pnpm build && yarn publish --no-git-tag-version --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
