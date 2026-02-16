@@ -250,7 +250,7 @@ export default function IGRPProcessPageRenderer({
           setShowSuccessDialog(true);
         } else {
           setErrorMessage(
-            result?.message || result?.title || "Error completing task",
+            `${result?.title ? `${result?.title} - ` : ""}${result?.message}`,
           );
           setShowErrorDialog(true);
         }
