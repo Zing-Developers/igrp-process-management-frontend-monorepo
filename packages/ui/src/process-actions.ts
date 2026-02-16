@@ -11,6 +11,7 @@ import {
   getKeyFromFormKey,
   getVersionFromFormKey,
 } from "./lib/form-key-utils";
+import type { ActivityProgress } from "@igrp/platform-process-management-types";
 
 export async function fetchStepConfig(
   params: IGRPStepConfigParams,
@@ -26,6 +27,12 @@ export async function fetchStepConfig(
   const processInstanceTaskStatus =
     await processManagementClient.processes.getProcessInstanceTaskStatus(
       params.processInstanceId,
+    );
+
+  const activityProgress =
+    await processManagementClient.activities.getActivityProgress(
+      params.processInstanceId,
+      "USER_TASK",
     );
 
   const task = await processManagementClient.tasks.getTaskById(
@@ -48,6 +55,10 @@ export async function fetchStepConfig(
       },
     ],
   ];
+
+  const activityProgressData = activityProgress.data?.filter(
+    (item: ActivityProgress) => item.type === "USER_TASK",
+  );
 
   const userTaskKey = processInstanceTaskStatus.data.some(
     (item: { status: string }) => item.status === "CURRENT",
@@ -88,6 +99,7 @@ export async function fetchStepConfig(
     userTaskKey,
     steps,
     form: { type: formType, page, version: formVersion },
+    activityProgress: activityProgressData,
   };
 }
 
@@ -170,25 +182,12 @@ function handleError(error: unknown): {
   message: string;
 } {
   console.log("call completed with error", error);
-  let details: Record<string, unknown> = {};
-  if (error instanceof Error && "details" in error) {
-    const errorDetails = (error as Error & { details: unknown }).details;
-    if (typeof errorDetails === "string") {
-      try {
-        details = JSON.parse(errorDetails) as Record<string, unknown>;
-      } catch (e) {
-        console.log("error parse details", e, "error-details", errorDetails);
-      }
-    } else if (typeof errorDetails === "object" && errorDetails !== null) {
-      details = errorDetails as Record<string, unknown>;
-    }
-  }
   return {
     success: false,
-    title: (details.title as string) || "Error",
+    title: (error as { title?: string }).title || "Error",
     message:
-      (details.instance as string) ||
-      (details.message as string) ||
-      `Call completed with unknown error: ${JSON.stringify(details, null, 2)}`,
+      (error as { instance?: string }).instance ||
+      (error as { message?: string }).message ||
+      `Call completed with unknown error: ${JSON.stringify(error, null, 2)}`,
   };
 }

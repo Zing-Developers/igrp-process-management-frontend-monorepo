@@ -14,6 +14,7 @@ import type {
   SaveTaskParams,
   CompleteTaskParams,
 } from "./types";
+import type { ActivityProgress } from "@igrp/platform-process-management-types";
 
 /**
  * Unified hook for process management operations.
@@ -134,6 +135,15 @@ export function useIGRPProcess(
     return variable;
   }, [stepConfigData, getVariableNameForTask]);
 
+  const getFormDataByTaskKey = useCallback(
+    (taskKey: string) => {
+      return stepConfigData?.activityProgress?.find(
+        (item: ActivityProgress) => item.activityId === taskKey,
+      )?.forms;
+    },
+    [stepConfigData],
+  );
+
   return {
     // Config (API baseUrl + accessToken) – use for custom API calls or debugging
     config,
@@ -164,8 +174,9 @@ export function useIGRPProcess(
 
     // Helpers
     getVariableNameForTask,
-    getFormDataForTask,
     getVariableForTask,
+    getFormDataForTask,
+    getFormDataByTaskKey,
 
     // Combined loading state
     isLoading:

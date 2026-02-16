@@ -1,7 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 import type { IGRPStepProcessProps } from "@igrp/igrp-framework-react-design-system";
 import type { FormKeyType } from "./lib/form-key-utils";
-import type { Task } from "@igrp/platform-process-management-types";
+import type {
+  ActivityProgress,
+  Task,
+} from "@igrp/platform-process-management-types";
 
 export interface IGRPFetchStepConfigResult {
   name: string;
@@ -151,6 +154,7 @@ export interface StepConfigResult {
   userTaskKey: string | null;
   steps: IGRPStepProcessProps[];
   form: Form;
+  activityProgress: ActivityProgress[];
 }
 
 export interface StepConfigParams {
