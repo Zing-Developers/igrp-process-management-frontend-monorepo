@@ -28,6 +28,15 @@ export type Process = {
   deploymentId?: string;
 };
 
+export type ProcessFilter = {
+  applicationBase?: string;
+  processName?: string;
+  page?: number;
+  size?: number;
+  filterByCurrentUser?: boolean;
+  candidateGroups?: string;
+};
+
 export type ProcessInstance = {
   id: string;
   procReleaseKey: string;
