@@ -1,4 +1,3 @@
-import { PaginatedResponse } from "@igrp/platform-process-management-types/dist/response";
 import { BaseApiClient } from "./base-client";
 import {
   ActivityEvent,
@@ -22,7 +21,7 @@ export class ActivityClient extends BaseApiClient {
     type?: string,
   ): Promise<ApiResponse<ActivityProgress[]>> {
     return this.get<ActivityProgress[]>(
-      `/activities/progress?processInstanceId=${processInstanceId}${type ? `&type=${type}` : ""}`,
+      `/activities/progress?processIdentifier=${processInstanceId}${type ? `&type=${type}` : ""}`,
     );
   }
 

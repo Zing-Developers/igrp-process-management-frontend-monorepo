@@ -14,18 +14,16 @@ import {
   StartProcessInstanceRequest,
   ProcessDefinitionSchema,
   Priority,
+  ProcessFilter,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
   /**
    * GET /process-definitions - Get all process definitions
    */
-  async getProcesses(params?: {
-    applicationBase?: string;
-    processName?: string;
-    page?: number;
-    size?: number;
-  }): Promise<ApiResponse<PaginatedResponse<Process>>> {
+  async getProcesses(
+    params?: ProcessFilter,
+  ): Promise<ApiResponse<PaginatedResponse<Process>>> {
     return this.get<PaginatedResponse<Process>>("/process-definitions", params);
   }
 
