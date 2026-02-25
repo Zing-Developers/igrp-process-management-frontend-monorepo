@@ -182,12 +182,45 @@ function handleError(error: unknown): {
   message: string;
 } {
   console.log("call completed with error", error);
+
+  const errorData = parseSaveTaskError(error);
   return {
     success: false,
-    title: (error as { title?: string }).title || "Error",
-    message:
-      (error as { instance?: string }).instance ||
-      (error as { message?: string }).message ||
-      `Call completed with unknown error: ${JSON.stringify(error, null, 2)}`,
+    title: errorData.title,
+    message: errorData.message,
   };
 }
+
+/**
+ * {"type":"about:blank","title":"Failed to save task. Unable to find task for the given id: cceec5dc-10d3-11f1-a3b8-5efddd07dfd4 for user: a667f627-5602-4ac2-4ac2-1fb6072c71c8 (with groups: [DSIP, DC, GEP, DAAP, GPE, DEPT_IGRP.superadmin, IT, QA, DF, UBUBA, UB, DEPT_IGRP] & with roles: [ACTIVITI_USER, DEPT_IGRP.superadmin, ACTIVITI_ADMIN])","status":500,"instance":"/tasks-instances/231ff9b9-61bd-411e-a0cc-a3c759948149/save"}
+ * @param error
+ * @returns
+ */
+const parseSaveTaskError = (
+  error: unknown,
+): {
+  title: string;
+  message: string;
+} => {
+  const details = (error as { details?: string }).details;
+  const status = (error as { status?: number }).status;
+  if (status === 401) {
+    return {
+      title: "Não autorizado",
+      message: "Não autorizado para completar a tarefa",
+    };
+  }
+  if (!details)
+    return {
+      title: "Error",
+      message: "Unknown error",
+    };
+  const errorData = JSON.parse(details);
+  return {
+    title: errorData.title || "Error",
+    message:
+      errorData.instance ||
+      errorData.message ||
+      `Call completed with unknown error: ${JSON.stringify(error, null, 2)}`,
+  };
+};
