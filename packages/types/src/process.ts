@@ -1,3 +1,4 @@
+import { UserProfile } from "./shared";
 import { TaskVariables } from "./task";
 
 export type ProcessStatus =
@@ -58,6 +59,9 @@ export type ProcessInstance = {
   name: string;
   progress: string;
   variables: Array<TaskVariables>;
+  userProfileStartedBy?: UserProfile;
+  userProfileEndedBy?: UserProfile;
+  userProfileCancelledBy?: UserProfile;
 };
 
 export interface CreateProcessInstanceRequest {
