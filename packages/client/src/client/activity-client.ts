@@ -33,7 +33,7 @@ export class ActivityClient extends BaseApiClient {
     type?: string,
   ): Promise<ApiResponse<ActivityEvent[]>> {
     return this.get<ActivityEvent[]>(
-      `/activities/instances?processInstanceId=${processInstanceId}${type ? `&type=${type}` : ""}`,
+      `/activities/instances?processIdentifier=${processInstanceId}${type ? `&type=${type}` : ""}`,
     );
   }
 }

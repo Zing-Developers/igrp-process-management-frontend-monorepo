@@ -1,3 +1,4 @@
+import { UserProfile } from "./shared";
 import { TaskVariables } from "./task";
 
 export interface ActivityEvent {
@@ -35,4 +36,5 @@ export interface ActivityProgress {
   candidateGroups: string[];
   variables?: TaskVariables[];
   forms?: TaskVariables[];
+  userProfileAssignee?: UserProfile;
 }

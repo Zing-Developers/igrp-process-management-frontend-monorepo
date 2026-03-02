@@ -1,3 +1,5 @@
+import { UserProfile } from "./shared";
+
 export type TaskStatus =
   | "CREATED"
   | "ASSIGNED"
@@ -22,6 +24,7 @@ export type Task = {
   startedAt: string;
   endedAt: string;
   endedBy: string;
+  dueDate: string;
   candidateGroups: string;
   status: TaskStatus;
   statusDesc?: string;
@@ -30,6 +33,9 @@ export type Task = {
   processVariables?: Array<TaskVariables>;
   applicationBase?: string;
   taskInstanceEvents?: TaskInstanceEvent[];
+  userProfileAssignedBy?: UserProfile;
+  userProfileStartedBy?: UserProfile;
+  userProfileEndedBy?: UserProfile;
 };
 
 export type TaskInstanceEvent = {
@@ -40,6 +46,7 @@ export type TaskInstanceEvent = {
   performedBy: string;
   obs?: string;
   taskInstanceId: string;
+  userProfilePerformedBy?: UserProfile;
 };
 
 export type TaskVariables = {
