@@ -11,7 +11,6 @@ import {
   getKeyFromFormKey,
   getVersionFromFormKey,
 } from "./lib/form-key-utils";
-import type { ActivityProgress } from "@igrp/platform-process-management-types";
 
 export async function fetchStepConfig(
   params: IGRPStepConfigParams,
@@ -35,29 +34,8 @@ export async function fetchStepConfig(
       "USER_TASK",
     );
 
-  const task = await processManagementClient.tasks.getTaskById(
-    params.userTaskInstanceId,
-  );
-
-  const formKey = task.data.formKey;
-
-  const page = getKeyFromFormKey(formKey);
-  const formType = getFormKeyType(formKey);
-  const formVersion = getVersionFromFormKey(formKey);
-
-  const variables = [
-    ...(task.data.variables || []),
-    ...(processInstance.data.variables || []),
-    ...[
-      {
-        name: `${params.userTaskInstanceId}_forms`,
-        value: task.data.forms || [],
-      },
-    ],
-  ];
-
   const activityProgressData = activityProgress.data?.filter(
-    (item: ActivityProgress) => item.type === "USER_TASK",
+    (item: any) => item.type === "USER_TASK",
   );
 
   const userTaskKey = processInstanceTaskStatus.data.some(
@@ -88,14 +66,40 @@ export async function fetchStepConfig(
     }),
   );
 
+  if (!params.userTaskInstanceId) {
+    return {
+      processInstance: processInstance.data,
+      variables: processInstance.data.variables || [],
+      userTaskKey,
+      steps,
+      activityProgress: activityProgressData,
+    };
+  }
+
+  const task = await processManagementClient.tasks.getTaskById(
+    params.userTaskInstanceId,
+  );
+
+  const formKey = task.data.formKey;
+  const page = getKeyFromFormKey(formKey);
+  const formType = getFormKeyType(formKey);
+  const formVersion = getVersionFromFormKey(formKey);
+
+  const variables = [
+    ...(task.data.variables || []),
+    ...(processInstance.data.variables || []),
+    ...[
+      {
+        name: `${params.userTaskInstanceId}_forms`,
+        value: task.data.forms || [],
+      },
+    ],
+  ];
+
   return {
     task: task.data,
-    name: processInstance.data.name || processInstance.data.procReleaseKey,
-    version: `v${processInstance.data.version}`,
-    statusDesc: processInstance.data.statusDesc,
-    number: processInstance.data.number,
-    startedAt: processInstance.data.startedAt,
-    variables: variables,
+    processInstance: processInstance.data,
+    variables,
     userTaskKey,
     steps,
     form: { type: formType, page, version: formVersion },
