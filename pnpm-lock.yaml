@@ -79,8 +79,8 @@ importers:
   packages/client:
     dependencies:
       '@igrp/platform-process-management-types':
-        specifier: 0.1.0-beta.11
-        version: 0.1.0-beta.11
+        specifier: latest
+        version: 0.1.0-beta.15
     devDependencies:
       '@types/node':
         specifier: ^24.1.0
@@ -128,17 +128,20 @@ importers:
         specifier: 0.1.0-beta.88
         version: 0.1.0-beta.88(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@igrp/platform-process-management-client-ts':
-        specifier: 0.1.0-beta.11
-        version: 0.1.0-beta.11
+        specifier: latest
+        version: 0.1.0-beta.15
       '@igrp/platform-process-management-types':
-        specifier: 0.1.0-beta.7
-        version: 0.1.0-beta.7
+        specifier: latest
+        version: 0.1.0-beta.15
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       next:
         specifier: ^15.5.9
         version: 15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1034,15 +1037,11 @@ packages:
       react: ^19.2.3
       react-dom: ^19.2.3
 
-  '@igrp/platform-process-management-client-ts@0.1.0-beta.11':
-    resolution: {integrity: sha512-Cfag99ZbI0Up60hN9dHb5BNNRWxo4Klm2cBloTV8NiDcxDmDyg2yaQi+CmglW5l4r33WPjybutji4S/VKpLcsg==}
+  '@igrp/platform-process-management-client-ts@0.1.0-beta.15':
+    resolution: {integrity: sha512-Dsda0eypELVCMYX7pVKajSJxIN7nRg5/uo0z6vVxOZTcn3e0BYhHyPTWlMKgwVMCTwPTiKBMRy5Q2RxWnsgOSg==}
 
-  '@igrp/platform-process-management-types@0.1.0-beta.11':
-    resolution: {integrity: sha512-0u2s/Te1sDcpT8CNCNOEC8OUv701v9dyaAbDtp9nP0qKpDrqNnmIEdKhEpuXw7NNP/kixqRrqK4z4yK9D3Nvfg==}
-    engines: {node: '>=20.x.x'}
-
-  '@igrp/platform-process-management-types@0.1.0-beta.7':
-    resolution: {integrity: sha512-4eGGHOBkqHWCDa7A0D6a0NkDZsYA/Mf2ivpZJUcVqnRamN+QnNNMrB4ZSFji21oy/b0aZ8vAFoThdvk3nDCF3A==}
+  '@igrp/platform-process-management-types@0.1.0-beta.15':
+    resolution: {integrity: sha512-kKgCG/+qY9gvYVHPXP37WckjIcoRGdl5I+98Cjo1gCMDTKPBVZCrWCnW4a9zV/8SBC6cGnJzOxtNl1++rgn5LQ==}
     engines: {node: '>=20.x.x'}
 
   '@img/colour@1.0.0':
@@ -6589,13 +6588,11 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@igrp/platform-process-management-client-ts@0.1.0-beta.11':
+  '@igrp/platform-process-management-client-ts@0.1.0-beta.15':
     dependencies:
-      '@igrp/platform-process-management-types': 0.1.0-beta.11
+      '@igrp/platform-process-management-types': 0.1.0-beta.15
 
-  '@igrp/platform-process-management-types@0.1.0-beta.11': {}
-
-  '@igrp/platform-process-management-types@0.1.0-beta.7': {}
+  '@igrp/platform-process-management-types@0.1.0-beta.15': {}
 
   '@img/colour@1.0.0':
     optional: true
