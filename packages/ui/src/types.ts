@@ -3,6 +3,7 @@ import type { IGRPStepProcessProps } from "@igrp/igrp-framework-react-design-sys
 import type { FormKeyType } from "./lib/form-key-utils";
 import type {
   ActivityProgress,
+  ProcessInstance,
   Task,
 } from "@igrp/platform-process-management-types";
 
@@ -110,21 +111,12 @@ export interface IGRPProcessClientConfig {
 }
 
 export interface IGRPProcessPageRendererProps {
-  version: string;
-  form: Form;
-  stepData?: undefined;
+  stepConfig: StepConfigResult;
   processKey: string;
   userTaskKey: string;
-  processName: string;
   processInstanceId: string;
   userTaskInstanceId: string;
-  statusDesc: string;
-  number: string;
-  steps: IGRPStepProcessProps[];
-  startedAt: string;
-  variables: Array<{ name: string; value: string }>;
   resolveStepComponent?: IGRPResolveStepComponent | null;
-  getBackUrl?: () => string;
 }
 
 export interface IGRPStepResult {
@@ -144,16 +136,12 @@ export interface StepResolverProps {
 }
 
 export interface StepConfigResult {
-  task: Task;
-  name: string;
-  version: string;
-  statusDesc: string;
-  number: string;
-  startedAt: string;
+  task?: Task;
+  processInstance: ProcessInstance;
   variables: Array<{ name: string; value: any }>;
   userTaskKey: string | null;
   steps: IGRPStepProcessProps[];
-  form: Form;
+  form?: Form;
   activityProgress: ActivityProgress[];
 }
 

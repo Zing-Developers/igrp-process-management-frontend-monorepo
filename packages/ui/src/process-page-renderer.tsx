@@ -11,7 +11,6 @@ import {
 import {
   IGRPPageHeader,
   IGRPButton,
-  IGRPCardDetails,
   IGRPIcon,
   IGRPLoadingSpinner,
   IGRPStepperProcess,
@@ -19,6 +18,7 @@ import {
   IGRPCardContentPrimitive,
   useIGRPToast,
 } from "@igrp/igrp-framework-react-design-system";
+import { ProcessDetailsCard } from "./components/process-details-card";
 import type {
   IGRPStepComponentConfig,
   IGRPStepComponentProps,
@@ -125,19 +125,11 @@ function StepResolver({
 }
 
 export default function IGRPProcessPageRenderer({
-  version,
-  statusDesc,
-  number,
-  userTaskKey,
-  stepData,
+  stepConfig,
   processKey,
-  processName,
+  userTaskKey,
   processInstanceId,
   userTaskInstanceId,
-  steps,
-  variables,
-  form,
-  getBackUrl,
   resolveStepComponent: resolveStepComponentProp,
 }: IGRPProcessPageRendererProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -155,18 +147,21 @@ export default function IGRPProcessPageRenderer({
     resolveStepComponent: resolveStepComponentContext,
   } = useIGRPProcessContext();
 
+  const { processInstance, steps, variables, form } = stepConfig || {};
+
+  const { name, version, statusDesc, number } = processInstance || {};
+
   const resolveStepComponent =
     resolveStepComponentProp ?? resolveStepComponentContext ?? null;
 
   const urlBackTemp = useMemo(() => {
-    if (getBackUrl) return getBackUrl();
     const IGRP_BASE_PATH = process.env.NEXT_PUBLIC_IGRP_BASE_PATH;
     const IGRP_APP_PAGE_TASK = process.env.NEXT_PUBLIC_IGRP_APP_PAGE_TASK || "";
     if (IGRP_BASE_PATH) {
       return `${window.location.origin}/apps/igrp-process-management/my-tasks`;
     }
     return IGRP_APP_PAGE_TASK || `/`;
-  }, [getBackUrl]);
+  }, []);
 
   // Callback to register step methods
   const handleRegisterMethods = useCallback((methods: IGRPStepMethods) => {
@@ -207,7 +202,7 @@ export default function IGRPProcessPageRenderer({
         return stepResult;
       }
 
-      return { success: true, data: stepData };
+      return { success: true, data: undefined };
     } catch (error) {
       console.error("Save error:", error);
       return {
@@ -268,13 +263,15 @@ export default function IGRPProcessPageRenderer({
   };
 
   const currentStep = useMemo(() => {
-    return steps.findIndex((step) => step.stepKey === userTaskKey) + 1;
+    return (
+      (steps || []).findIndex((step: any) => step.stepKey === userTaskKey) + 1
+    );
   }, [steps, userTaskKey]);
 
   return (
     <div className="flex flex-col gap-6">
       <IGRPPageHeader
-        title={processName}
+        title={name}
         className="py-0"
         iconBackButton={`ArrowLeft`}
         isSticky={true}
@@ -324,40 +321,10 @@ export default function IGRPProcessPageRenderer({
         </div>
       </IGRPPageHeader>
 
-      {isDetailsOpen && (
-        <>
-          <IGRPCardDetails
-            items={[
-              {
-                label: "Código do Processo",
-                content: processKey,
-              },
-              {
-                label: "ID da Instância do Processo",
-                content: processInstanceId,
-                showCopyTo: true,
-              },
-              {
-                label: "Código da Tarefa",
-                content: userTaskKey,
-              },
-              {
-                label: "ID da Instância da Tarefa",
-                content: userTaskInstanceId,
-              },
-              {
-                label: "Estado da Tarefa",
-                content: statusDesc,
-              },
-              {
-                label: "Número",
-                content: number,
-                showCopyTo: true,
-              },
-            ]}
-          ></IGRPCardDetails>
-        </>
-      )}
+      <ProcessDetailsCard
+        isVisible={isDetailsOpen}
+        processInstance={processInstance}
+      />
 
       <IGRPConfirmationDialog
         open={showSuccessDialog}
@@ -398,7 +365,7 @@ export default function IGRPProcessPageRenderer({
             processInstanceId,
             userTaskInstanceId,
             variables,
-            processName,
+            processName: name,
             processNumber: number,
             onRegisterMethods: handleRegisterMethods,
           };
@@ -430,13 +397,15 @@ export default function IGRPProcessPageRenderer({
                     processKey,
                     version,
                     userTaskKey,
-                    processName,
-                    form,
+                    processName: name,
+                    form: form || {
+                      type: "shared" as const,
+                      page: "default",
+                      version: "1",
+                    },
                   }}
                   config={stepComponentConfig}
-                  loadingFallback={
-                    <IGRPStepLoading userTaskKey={processName} />
-                  }
+                  loadingFallback={<IGRPStepLoading userTaskKey={name} />}
                 />
               </IGRPCardContentPrimitive>
             </IGRPCardPrimitive>
