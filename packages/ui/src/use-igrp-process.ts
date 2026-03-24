@@ -134,12 +134,26 @@ export function useIGRPProcess(
 
     return variable;
   }, [stepConfigData, getVariableNameForTask]);
-
+  
   const getFormDataByTaskKey = useCallback(
     (taskKey: string) => {
-      return stepConfigData?.activityProgress?.find(
+      const matches = stepConfigData?.activityProgress?.filter(
         (item: ActivityProgress) => item.activityId === taskKey,
-      )?.forms;
+      );
+
+      if (!matches?.length) return undefined;
+
+      const latest = matches.reduce((acc: ActivityProgress, current: ActivityProgress) => {
+        const accTime = new Date(acc.endTime).getTime();
+        const currentTime = new Date(current.endTime).getTime();
+
+        if (Number.isNaN(accTime) && !Number.isNaN(currentTime)) return current;
+        if (Number.isNaN(currentTime)) return acc;
+
+        return currentTime >= accTime ? current : acc;
+      });
+
+      return latest.forms;
     },
     [stepConfigData],
   );
