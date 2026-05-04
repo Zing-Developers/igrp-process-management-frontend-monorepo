@@ -1,3 +1,12 @@
+import { UserProfile } from "./shared";
+
+export type TaskStatus =
+  | "CREATED"
+  | "ASSIGNED"
+  | "COMPLETED"
+  | "CANCELED"
+  | "DELETED";
+
 export type Task = {
   id: string;
   taskKey: string;
@@ -13,15 +22,36 @@ export type Task = {
   assignedAt: string;
   startedBy: string;
   startedAt: string;
+  endedAt: string;
   endedBy: string;
-  endAt: string;
-  status: "CREATED" | "ASSIGNED" | "COMPLETED" | "CANCELED" | "DELETED";
+  dueDate: string;
+  candidateGroups: string;
+  status: TaskStatus;
   statusDesc?: string;
+  variables?: Array<TaskVariables>;
+  forms?: Array<TaskVariables>;
+  processVariables?: Array<TaskVariables>;
+  applicationBase?: string;
+  taskInstanceEvents?: TaskInstanceEvent[];
+  userProfileAssignedBy?: UserProfile;
+  userProfileStartedBy?: UserProfile;
+  userProfileEndedBy?: UserProfile;
+};
+
+export type TaskInstanceEvent = {
+  id: string;
+  eventType: string;
+  status: string;
+  performedAt: string;
+  performedBy: string;
+  obs?: string;
+  taskInstanceId: string;
+  userProfilePerformedBy?: UserProfile;
 };
 
 export type TaskVariables = {
   name: string;
-  value: string;
+  value: string | number | boolean | object;
 };
 
 export type TaskStats = {

@@ -14,6 +14,7 @@ export interface Area {
   createdBy?: string;
   updatedBy?: string;
   description?: string;
+  color?: string;
 }
 
 export interface CreateAreaRequest {

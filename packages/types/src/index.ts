@@ -9,3 +9,5 @@ export type {
   PaginatedResponse,
 } from "./response";
 export * from "./area";
+export * from "./shared";
+export * from "./activities";

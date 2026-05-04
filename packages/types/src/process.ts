@@ -1,3 +1,14 @@
+import { UserProfile } from "./shared";
+import { TaskVariables } from "./task";
+
+export type ProcessStatus =
+  | "CREATED"
+  | "RUNNING"
+  | "SUSPENDED"
+  | "CANCELED"
+  | "COMPLETED"
+  | "TERMINATED";
+
 export type Process = {
   id: string;
   processKey: string;
@@ -14,6 +25,17 @@ export type Process = {
   updatedBy?: string;
   removedAt?: string | null;
   removedBy?: string | null;
+  applicationBase?: string;
+  deploymentId?: string;
+};
+
+export type ProcessFilter = {
+  applicationBase?: string;
+  processName?: string;
+  page?: number;
+  size?: number;
+  filterByCurrentUser?: boolean;
+  candidateGroups?: string;
 };
 
 export type ProcessInstance = {
@@ -21,13 +43,7 @@ export type ProcessInstance = {
   procReleaseKey: string;
   procReleaseId: string;
   number: string;
-  status:
-    | "CREATED"
-    | "RUNNING"
-    | "SUSPENDED"
-    | "CANCELED"
-    | "COMPLETED"
-    | "TERMINATED";
+  status: ProcessStatus;
   statusDesc: string;
   businessKey?: string;
   version: string;
@@ -42,7 +58,10 @@ export type ProcessInstance = {
   applicationBase: string;
   name: string;
   progress: string;
-  variables: Map<string, string>;
+  variables: Array<TaskVariables>;
+  userProfileStartedBy?: UserProfile;
+  userProfileEndedBy?: UserProfile;
+  userProfileCancelledBy?: UserProfile;
 };
 
 export interface CreateProcessInstanceRequest {
@@ -54,10 +73,17 @@ export interface CreateProcessInstanceRequest {
   variables?: Array<{ name: string; value: string }>;
 }
 
+export interface StartProcessInstanceRequest {
+  variables?: Array<{ name: string; value: string }>;
+}
+
 export interface CreateProcessArtifactRequest {
   name: string;
   key: string;
   formKey: string;
+  candidateGroups?: string;
+  dueDate: string;
+  priority: number;
 }
 
 export interface ProcessArtifact {
@@ -66,6 +92,20 @@ export interface ProcessArtifact {
   key: string;
   processDefinitionId: string;
   formKey: string;
+  candidateGroups?: string;
+  dueDate: string;
+  priority: number;
+}
+
+export interface ProcessDefinition {
+  id: string;
+  processKey: string;
+  name: string;
+  description: string;
+  version: string;
+  deploymentId: string;
+  applicationBase: string;
+  candidateGroups: string;
 }
 
 export interface ProcessSequence {
@@ -97,3 +137,24 @@ export type ProcessStats = {
   totalSuspendedProcess: number;
   totalCanceledProcess: number;
 };
+
+export interface ProcessDefinitionSchema {
+  processKey: string;
+  processName: string;
+  processVersion: string;
+  processDescription: string;
+  bpmnXml: string;
+  applicationBase: string;
+  artifacts: ProcessArtifact[];
+  sequence: ProcessSequence;
+  candidateGroups: string;
+}
+
+export interface Priority {
+  code: string;
+  label: string;
+  weight: number;
+  id?: string;
+  processDefinitionKey: string;
+  color?: string;
+}
