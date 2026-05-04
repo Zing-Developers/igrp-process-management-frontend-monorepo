@@ -1,0 +1,150 @@
+import {
+  cn,
+  IGRPButton,
+  IGRPButtonPrimitive,
+  IGRPDialogContentPrimitive,
+  IGRPDialogDescriptionPrimitive,
+  IGRPDialogFooterPrimitive,
+  IGRPDialogHeaderPrimitive,
+  IGRPDialogPrimitive,
+  IGRPDialogTitlePrimitive,
+  IGRPIcon,
+  IGRPCopyTo,
+} from "@igrp/igrp-framework-react-design-system";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@igrp/igrp-framework-react-design-system/dist/components/primitives/collapsible";
+import { Textarea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/textarea";
+import { useEffect } from "react";
+import { useState } from "react";
+
+export interface IGRPConfirmationDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  confirmDelete: () => Promise<void>;
+  description?: string;
+  labelBtnCancel?: string;
+  labelBtnConfirm?: string;
+  textHeader?: string;
+  isCompleted?: boolean;
+  message?: string;
+}
+
+const IGRPConfirmationDialogIconConfig = {
+  success: {
+    iconName: "CircleCheckBig" as const,
+    color: "text-green-500",
+    bgColor: "bg-green-500/10",
+    animation: "animate-scale-in",
+  },
+  error: {
+    iconName: "Ban" as const,
+    color: "text-red-500",
+    bgColor: "bg-red-500/10",
+    animation: "animate-shake",
+  },
+};
+
+export function IGRPConfirmationDialog({
+  open,
+  onOpenChange,
+  confirmDelete,
+  description,
+  labelBtnConfirm = "Continuar",
+  textHeader = "Confirmação Final",
+  isCompleted = false,
+  message = "",
+}: IGRPConfirmationDialogProps) {
+  const [isMessageOpen, setIsMessageOpen] = useState(false);
+  const [showIcon, setShowIcon] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => setShowIcon(true), 50);
+      return () => clearTimeout(timer);
+    }
+    setShowIcon(false);
+  }, [open]);
+
+  const config = isCompleted
+    ? IGRPConfirmationDialogIconConfig.success
+    : IGRPConfirmationDialogIconConfig.error;
+
+  return (
+    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
+      <IGRPDialogContentPrimitive
+        className={cn("space-y-4", isCompleted ? "max-w-md" : "")}
+      >
+        <div className="flex flex-col items-center gap-2 justify-center">
+          <div
+            aria-hidden="true"
+            className={cn(
+              "flex h-20 w-20 items-center justify-center rounded-full transition-all duration-500",
+              config.bgColor,
+              showIcon ? "scale-100 opacity-100" : "scale-50 opacity-0",
+            )}
+          >
+            <IGRPIcon
+              iconName={config.iconName}
+              className={cn(
+                "h-10 w-10",
+                config.color,
+                showIcon && config.animation,
+              )}
+            />
+          </div>
+          <IGRPDialogHeaderPrimitive>
+            <IGRPDialogTitlePrimitive className="text-center">
+              {textHeader}
+            </IGRPDialogTitlePrimitive>
+            <IGRPDialogDescriptionPrimitive className="text-center">
+              {description}
+            </IGRPDialogDescriptionPrimitive>
+          </IGRPDialogHeaderPrimitive>
+        </div>
+        {message && (
+          <Collapsible open={isMessageOpen} onOpenChange={setIsMessageOpen}>
+            <CollapsibleTrigger asChild>
+              <IGRPButton
+                variant="ghost"
+                className="w-full justify-center"
+                type="button"
+              >
+                <span className="text-sm font-medium">
+                  {isMessageOpen ? "Ocultar detalhes" : "Mostrar detalhes"}
+                </span>
+                {isMessageOpen ? (
+                  <IGRPIcon iconName="ChevronUp" />
+                ) : (
+                  <IGRPIcon iconName="ChevronDown" />
+                )}
+              </IGRPButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2">
+              <div className="flex justify-between gap-2">
+                <Textarea
+                  value={message}
+                  readOnly={true}
+                  className="w-full flex-1"
+                  rows={4}
+                />
+                <IGRPCopyTo value={message} />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+        <IGRPDialogFooterPrimitive>
+          <IGRPButtonPrimitive
+            variant="default"
+            onClick={() => confirmDelete()}
+            className="w-full"
+          >
+            {labelBtnConfirm}
+          </IGRPButtonPrimitive>
+        </IGRPDialogFooterPrimitive>
+      </IGRPDialogContentPrimitive>
+    </IGRPDialogPrimitive>
+  );
+}

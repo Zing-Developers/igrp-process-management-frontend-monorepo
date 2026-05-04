@@ -8,6 +8,7 @@ import {
   Task,
   TaskVariables,
   TaskStats,
+  VariableParams,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
@@ -23,6 +24,7 @@ interface TaskQueryParams {
   applicationBase?: string;
   page?: number;
   size?: number;
+  filterByCurrentUser?: boolean;
 }
 
 interface TaskActionParams {
@@ -34,6 +36,7 @@ interface TaskActionBody {
   user: string;
   priority?: number;
   note?: string;
+  candidateGroups?: string;
 }
 
 interface PaginationParams {
@@ -44,6 +47,10 @@ interface PaginationParams {
 interface TaskCompletionBody {
   variables?: Array<{ name: string; value: string }>;
   forms?: Array<{ name: string; value: string }>;
+}
+
+interface TaskUnclaimBody {
+  note?: string;
 }
 
 export class TaskClient extends BaseApiClient {
@@ -59,8 +66,16 @@ export class TaskClient extends BaseApiClient {
    */
   async getTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-    return this.get<PaginatedResponse<Task>>("/tasks-instances", params);
+    const requestBody = body || {};
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/search",
+      requestBody,
+      params,
+    );
   }
   /**
    * GET /tasks-instances/{id}/variables - Get variables for a specific task instance by ID
@@ -81,13 +96,21 @@ export class TaskClient extends BaseApiClient {
    */
   async getMyTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     // Add current user to filters
+    const requestBody = body || {};
     params = {
       ...params,
       status: "ASSIGNED",
     };
-    return this.get<PaginatedResponse<Task>>("/tasks-instances/me", params);
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/me",
+      requestBody,
+      params,
+    );
   }
 
   /**
@@ -108,16 +131,26 @@ export class TaskClient extends BaseApiClient {
   }
 
   /**
+   * POST /tasks-instances/{id} - Save a task
+   */
+  async saveTask(
+    taskId: string,
+    body?: TaskCompletionBody,
+  ): Promise<ApiResponse<PostResponse>> {
+    return this.post<PostResponse>(`/tasks-instances/${taskId}/save`, body);
+  }
+
+  /**
    * POST /tasks-instances/{id}/unclaim - Release/unclaim a task
    */
   async unclaimTask(
     taskId: string,
-    note?: string,
+    body?: TaskUnclaimBody,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(
       `/tasks-instances/${taskId}/unclaim`,
+      body,
       undefined,
-      { note },
     );
   }
 
