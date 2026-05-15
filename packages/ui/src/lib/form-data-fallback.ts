@@ -1,15 +1,19 @@
 import type {
   IGRPGetFormDataForTaskOptions,
   IGRPFormEntry,
-  IGRPProcessVariable,
 } from "../types";
 
 /**
  * Decide se a chamada de `getFormDataForTask` deve cair no histórico
- * (RECTIFICAR cycle) ou devolver os dados do step actual.
+ * ou devolver os dados do step actual.
  *
- * Função pura — toda a lógica de fallback vive aqui para ser fácil
- * de testar sem React.
+ * Função puramente mecânica — não tem qualquer regra de negócio. O
+ * consumidor é responsável por decidir QUANDO activar o fallback
+ * (ex.: `fallbackToHistory: isRectifyingCycle(variables)`).
+ *
+ * Regra: se `opts.fallbackToHistory === true` E o step actual está
+ * vazio (undefined / null / array vazio), invoca `historyLoader()`.
+ * Caso contrário, devolve `current`.
  *
  * @param current dados do step actual (lidos da variável `${userTaskInstanceId}_forms`)
  * @param opts opções da chamada — ver `IGRPGetFormDataForTaskOptions`
@@ -29,17 +33,6 @@ export function resolveFormDataForTask(
 
   if (!opts?.fallbackToHistory || !isEmpty) {
     return current;
-  }
-
-  if (opts.variables) {
-    const decision = opts.variables.find(
-      (v: IGRPProcessVariable) => v.name === "decision",
-    )?.value;
-    const decisionUpper =
-      typeof decision === "string" ? decision.toUpperCase() : "";
-    if (decisionUpper !== "RECTIFICAR" && decisionUpper !== "RETIFICAR") {
-      return current;
-    }
   }
 
   return historyLoader();

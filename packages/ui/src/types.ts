@@ -119,40 +119,36 @@ export interface IGRPProcessPageRendererProps {
   resolveStepComponent?: IGRPResolveStepComponent | null;
 }
 
-/** Entrada (nome/valor) de uma variável BPMN do processo. */
-export interface IGRPProcessVariable {
+/** Entrada de form persistida no engine BPMN. */
+export interface IGRPFormEntry {
   name: string;
   value: unknown;
 }
 
-/** Entrada de form persistida no engine BPMN. */
-export type IGRPFormEntry = IGRPProcessVariable;
-
 /**
  * Opções para `getFormDataForTask`.
  *
- * Permite que, quando o step actual ainda não tem dados persistidos,
- * a função carregue automaticamente os dados do histórico do MESMO step
- * — útil em ciclos de rectificação (RECTIFICAR/RETIFICAR) onde o
- * utilizador volta a uma etapa anterior.
+ * A lib oferece apenas o mecanismo genérico: "se o step actual está
+ * vazio, cai no histórico". A decisão de QUANDO activar pertence ao
+ * consumidor (que conhece as regras de negócio do seu processo —
+ * ex.: ciclos de RECTIFICAR).
  */
 export interface IGRPGetFormDataForTaskOptions {
   /**
-   * Quando o step actual não tem dados ainda, tentar carregar do
-   * histórico do MESMO step (taskKey actual). Útil em ciclos de
-   * RECTIFICAR onde o utilizador volta a uma etapa anterior.
+   * Quando `true` E o step actual está vazio, carrega automaticamente
+   * do histórico do MESMO step (via `getFormDataByTaskKey(userTaskKey)`).
+   *
+   * O consumidor é responsável por decidir quando activar — tipicamente
+   * com base em regras de negócio do seu processo, ex.:
+   *
+   * ```ts
+   * const isRectifying = decision === "RECTIFICAR";
+   * getFormDataForTask({ fallbackToHistory: isRectifying });
+   * ```
+   *
    * @default false
    */
   fallbackToHistory?: boolean;
-
-  /**
-   * Variáveis BPMN do processo. Quando passado, o fallback só dispara
-   * se houver uma `decision` com valor "RECTIFICAR" (ou "RETIFICAR"
-   * legacy) — evita reidratar acidentalmente em cenários onde o step
-   * actual está vazio por outras razões.
-   * Opcional: se omitido, o fallback dispara sempre que current está vazio.
-   */
-  variables?: Array<IGRPProcessVariable>;
 }
 
 export interface IGRPStepResult {

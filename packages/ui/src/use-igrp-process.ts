@@ -161,13 +161,11 @@ export function useIGRPProcess(
    * variável `${userTaskInstanceId}_forms` do step actual.
    *
    * Com `opts.fallbackToHistory = true`: se o step actual estiver vazio,
-   * cai automaticamente no histórico (`getFormDataByTaskKey(userTaskKey)`).
-   * Útil em ciclos de RECTIFICAR onde o utilizador volta a uma etapa
-   * anterior e o engine ainda não persistiu nada no step actual.
+   * cai automaticamente no histórico do mesmo step (via
+   * `getFormDataByTaskKey(userTaskKey)`).
    *
-   * Se `opts.variables` for fornecido, o fallback só dispara quando
-   * existe `decision` com valor `RECTIFICAR`/`RETIFICAR` — evita
-   * reidratar em cenários onde o step actual está legitimamente vazio.
+   * O consumidor decide quando activar o fallback — a lib não conhece
+   * regras de negócio (ex.: ciclos de rectificação).
    */
   const getFormDataForTask = useCallback(
     (opts?: IGRPGetFormDataForTaskOptions) => {
