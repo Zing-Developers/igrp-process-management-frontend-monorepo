@@ -104,24 +104,29 @@ O contexto expõe duas funções para ler dados de form persistidos no engine BP
 
 Em alguns processos o step actual está vazio mas existe histórico do MESMO
 step que o consumidor quer reidratar (ex.: ciclos de _Rectificar_ onde o
-utilizador volta a uma etapa anterior). Para esses casos passa
-`fallbackToHistory: true`:
+utilizador volta a uma etapa anterior). `fallbackToHistory` aceita
+**`boolean`** ou **predicate**:
 
 ```ts
 import { useIGRPProcessContext } from "@igrp/platform-process-management-client-ui";
 
 function MyStep() {
-  const { getFormDataForTask, stepConfig } = useIGRPProcessContext();
+  const { getFormDataForTask } = useIGRPProcessContext();
 
-  // Regra de negócio fica do lado do consumidor:
-  const decision = stepConfig?.variables?.find((v) => v.name === "decision")
-    ?.value;
-  const isRectifying =
-    typeof decision === "string" &&
-    ["RECTIFICAR", "RETIFICAR"].includes(decision.toUpperCase());
+  // Opção 1: sempre que current está vazio
+  const data1 = getFormDataForTask({ fallbackToHistory: true });
 
-  // A lib só faz o mecanismo: "se vazio, cai no histórico"
-  const data = getFormDataForTask({ fallbackToHistory: isRectifying });
+  // Opção 2: regra de negócio do consumidor — `vars` são as variáveis BPMN
+  // actuais (stepConfig.variables), injectadas pela lib.
+  const data2 = getFormDataForTask({
+    fallbackToHistory: (vars) => {
+      const d = vars.find((v) => v.name === "decision")?.value;
+      return (
+        typeof d === "string" &&
+        ["RECTIFICAR", "RETIFICAR"].includes(d.toUpperCase())
+      );
+    },
+  });
 
   // ...
 }
@@ -130,14 +135,17 @@ function MyStep() {
 **Comportamento da lib (mecanismo apenas, sem regras de negócio):**
 
 1. Lê dados do step actual (variável `${userTaskInstanceId}_forms`).
-2. Se `opts.fallbackToHistory === true` E current está vazio
-   (`undefined` / `null` / `[]`):
-   - Carrega via `getFormDataByTaskKey(userTaskKey)` (latest activity progress).
+2. Se current está vazio (`undefined` / `null` / `[]`):
+   - Se `opts.fallbackToHistory === true`, OU
+   - Se `opts.fallbackToHistory(stepConfig.variables) === true`,
+   - → Carrega via `getFormDataByTaskKey(userTaskKey)` (latest activity
+     progress).
 3. Caso contrário, devolve o current original.
 
 > **Decisão arquitectural:** a lib **não** conhece nomes de variáveis BPMN
-> nem valores de decisão (`RECTIFICAR`, `RETIFICAR`, etc.). O consumidor
-> decide _quando_ activar o fallback com base nas regras do seu processo.
+> nem valores de decisão (`RECTIFICAR`, `RETIFICAR`, etc.). A predicate é o
+> mecanismo para o consumidor injectar regras de negócio sem ter de ir
+> buscar variables ao contexto.
 
 **Retro-compatibilidade:** chamadas sem args (`getFormDataForTask()`) mantêm
 **exactamente** o comportamento legacy — sem fallback.

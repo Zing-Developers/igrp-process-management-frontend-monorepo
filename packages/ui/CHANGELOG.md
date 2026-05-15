@@ -2,6 +2,53 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## 0.1.0-beta.21
+
+### Added
+
+- `opts.fallbackToHistory` aceita agora **`boolean | (variables) => boolean`**.
+  Quando passada uma predicate, recebe as variáveis BPMN do step actual
+  (`stepConfig.variables`, injectadas pela lib) e devolve `true` para
+  activar o fallback. Permite ao consumidor codificar regras de negócio
+  sem precisar de ir buscar variables ao contexto e sem inflar a API
+  pública da lib com nomes/valores de domínio.
+
+### Migration desde `beta.20`
+
+`beta.20` já suportava apenas `boolean`. Continua válido:
+
+```ts
+getFormDataForTask({ fallbackToHistory: true });
+```
+
+Para regras de negócio, em vez de:
+
+```ts
+const decision = stepConfig?.variables?.find((v) => v.name === "decision")
+  ?.value;
+const isRectifying =
+  typeof decision === "string" &&
+  ["RECTIFICAR", "RETIFICAR"].includes(decision.toUpperCase());
+
+getFormDataForTask({ fallbackToHistory: isRectifying });
+```
+
+passa a poder escrever:
+
+```ts
+getFormDataForTask({
+  fallbackToHistory: (vars) => {
+    const d = vars.find((v) => v.name === "decision")?.value;
+    return (
+      typeof d === "string" &&
+      ["RECTIFICAR", "RETIFICAR"].includes(d.toUpperCase())
+    );
+  },
+});
+```
+
+Nenhuma quebra: chamadas existentes com `boolean` continuam a funcionar.
+
 ## 0.1.0-beta.20
 
 ### Changed (breaking — relativo a `beta.19`)
