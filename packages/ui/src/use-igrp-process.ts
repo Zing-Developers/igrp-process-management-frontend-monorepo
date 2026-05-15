@@ -157,15 +157,21 @@ export function useIGRPProcess(
   /**
    * Devolve os dados de form do step actual.
    *
-   * Comportamento legacy (sem args): lê apenas o que o engine tem na
-   * variável `${userTaskInstanceId}_forms` do step actual.
+   * Sem args (`getFormDataForTask()`): lê apenas o que o engine tem na
+   * variável `${userTaskInstanceId}_forms` do step actual — comportamento
+   * legacy.
    *
-   * Com `opts.fallbackToHistory = true`: se o step actual estiver vazio,
-   * cai automaticamente no histórico do mesmo step (via
-   * `getFormDataByTaskKey(userTaskKey)`).
+   * `opts.fallbackToHistory`:
+   *   - `true` — quando current está vazio, cai no histórico do mesmo
+   *     step (`getFormDataByTaskKey(userTaskKey)`).
+   *   - `(variables) => boolean` — predicate que recebe as variáveis
+   *     BPMN actuais (`stepConfig.variables`) e decide se activa o
+   *     fallback. Permite regras de negócio no consumidor (ex.: só
+   *     cair no histórico em ciclos de rectificação) sem precisar de
+   *     ir buscar variables ao contexto.
    *
-   * O consumidor decide quando activar o fallback — a lib não conhece
-   * regras de negócio (ex.: ciclos de rectificação).
+   * A lib não conhece nomes/valores de variáveis de negócio — só faz o
+   * mecanismo.
    */
   const getFormDataForTask = useCallback(
     (opts?: IGRPGetFormDataForTaskOptions) => {
@@ -174,11 +180,14 @@ export function useIGRPProcess(
         | Array<IGRPFormEntry>
         | undefined;
 
-      return resolveFormDataForTask(current, opts, () =>
+      const variables = (stepConfigData?.variables ?? []) as Array<IGRPFormEntry>;
+
+      return resolveFormDataForTask(current, opts, variables, () =>
         userTaskKey ? getFormDataByTaskKey(userTaskKey) : current,
       );
     },
     [
+      stepConfigData,
       getVariableNameForTask,
       getVariableForTask,
       getFormDataByTaskKey,

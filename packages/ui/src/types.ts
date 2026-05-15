@@ -135,20 +135,38 @@ export interface IGRPFormEntry {
  */
 export interface IGRPGetFormDataForTaskOptions {
   /**
-   * Quando `true` E o step actual está vazio, carrega automaticamente
-   * do histórico do MESMO step (via `getFormDataByTaskKey(userTaskKey)`).
+   * Activar o fallback quando o step actual está vazio.
    *
-   * O consumidor é responsável por decidir quando activar — tipicamente
-   * com base em regras de negócio do seu processo, ex.:
+   * Aceita dois formatos:
+   *
+   * - `boolean` — `true` activa sempre que current está vazio.
+   * - `(variables) => boolean` — predicate que recebe as variáveis BPMN
+   *   do step actual (`stepConfig.variables`, injectadas pelo hook) e
+   *   devolve `true`/`false`. Permite ao consumidor decidir com base
+   *   em regras de negócio sem precisar de ir buscar as variáveis ao
+   *   contexto.
+   *
+   * Exemplos:
    *
    * ```ts
-   * const isRectifying = decision === "RECTIFICAR";
-   * getFormDataForTask({ fallbackToHistory: isRectifying });
+   * // Sempre que vazio
+   * getFormDataForTask({ fallbackToHistory: true });
+   *
+   * // Apenas em ciclos de rectificação (regra do consumidor)
+   * getFormDataForTask({
+   *   fallbackToHistory: (vars) => {
+   *     const d = vars.find((v) => v.name === "decision")?.value;
+   *     return typeof d === "string" &&
+   *       ["RECTIFICAR", "RETIFICAR"].includes(d.toUpperCase());
+   *   },
+   * });
    * ```
    *
    * @default false
    */
-  fallbackToHistory?: boolean;
+  fallbackToHistory?:
+    | boolean
+    | ((variables: Array<IGRPFormEntry>) => boolean);
 }
 
 export interface IGRPStepResult {
