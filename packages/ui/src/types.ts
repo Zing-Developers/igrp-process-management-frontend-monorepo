@@ -119,6 +119,42 @@ export interface IGRPProcessPageRendererProps {
   resolveStepComponent?: IGRPResolveStepComponent | null;
 }
 
+/** Entrada (nome/valor) de uma variável BPMN do processo. */
+export interface IGRPProcessVariable {
+  name: string;
+  value: unknown;
+}
+
+/** Entrada de form persistida no engine BPMN. */
+export type IGRPFormEntry = IGRPProcessVariable;
+
+/**
+ * Opções para `getFormDataForTask`.
+ *
+ * Permite que, quando o step actual ainda não tem dados persistidos,
+ * a função carregue automaticamente os dados do histórico do MESMO step
+ * — útil em ciclos de rectificação (RECTIFICAR/RETIFICAR) onde o
+ * utilizador volta a uma etapa anterior.
+ */
+export interface IGRPGetFormDataForTaskOptions {
+  /**
+   * Quando o step actual não tem dados ainda, tentar carregar do
+   * histórico do MESMO step (taskKey actual). Útil em ciclos de
+   * RECTIFICAR onde o utilizador volta a uma etapa anterior.
+   * @default false
+   */
+  fallbackToHistory?: boolean;
+
+  /**
+   * Variáveis BPMN do processo. Quando passado, o fallback só dispara
+   * se houver uma `decision` com valor "RECTIFICAR" (ou "RETIFICAR"
+   * legacy) — evita reidratar acidentalmente em cenários onde o step
+   * actual está vazio por outras razões.
+   * Opcional: se omitido, o fallback dispara sempre que current está vazio.
+   */
+  variables?: Array<IGRPProcessVariable>;
+}
+
 export interface IGRPStepResult {
   success: boolean;
   error?: string;

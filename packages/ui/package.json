@@ -1,6 +1,6 @@
 {
   "name": "@igrp/platform-process-management-client-ui",
-  "version": "0.1.0-beta.17",
+  "version": "0.1.0-beta.19",
   "description": "IGRP Platform Process Management - Client UI",
   "keywords": [
     "igrp",
@@ -42,8 +42,8 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "next-themes": "0.4.6",
-    "tailwind-merge": "^3.4.0",
-    "zod": "^4.1.12"
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@babel/cli": "7.28.6",
