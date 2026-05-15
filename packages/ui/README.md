@@ -91,4 +91,48 @@ Os steps (ex: `(P1.1.1)/v9/Task_pedido.tsx`) continuam no projeto, na mesma past
 | `ProcessPageRenderer`             | Renderer configurável com `resolveStepComponent` e `getBackUrl?`.                          |
 | `ConfirmationDialog`              | Diálogo de confirmação (sucesso/erro).                                                     |
 
-Tipos: `StepConfigParams`, `FetchStepConfigResult`, `ProcessActions`, `ResolveStepComponentParams`, `StepComponentProps`, `StepComponentConfig`, `StepMethods`, etc.
+Tipos: `StepConfigParams`, `FetchStepConfigResult`, `ProcessActions`, `ResolveStepComponentParams`, `StepComponentProps`, `StepComponentConfig`, `StepMethods`, `IGRPGetFormDataForTaskOptions`, `IGRPProcessVariable`, `IGRPFormEntry`, etc.
+
+## Ler dados de form do step
+
+O contexto expõe duas funções para ler dados de form persistidos no engine BPMN:
+
+- `getFormDataForTask(opts?)` — dados do step actual.
+- `getFormDataByTaskKey(taskKey)` — dados de qualquer step pelo `taskKey`.
+
+### Fallback histórico (ciclos de RECTIFICAR)
+
+Quando o utilizador volta a uma etapa anterior via _Rectificar_, o step actual
+está vazio porque ainda não foi persistido nada de novo. Para reidratar o form
+com os últimos dados submetidos para o MESMO step, passa `fallbackToHistory: true`:
+
+```ts
+import { useIGRPProcessContext } from "@igrp/platform-process-management-client-ui";
+
+function MyStep() {
+  const { getFormDataForTask, stepConfig } = useIGRPProcessContext();
+
+  // Carrega current; se vazio E houver decision=RECTIFICAR no processo,
+  // cai automaticamente no histórico do mesmo step.
+  const data = getFormDataForTask({
+    fallbackToHistory: true,
+    variables: stepConfig?.variables,
+  });
+
+  // ...
+}
+```
+
+**Comportamento:**
+
+1. Lê dados do step actual.
+2. Se vazio E `opts.fallbackToHistory === true`:
+   - Se `opts.variables` for passado, o fallback só dispara quando existe
+     `decision = "RECTIFICAR"` (ou `"RETIFICAR"` legacy, case-insensitive).
+   - Se `opts.variables` for omitido, o fallback dispara sempre que current
+     está vazio.
+   - Carrega via `getFormDataByTaskKey(userTaskKey)` (latest activity progress).
+3. Caso contrário, devolve o current original.
+
+**Retro-compatibilidade:** chamadas sem args (`getFormDataForTask()`) mantêm
+**exactamente** o comportamento legacy — sem fallback.

@@ -6,6 +6,7 @@ import {
   callCompleteTask as callCompleteTaskAction,
   callSaveTask as callSaveTaskAction,
 } from "./process-actions";
+import { resolveFormDataForTask } from "./lib/form-data-fallback";
 import type {
   StepConfigResult,
   IGRPProcessClientConfig,
@@ -13,6 +14,8 @@ import type {
   TaskResult,
   SaveTaskParams,
   CompleteTaskParams,
+  IGRPGetFormDataForTaskOptions,
+  IGRPFormEntry,
 } from "./types";
 import type { ActivityProgress } from "@igrp/platform-process-management-types";
 
@@ -128,13 +131,6 @@ export function useIGRPProcess(
     [stepConfigData],
   );
 
-  const getFormDataForTask = useCallback(() => {
-    const variableName = getVariableNameForTask();
-    const variable = getVariableForTask(variableName);
-
-    return variable;
-  }, [stepConfigData, getVariableNameForTask]);
-  
   const getFormDataByTaskKey = useCallback(
     (taskKey: string) => {
       const matches = stepConfigData?.activityProgress?.filter(
@@ -156,6 +152,40 @@ export function useIGRPProcess(
       return latest.forms;
     },
     [stepConfigData],
+  );
+
+  /**
+   * Devolve os dados de form do step actual.
+   *
+   * Comportamento legacy (sem args): lê apenas o que o engine tem na
+   * variável `${userTaskInstanceId}_forms` do step actual.
+   *
+   * Com `opts.fallbackToHistory = true`: se o step actual estiver vazio,
+   * cai automaticamente no histórico (`getFormDataByTaskKey(userTaskKey)`).
+   * Útil em ciclos de RECTIFICAR onde o utilizador volta a uma etapa
+   * anterior e o engine ainda não persistiu nada no step actual.
+   *
+   * Se `opts.variables` for fornecido, o fallback só dispara quando
+   * existe `decision` com valor `RECTIFICAR`/`RETIFICAR` — evita
+   * reidratar em cenários onde o step actual está legitimamente vazio.
+   */
+  const getFormDataForTask = useCallback(
+    (opts?: IGRPGetFormDataForTaskOptions) => {
+      const variableName = getVariableNameForTask();
+      const current = getVariableForTask(variableName) as
+        | Array<IGRPFormEntry>
+        | undefined;
+
+      return resolveFormDataForTask(current, opts, () =>
+        userTaskKey ? getFormDataByTaskKey(userTaskKey) : current,
+      );
+    },
+    [
+      getVariableNameForTask,
+      getVariableForTask,
+      getFormDataByTaskKey,
+      userTaskKey,
+    ],
   );
 
   return {
