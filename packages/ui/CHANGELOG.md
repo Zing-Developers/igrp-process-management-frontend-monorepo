@@ -2,6 +2,44 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## 0.1.0-beta.20
+
+### Changed (breaking — relativo a `beta.19`)
+
+- **Removida** a opção `opts.variables` de `getFormDataForTask`. A lib não
+  conhece regras de negócio (nomes de variáveis BPMN, valores de decisão
+  como `RECTIFICAR`/`RETIFICAR`, etc.) — o gate de "quando activar o
+  fallback" pertence ao consumidor.
+- **Removido** o tipo exportado `IGRPProcessVariable`.
+- O fallback agora dispara sempre que `fallbackToHistory === true` E o
+  step actual está vazio (`undefined`/`null`/`[]`).
+
+### Migration
+
+Antes (`beta.19`):
+
+```ts
+getFormDataForTask({
+  fallbackToHistory: true,
+  variables: stepConfig?.variables,
+});
+```
+
+Agora (`beta.20`):
+
+```ts
+const decision = stepConfig?.variables?.find((v) => v.name === "decision")
+  ?.value;
+const isRectifying =
+  typeof decision === "string" &&
+  ["RECTIFICAR", "RETIFICAR"].includes(decision.toUpperCase());
+
+getFormDataForTask({ fallbackToHistory: isRectifying });
+```
+
+Chamadas sem args (`getFormDataForTask()`) continuam sem qualquer
+alteração.
+
 ## 0.1.0-beta.19
 
 > Nota: a versão `0.1.0-beta.18` foi publicada no registry Sonatype sem
