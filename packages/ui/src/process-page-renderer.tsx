@@ -147,9 +147,51 @@ export default function IGRPProcessPageRenderer({
     resolveStepComponent: resolveStepComponentContext,
   } = useIGRPProcessContext();
 
-  const { processInstance, steps, variables, form } = stepConfig || {};
+  const { processInstance, steps, variables, form, activityProgress } =
+    stepConfig || {};
 
   const { name, version, statusDesc, number } = processInstance || {};
+
+  /**
+   * Compat layer — the backend currently returns `userTaskKey: null` and
+   * marks every entry in `steps[]` as `isCompleted: true` once any task has
+   * been executed at least once. After a rectification loop (when the
+   * process moves back to a previous step) the stepper renders everything
+   * green even though one of the steps is actually in progress.
+   *
+   * Until the backend is corrected, we rebuild the truth from
+   * `activityProgress`, which always contains one entry with
+   * `status: "CURRENT"` pointing at the activity the engine has open.
+   * Steps before the current index become "completed", steps after stay
+   * "future". If no CURRENT entry exists (process finished) we mark all
+   * steps as completed.
+   */
+  const effectiveUserTaskKey = useMemo(() => {
+    const current = (activityProgress || []).find(
+      (a) => a.status === "CURRENT",
+    );
+    return current?.activityId ?? userTaskKey ?? null;
+  }, [activityProgress, userTaskKey]);
+
+  const effectiveSteps = useMemo(() => {
+    if (!steps || steps.length === 0) return steps;
+    const currentIndex = effectiveUserTaskKey
+      ? steps.findIndex((s) => s.stepKey === effectiveUserTaskKey)
+      : -1;
+    // No CURRENT activity → assume the process is done; keep everything green.
+    if (currentIndex === -1) {
+      return steps.map((s) => ({
+        ...s,
+        isCompleted: true,
+        isActive: false,
+      }));
+    }
+    return steps.map((s, i) => ({
+      ...s,
+      isCompleted: i < currentIndex,
+      isActive: i === currentIndex,
+    }));
+  }, [steps, effectiveUserTaskKey]);
 
   const resolveStepComponent =
     resolveStepComponentProp ?? resolveStepComponentContext ?? null;
@@ -264,9 +306,11 @@ export default function IGRPProcessPageRenderer({
 
   const currentStep = useMemo(() => {
     return (
-      (steps || []).findIndex((step: any) => step.stepKey === userTaskKey) + 1
+      (effectiveSteps || []).findIndex(
+        (step: any) => step.stepKey === effectiveUserTaskKey,
+      ) + 1
     );
-  }, [steps, userTaskKey]);
+  }, [effectiveSteps, effectiveUserTaskKey]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -352,13 +396,13 @@ export default function IGRPProcessPageRenderer({
       />
 
       <IGRPStepperProcess
-        steps={steps}
+        steps={effectiveSteps}
         isLoading={isLoading}
         currentStep={currentStep}
       >
         {(currentStepIndex: number) => {
-          const stepConfig = steps[currentStepIndex - 1];
-          if (stepConfig?.stepKey !== userTaskKey) return <></>;
+          const stepConfig = effectiveSteps[currentStepIndex - 1];
+          if (stepConfig?.stepKey !== effectiveUserTaskKey) return <></>;
 
           const stepComponentConfig: IGRPStepComponentConfig = {
             processKey,
