@@ -137,6 +137,11 @@ export default function IGRPProcessPageRenderer({
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  // Latches `true` once `completeTask` succeeds. Drives:
+  //  - hiding Save / Complete Task buttons (no double-submit)
+  //  - locking the step content so the user can't keep editing
+  //  - opening the success dialog as non-dismissable (user must press Voltar)
+  const [taskCompleted, setTaskCompleted] = useState(false);
 
   const { igrpToast } = useIGRPToast();
   const router = useRouter();
@@ -260,6 +265,12 @@ export default function IGRPProcessPageRenderer({
     success: boolean;
     error?: string;
   }> => {
+    // Defense in depth: even if the buttons are hidden after success, swallow
+    // any reentrant call (keyboard shortcut, programmatic dispatch, …) to
+    // guarantee the task is submitted at most once per page load.
+    if (taskCompleted || isLoading) {
+      return { success: false, error: "Already submitted" };
+    }
     try {
       // First, try to call the dynamic step's complete method
       let stepResult: IGRPStepResult = {
@@ -284,6 +295,10 @@ export default function IGRPProcessPageRenderer({
           forms: stepResult.forms,
         });
         if (result?.success) {
+          // Latch FIRST so the buttons are hidden before the dialog renders,
+          // and any in-flight click that races with the response is rejected
+          // by the guard above.
+          setTaskCompleted(true);
           setShowSuccessDialog(true);
         } else {
           setErrorMessage(
@@ -336,7 +351,7 @@ export default function IGRPProcessPageRenderer({
             )}
             <span className="sr-only">Toggle details</span>
           </IGRPButton>
-          {statusDesc != "COMPLETED" && (
+          {statusDesc != "COMPLETED" && !taskCompleted && (
             <>
               <IGRPButton
                 variant="outline"
@@ -375,9 +390,16 @@ export default function IGRPProcessPageRenderer({
         onOpenChange={setShowSuccessDialog}
         textHeader="Tarefa completada com sucesso!"
         description="A tarefa foi completada com sucesso!"
+        // Only way out is the confirm button — Esc, X and backdrop are no-ops.
+        // Prevents the user from staying on the page in a "submitted but not
+        // navigated" limbo where the form is still visible.
+        dismissable={false}
+        labelBtnConfirm="Voltar"
         confirmDelete={async () => {
           setShowSuccessDialog(false);
-          router.push(urlBackTemp as any);
+          // `replace` so the back button does not return to the completed
+          // task page (which would now be locked and confusing).
+          router.replace(urlBackTemp as any);
         }}
         isCompleted={true}
       />
@@ -434,7 +456,18 @@ export default function IGRPProcessPageRenderer({
 
           return (
             <IGRPCardPrimitive>
-              <IGRPCardContentPrimitive>
+              <IGRPCardContentPrimitive
+                // Once the task is submitted, the step content stays mounted
+                // (so the success dialog can overlay it) but becomes
+                // uninteractive — no more keystrokes, clicks or focus moves
+                // until the user navigates away via the dialog.
+                className={
+                  taskCompleted
+                    ? "pointer-events-none select-none opacity-60"
+                    : undefined
+                }
+                aria-disabled={taskCompleted}
+              >
                 <StepResolver
                   resolve={resolveStepComponent}
                   params={{

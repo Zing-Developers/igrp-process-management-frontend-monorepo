@@ -30,6 +30,15 @@ export interface IGRPConfirmationDialogProps {
   textHeader?: string;
   isCompleted?: boolean;
   message?: string;
+  /**
+   * When `false`, the dialog can only be closed via the confirm action.
+   * Escape, backdrop click and the X button are all neutralised. Useful for
+   * non-cancellable success confirmations after destructive / one-shot
+   * actions (e.g. "task completed" — the user must press the explicit
+   * button so the host can decide where to navigate).
+   * Defaults to `true`.
+   */
+  dismissable?: boolean;
 }
 
 const IGRPConfirmationDialogIconConfig = {
@@ -56,6 +65,7 @@ export function IGRPConfirmationDialog({
   textHeader = "Confirmação Final",
   isCompleted = false,
   message = "",
+  dismissable = true,
 }: IGRPConfirmationDialogProps) {
   const [isMessageOpen, setIsMessageOpen] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
@@ -72,10 +82,29 @@ export function IGRPConfirmationDialog({
     ? IGRPConfirmationDialogIconConfig.success
     : IGRPConfirmationDialogIconConfig.error;
 
+  // When `dismissable` is false, only allow the dialog to be opened from the
+  // outside. Any attempt to close it (X, Esc, backdrop) is swallowed so the
+  // host stays in control of when it actually goes away (typically via the
+  // confirm button's navigation).
+  const handleOpenChange = (next: boolean) => {
+    if (!dismissable && !next) return;
+    onOpenChange(next);
+  };
+
   return (
-    <IGRPDialogPrimitive open={open} onOpenChange={onOpenChange}>
+    <IGRPDialogPrimitive open={open} onOpenChange={handleOpenChange}>
       <IGRPDialogContentPrimitive
         className={cn("space-y-4", isCompleted ? "max-w-md" : "")}
+        showCloseButton={dismissable}
+        onEscapeKeyDown={(e) => {
+          if (!dismissable) e.preventDefault();
+        }}
+        onPointerDownOutside={(e) => {
+          if (!dismissable) e.preventDefault();
+        }}
+        onInteractOutside={(e) => {
+          if (!dismissable) e.preventDefault();
+        }}
       >
         <div className="flex flex-col items-center gap-2 justify-center">
           <div
