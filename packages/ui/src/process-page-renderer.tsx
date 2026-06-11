@@ -419,7 +419,10 @@ export default function IGRPProcessPageRenderer({
 
       <IGRPStepperProcess
         steps={effectiveSteps}
-        isLoading={isLoading}
+        // Suppress the per-step loading spinner once the task is committed.
+        // The success dialog (non-dismissable) already conveys "done" — leaving
+        // the spinner on while the user reads it makes the step look stuck.
+        isLoading={isLoading && !taskCompleted}
         currentStep={currentStep}
       >
         {(currentStepIndex: number) => {
