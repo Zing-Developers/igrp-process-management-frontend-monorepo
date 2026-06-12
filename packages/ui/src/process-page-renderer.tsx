@@ -185,6 +185,28 @@ export default function IGRPProcessPageRenderer({
 
   const effectiveSteps = useMemo(() => {
     if (!steps || steps.length === 0) return steps;
+
+    // `steps[]` comes ordered by visual position in the BPMN diagram, which
+    // does not always match the engine's execution order — branches routed
+    // through gateways can show up out of sequence. `activityProgress` lists
+    // activities in real chronological order (with PENDING entries already
+    // sorted by the engine's planned next path), so we use it as the source
+    // of truth for ordering too.
+    const stepsByKey = new Map(steps.map((s) => [s.stepKey, s]));
+    const orderedKeys: string[] = [];
+    (activityProgress || []).forEach((a) => {
+      if (stepsByKey.has(a.activityId) && !orderedKeys.includes(a.activityId)) {
+        orderedKeys.push(a.activityId);
+      }
+    });
+    // Defensive: any step that never showed up in `activityProgress` keeps
+    // its original relative position at the tail of the list.
+    steps.forEach((s) => {
+      if (!orderedKeys.includes(s.stepKey)) {
+        orderedKeys.push(s.stepKey);
+      }
+    });
+
     const progressByActivity = new Map<string, string>();
     (activityProgress || []).forEach((a) => {
       progressByActivity.set(a.activityId, a.status);
@@ -192,8 +214,10 @@ export default function IGRPProcessPageRenderer({
     const hasCurrent = Array.from(progressByActivity.values()).includes(
       "CURRENT",
     );
-    return steps.map((s) => {
-      const status = progressByActivity.get(s.stepKey);
+
+    return orderedKeys.map((key) => {
+      const s = stepsByKey.get(key)!;
+      const status = progressByActivity.get(key);
       if (status === "CURRENT") {
         return { ...s, isCompleted: false, isActive: true, isSkipped: false };
       }
