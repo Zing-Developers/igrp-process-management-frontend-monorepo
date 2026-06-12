@@ -158,18 +158,23 @@ export default function IGRPProcessPageRenderer({
   const { name, version, statusDesc, number } = processInstance || {};
 
   /**
-   * Compat layer — the backend currently returns `userTaskKey: null` and
-   * marks every entry in `steps[]` as `isCompleted: true` once any task has
-   * been executed at least once. After a rectification loop (when the
-   * process moves back to a previous step) the stepper renders everything
-   * green even though one of the steps is actually in progress.
+   * Compat layer — the backend returns `userTaskKey: null`, marks every
+   * entry in `steps[]` as `isCompleted: true` once executed, and emits
+   * `steps[]` in a visual order that does NOT always match the engine's
+   * cronological flow (e.g. when a BPMN gateway routes around a branch the
+   * step that comes later in execution may appear earlier in `steps[]`).
    *
-   * Until the backend is corrected, we rebuild the truth from
-   * `activityProgress`, which always contains one entry with
-   * `status: "CURRENT"` pointing at the activity the engine has open.
-   * Steps before the current index become "completed", steps after stay
-   * "future". If no CURRENT entry exists (process finished) we mark all
-   * steps as completed.
+   * `activityProgress` is the authoritative source: it has one entry per
+   * activity with a `status` of `CURRENT`, `COMPLETED` or `PENDING`. We map
+   * each step in the definition to its `status` and recompute the flags
+   * directly — never using the position inside `steps[]` because that
+   * position is unreliable.
+   *
+   * - `CURRENT` step → active, not completed.
+   * - `COMPLETED` step → completed, not active.
+   * - `PENDING` / not in activityProgress → grey (not yet visited).
+   * - No `CURRENT` anywhere → assume the process finished, mark every step
+   *   as completed.
    */
   const effectiveUserTaskKey = useMemo(() => {
     const current = (activityProgress || []).find(
@@ -180,23 +185,30 @@ export default function IGRPProcessPageRenderer({
 
   const effectiveSteps = useMemo(() => {
     if (!steps || steps.length === 0) return steps;
-    const currentIndex = effectiveUserTaskKey
-      ? steps.findIndex((s) => s.stepKey === effectiveUserTaskKey)
-      : -1;
-    // No CURRENT activity → assume the process is done; keep everything green.
-    if (currentIndex === -1) {
-      return steps.map((s) => ({
+    const progressByActivity = new Map<string, string>();
+    (activityProgress || []).forEach((a) => {
+      progressByActivity.set(a.activityId, a.status);
+    });
+    const hasCurrent = Array.from(progressByActivity.values()).includes(
+      "CURRENT",
+    );
+    return steps.map((s) => {
+      const status = progressByActivity.get(s.stepKey);
+      if (status === "CURRENT") {
+        return { ...s, isCompleted: false, isActive: true, isSkipped: false };
+      }
+      if (status === "COMPLETED") {
+        return { ...s, isCompleted: true, isActive: false, isSkipped: false };
+      }
+      // PENDING, or activity not visited yet by the engine.
+      return {
         ...s,
-        isCompleted: true,
+        isCompleted: !hasCurrent,
         isActive: false,
-      }));
-    }
-    return steps.map((s, i) => ({
-      ...s,
-      isCompleted: i < currentIndex,
-      isActive: i === currentIndex,
-    }));
-  }, [steps, effectiveUserTaskKey]);
+        isSkipped: false,
+      };
+    });
+  }, [steps, activityProgress]);
 
   const resolveStepComponent =
     resolveStepComponentProp ?? resolveStepComponentContext ?? null;
