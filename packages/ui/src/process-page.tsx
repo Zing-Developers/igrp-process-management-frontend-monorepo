@@ -14,8 +14,13 @@ function IGRPProcessPage() {
   } = useIGRPProcessContext();
 
   if (isLoadingStepConfig || !stepConfig) {
+    // Compact loader that stays inside the host shell layout — using
+    // `h-screen` here used to take over the whole viewport on top of any
+    // app chrome the consumer renders around <IGRPProcessPage />.
     return (
-      <IGRPLoadingSpinner className="flex justify-center items-center h-screen" />
+      <div className="flex w-full items-center justify-center py-16">
+        <IGRPLoadingSpinner />
+      </div>
     );
   }
 
