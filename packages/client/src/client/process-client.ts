@@ -15,6 +15,9 @@ import {
   ProcessDefinitionSchema,
   Priority,
   ProcessFilter,
+  ProcessEventDTO,
+  TimerRescheduleDTO,
+  ProcessDeploymentRequestDTO,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
@@ -122,6 +125,7 @@ export class ProcessClient extends BaseApiClient {
   async getProcessInstances(
     params?: {
       number?: string;
+      name?: string;
       procReleaseKey?: string;
       procReleaseId?: string;
       status?:
@@ -302,5 +306,31 @@ export class ProcessClient extends BaseApiClient {
       `/process-definitions/${processKey}/priorities`,
       priority,
     );
+  }
+
+  /**
+   * POST /process-definitions/deploy - Deploy a process (BPMN XML)
+   */
+  async deployProcess(
+    body: ProcessDeploymentRequestDTO,
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(`/process-definitions/deploy`, body);
+  }
+
+  /**
+   * POST /process-instances/event - Trigger a process (message) event
+   */
+  async triggerProcessEvent(body: ProcessEventDTO): Promise<ApiResponse<void>> {
+    return this.post<void>(`/process-instances/event`, body);
+  }
+
+  /**
+   * POST /process-instances/{id}/timer/reschedule - Reschedule a timer
+   */
+  async rescheduleTimer(
+    id: string,
+    body: TimerRescheduleDTO,
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(`/process-instances/${id}/timer/reschedule`, body);
   }
 }

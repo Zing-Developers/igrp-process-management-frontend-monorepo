@@ -1,4 +1,4 @@
-import { UserProfile } from "./shared";
+import { UserProfile, VariableParams } from "./shared";
 import { TaskVariables } from "./task";
 
 export type ProcessStatus =
@@ -157,4 +157,28 @@ export interface Priority {
   id?: string;
   processDefinitionKey: string;
   color?: string;
+}
+
+// POST /process-instances/event — trigger a process (message) event
+export interface ProcessEventDTO {
+  messageName: string;
+  taskId?: string;
+  businessKey?: string;
+  variables?: VariableParams;
+}
+
+// POST /process-instances/{id}/timer/reschedule
+export interface TimerRescheduleDTO {
+  elementId: string;
+  seconds: number;
+}
+
+// POST /process-definitions/deploy
+export interface ProcessDeploymentRequestDTO {
+  name: string;
+  description?: string;
+  key: string;
+  resourceName?: string;
+  bpmnXml: string;
+  applicationBase: string;
 }

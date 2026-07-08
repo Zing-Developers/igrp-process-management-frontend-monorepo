@@ -9,13 +9,22 @@ import {
   TaskVariables,
   TaskStats,
   VariableParams,
+  TaskAssignmentRuleDTO,
+  TaskAssignmentRuleUpdateRequest,
+  TaskAssignmentRuleFilters,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
 interface TaskQueryParams {
   processInstanceId?: string;
   processNumber?: string;
+  /** @deprecated the API filters by processReleaseKey; kept for back-compat */
   processKey?: string;
+  processReleaseKey?: string;
+  candidateGroups?: string;
+  candidateUsers?: string;
+  name?: string;
+  priority?: number;
   processName?: string;
   user?: string;
   status?: string;
@@ -224,5 +233,37 @@ export class TaskClient extends BaseApiClient {
     params?: PaginationParams,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.getTasks({ ...params, user: userId });
+  }
+
+  /**
+   * GET /tasks-instances/assignment-rules - List task assignment rules
+   */
+  async getTaskAssignmentRules(
+    params?: TaskAssignmentRuleFilters,
+  ): Promise<ApiResponse<PaginatedResponse<TaskAssignmentRuleDTO>>> {
+    return this.get<PaginatedResponse<TaskAssignmentRuleDTO>>(
+      "/tasks-instances/assignment-rules",
+      params,
+    );
+  }
+
+  /**
+   * PUT /tasks-instances/assignment-rules/{id} - Update a task assignment rule
+   */
+  async updateTaskAssignmentRule(
+    id: string,
+    body: TaskAssignmentRuleUpdateRequest,
+  ): Promise<ApiResponse<TaskAssignmentRuleDTO>> {
+    return this.put<TaskAssignmentRuleDTO>(
+      `/tasks-instances/assignment-rules/${id}`,
+      body,
+    );
+  }
+
+  /**
+   * DELETE /tasks-instances/assignment-rules/{id} - Delete a task assignment rule
+   */
+  async deleteTaskAssignmentRule(id: string): Promise<ApiResponse<void>> {
+    return this.delete<void>(`/tasks-instances/assignment-rules/${id}`);
   }
 }
