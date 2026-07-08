@@ -62,3 +62,43 @@ export type TaskStats = {
   totalCompletedTasks: number;
   totalCanceledTasks: number;
 };
+
+// --- Task assignment rules (/tasks-instances/assignment-rules) ---
+
+export type TaskAssignmentMode = "ALWAYS" | "ONE_TIME";
+
+export interface TaskAssignmentRuleDTO {
+  id: string;
+  processDefinitionKey: string;
+  processInstanceId: string;
+  taskDefinitionKey: string;
+  assignee: string;
+  candidateUsers: string;
+  candidateGroups: string;
+  assignmentMode: TaskAssignmentMode;
+  priority: number;
+  consumed: boolean;
+  active: boolean;
+  createdByTask: string;
+}
+
+export interface TaskAssignmentRuleUpdateRequest {
+  assignee?: string;
+  candidateUsers?: string;
+  candidateGroups?: string;
+}
+
+export interface TaskAssignmentRuleFilters {
+  processInstanceId?: string;
+  processDefinitionKey?: string;
+  taskDefinitionKey?: string;
+  assignee?: string;
+  candidateUsers?: string;
+  candidateGroups?: string;
+  assignmentMode?: TaskAssignmentMode;
+  consumed?: boolean;
+  active?: boolean;
+  createdByTask?: string;
+  page?: number;
+  size?: number;
+}
