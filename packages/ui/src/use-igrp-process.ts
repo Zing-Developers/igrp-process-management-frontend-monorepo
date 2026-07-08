@@ -139,15 +139,18 @@ export function useIGRPProcess(
 
       if (!matches?.length) return undefined;
 
-      const latest = matches.reduce((acc: ActivityProgress, current: ActivityProgress) => {
-        const accTime = new Date(acc.endTime).getTime();
-        const currentTime = new Date(current.endTime).getTime();
+      const latest = matches.reduce(
+        (acc: ActivityProgress, current: ActivityProgress) => {
+          const accTime = new Date(acc.endTime).getTime();
+          const currentTime = new Date(current.endTime).getTime();
 
-        if (Number.isNaN(accTime) && !Number.isNaN(currentTime)) return current;
-        if (Number.isNaN(currentTime)) return acc;
+          if (Number.isNaN(accTime) && !Number.isNaN(currentTime))
+            return current;
+          if (Number.isNaN(currentTime)) return acc;
 
-        return currentTime >= accTime ? current : acc;
-      });
+          return currentTime >= accTime ? current : acc;
+        },
+      );
 
       return latest.forms;
     },
@@ -180,7 +183,8 @@ export function useIGRPProcess(
         | Array<IGRPFormEntry>
         | undefined;
 
-      const variables = (stepConfigData?.variables ?? []) as Array<IGRPFormEntry>;
+      const variables = (stepConfigData?.variables ??
+        []) as Array<IGRPFormEntry>;
 
       return resolveFormDataForTask(current, opts, variables, () =>
         userTaskKey ? getFormDataByTaskKey(userTaskKey) : current,

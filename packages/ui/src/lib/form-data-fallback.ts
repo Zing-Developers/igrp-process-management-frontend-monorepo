@@ -1,7 +1,4 @@
-import type {
-  IGRPGetFormDataForTaskOptions,
-  IGRPFormEntry,
-} from "../types";
+import type { IGRPGetFormDataForTaskOptions, IGRPFormEntry } from "../types";
 
 /**
  * Decide se a chamada de `getFormDataForTask` deve cair no histórico
