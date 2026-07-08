@@ -24,8 +24,9 @@ getFormDataForTask({ fallbackToHistory: true });
 Para regras de negócio, em vez de:
 
 ```ts
-const decision = stepConfig?.variables?.find((v) => v.name === "decision")
-  ?.value;
+const decision = stepConfig?.variables?.find(
+  (v) => v.name === "decision",
+)?.value;
 const isRectifying =
   typeof decision === "string" &&
   ["RECTIFICAR", "RETIFICAR"].includes(decision.toUpperCase());
@@ -75,8 +76,9 @@ getFormDataForTask({
 Agora (`beta.20`):
 
 ```ts
-const decision = stepConfig?.variables?.find((v) => v.name === "decision")
-  ?.value;
+const decision = stepConfig?.variables?.find(
+  (v) => v.name === "decision",
+)?.value;
 const isRectifying =
   typeof decision === "string" &&
   ["RECTIFICAR", "RETIFICAR"].includes(decision.toUpperCase());
