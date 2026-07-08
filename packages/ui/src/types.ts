@@ -164,9 +164,7 @@ export interface IGRPGetFormDataForTaskOptions {
    *
    * @default false
    */
-  fallbackToHistory?:
-    | boolean
-    | ((variables: Array<IGRPFormEntry>) => boolean);
+  fallbackToHistory?: boolean | ((variables: Array<IGRPFormEntry>) => boolean);
 }
 
 export interface IGRPStepResult {
