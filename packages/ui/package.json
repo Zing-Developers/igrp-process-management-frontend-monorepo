@@ -22,7 +22,7 @@
     "clean:dist": "rimraf {dist,*.tsbuildinfo}",
     "clean:packages": "rimraf node_modules",
     "format": "prettier --write .",
-    "tailwind:build": "pnpm dlx @tailwindcss/cli -i ./src/index.css -o ./src/styles.css",
+    "tailwind:build": "pnpm exec tailwindcss -i ./src/index.css -o ./src/styles.css",
     "release": "pnpm format && pnpm build && yarn publish --no-git-tag-version --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest",
     "clean-all": "rimraf node_modules && rimraf dist && rimraf tsconfig.tsbuildinfo"
   },
