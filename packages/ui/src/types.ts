@@ -18,11 +18,21 @@ export interface IGRPFetchStepConfigResult {
   steps: IGRPStepProcessProps[];
 }
 
+/** Runtime mode for the process page. */
+export type IGRPProcessMode = "execution" | "consultation";
+
 export interface IGRPStepConfigParams {
-  processKey: string;
+  /** Optional in consultation — resolved from process instance (`procReleaseKey`). */
+  processKey?: string;
+  /**
+   * Process instance UUID **or** business process number (e.g. `MD-2026-1717`).
+   * Consultation URLs may use either; the package resolves to the canonical id.
+   */
   processInstanceId: string;
-  userTaskInstanceId: string;
-  userTaskKey: string;
+  /** Required for execution; optional/empty in consultation. */
+  userTaskInstanceId?: string;
+  /** Required for execution; optional/empty in consultation. */
+  userTaskKey?: string;
 }
 
 export interface IGRPTaskResult {
@@ -60,6 +70,8 @@ export interface IGRPStepComponentConfig {
   processNumber: string;
   onRegisterMethods: (methods: IGRPStepMethods) => void;
   loading?: boolean;
+  /** When true, the step should render as read-only (consultation). */
+  readOnly?: boolean;
 }
 
 export interface IGRPStepMethods {
@@ -117,6 +129,8 @@ export interface IGRPProcessPageRendererProps {
   processInstanceId: string;
   userTaskInstanceId: string;
   resolveStepComponent?: IGRPResolveStepComponent | null;
+  /** Defaults to execution. Consultation hides mutations and allows step navigation. */
+  mode?: IGRPProcessMode;
 }
 
 /** Entrada de form persistida no engine BPMN. */
@@ -191,13 +205,17 @@ export interface StepConfigResult {
   steps: IGRPStepProcessProps[];
   form?: Form;
   activityProgress: ActivityProgress[];
+  /** form definition per taskKey — used in consultation to resolve step components. */
+  formsByStepKey?: Record<string, Form>;
+  /** activityInstanceId (task id) per taskKey — used when injecting form variables. */
+  taskIdsByStepKey?: Record<string, string>;
 }
 
 export interface StepConfigParams {
-  processKey: string;
+  processKey?: string;
   processInstanceId: string;
-  userTaskInstanceId: string;
-  userTaskKey: string;
+  userTaskInstanceId?: string;
+  userTaskKey?: string;
 }
 
 export interface TaskResult {

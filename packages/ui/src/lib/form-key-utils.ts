@@ -99,3 +99,66 @@ export function getVersionFromFormKey(
 /** Matches version folder names: v1, v2, v10, etc. */
 export const isVersionFolderName = (name: string | undefined): boolean =>
   Boolean(name && /^v\d+$/.test(name));
+
+/**
+ * Discovery target for a step form key / Form descriptor.
+ *
+ * - `ui:shared:<name>@<v>` → `{ kind: "shared", page: "<name>.v<v>" }`
+ *   → load from `process/shared/<page>`
+ * - `ui:form:<name>@<v>` → `{ kind: "form", page: "<name>.v<v>" }`
+ *   → load from `process/[...process]/(<processKey>)/<page>`
+ * - missing / unknown → shared `default.v1`
+ */
+export interface IGRPFormDiscovery {
+  kind: "shared" | "form";
+  /** File stem used in dynamic import, e.g. `default.v1`, `pedido.v1`. */
+  page: string;
+}
+
+const DEFAULT_SHARED_PAGE = "default.v1";
+
+/**
+ * Resolves where a step component should be loaded from, based on Form.type/page
+ * (already derived from formKey via getFormKeyType / getKeyFromFormKey).
+ */
+export function getFormDiscovery(
+  form?: { type?: FormKeyType; page?: string; version?: string } | null,
+): IGRPFormDiscovery {
+  if (!form) {
+    return { kind: "shared", page: DEFAULT_SHARED_PAGE };
+  }
+
+  const page =
+    form.page && form.page.trim() !== ""
+      ? form.page
+      : form.version
+        ? `default.v${form.version}`
+        : DEFAULT_SHARED_PAGE;
+
+  if (form.type === "form") {
+    return { kind: "form", page };
+  }
+
+  // shared | unknown | missing type → shared folder
+  return { kind: "shared", page };
+}
+
+/**
+ * Build a Form descriptor from a raw BPMN formKey string.
+ * `ui:shared:approve@1` → `{ type: "shared", page: "approve.v1", version: "1" }`
+ * `ui:form:pedido@1` → `{ type: "form", page: "pedido.v1", version: "1" }`
+ */
+export function formFromFormKey(formKey: string | undefined | null): {
+  type: FormKeyType;
+  page: string;
+  version: string;
+} {
+  const type = getFormKeyType(formKey);
+  const page = getKeyFromFormKey(formKey) || DEFAULT_SHARED_PAGE;
+  const version = getVersionFromFormKey(formKey) || "1";
+  return {
+    type: type === "unknown" ? "shared" : type,
+    page,
+    version,
+  };
+}

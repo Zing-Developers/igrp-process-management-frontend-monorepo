@@ -1,16 +1,14 @@
 "use server";
 
 import type {
+  Form,
   IGRPProcessClientConfig,
   IGRPStepConfigParams,
   StepConfigResult,
 } from "./types";
 import { getIGRPProcessClient } from "./lib/api-client";
-import {
-  getFormKeyType,
-  getKeyFromFormKey,
-  getVersionFromFormKey,
-} from "./lib/form-key-utils";
+import { formFromFormKey } from "./lib/form-key-utils";
+import { resolveProcessInstance } from "./lib/resolve-process-instance";
 
 export async function fetchStepConfig(
   params: IGRPStepConfigParams,
@@ -18,19 +16,22 @@ export async function fetchStepConfig(
 ): Promise<StepConfigResult> {
   const processManagementClient = await getIGRPProcessClient(config);
 
-  const processInstance =
-    await processManagementClient.processes.getProcessInstanceById(
-      params.processInstanceId,
-    );
+  // URL may carry either the instance UUID or the business process number
+  // (e.g. MD-2026-1717). Resolve to the canonical instance first.
+  const processInstanceData = await resolveProcessInstance(
+    processManagementClient,
+    params.processInstanceId,
+  );
+  const processInstanceId = processInstanceData.id;
 
   const processInstanceTaskStatus =
     await processManagementClient.processes.getProcessInstanceTaskStatus(
-      params.processInstanceId,
+      processInstanceId,
     );
 
   const activityProgress =
     await processManagementClient.activities.getActivityProgress(
-      params.processInstanceId,
+      processInstanceId,
       "USER_TASK",
     );
 
@@ -67,12 +68,51 @@ export async function fetchStepConfig(
   );
 
   if (!params.userTaskInstanceId) {
+    const formsByStepKey: Record<string, Form> = {};
+    const taskIdsByStepKey: Record<string, string> = {};
+
+    try {
+      const tasksResponse =
+        await processManagementClient.tasks.getTasksByProcessInstance(
+          processInstanceId,
+          { size: 200 },
+        );
+      const tasks = tasksResponse.data?.content ?? [];
+      for (const task of tasks) {
+        if (!task.taskKey) continue;
+        if (task.id) {
+          taskIdsByStepKey[task.taskKey] = task.id;
+        }
+        if (task.formKey) {
+          formsByStepKey[task.taskKey] = formFromFormKey(task.formKey);
+        }
+      }
+    } catch (error) {
+      console.warn(
+        "Could not load tasks for consultation form map:",
+        error,
+      );
+    }
+
+    // Fallback: activityProgress activityInstanceId when task search misses a step
+    for (const activity of activityProgressData || []) {
+      if (
+        activity.activityId &&
+        activity.activityInstanceId &&
+        !taskIdsByStepKey[activity.activityId]
+      ) {
+        taskIdsByStepKey[activity.activityId] = activity.activityInstanceId;
+      }
+    }
+
     return {
-      processInstance: processInstance.data,
-      variables: processInstance.data.variables || [],
+      processInstance: processInstanceData,
+      variables: processInstanceData.variables || [],
       userTaskKey,
       steps,
       activityProgress: activityProgressData,
+      formsByStepKey,
+      taskIdsByStepKey,
     };
   }
 
@@ -80,14 +120,11 @@ export async function fetchStepConfig(
     params.userTaskInstanceId,
   );
 
-  const formKey = task.data.formKey;
-  const page = getKeyFromFormKey(formKey);
-  const formType = getFormKeyType(formKey);
-  const formVersion = getVersionFromFormKey(formKey);
+  const form = formFromFormKey(task.data.formKey);
 
   const variables = [
     ...(task.data.variables || []),
-    ...(processInstance.data.variables || []),
+    ...(processInstanceData.variables || []),
     ...[
       {
         name: `${params.userTaskInstanceId}_forms`,
@@ -98,11 +135,11 @@ export async function fetchStepConfig(
 
   return {
     task: task.data,
-    processInstance: processInstance.data,
+    processInstance: processInstanceData,
     variables,
     userTaskKey,
     steps,
-    form: { type: formType, page, version: formVersion },
+    form,
     activityProgress: activityProgressData,
   };
 }

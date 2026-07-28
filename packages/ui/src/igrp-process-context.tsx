@@ -1,9 +1,17 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  type ReactNode,
+} from "react";
 import { useIGRPProcess } from "./use-igrp-process";
 import type {
+  IGRPGetFormDataForTaskOptions,
   IGRPProcessClientConfig,
+  IGRPProcessMode,
   IGRPResolveStepComponent,
   IGRPStepConfigParams,
 } from "./types";
@@ -11,6 +19,13 @@ import type {
 export type IGRPProcessContextValue = ReturnType<typeof useIGRPProcess> & {
   /** Resolve step component (e.g. dynamic import in app). Required to render steps. */
   resolveStepComponent?: IGRPResolveStepComponent | null;
+  /** execution = mutate CURRENT task; consultation = read-only step navigation. */
+  mode: IGRPProcessMode;
+  /** `true` in consultation (read-only). Prefer this over comparing `mode` strings. */
+  readOnly: boolean;
+  /** Currently selected step key (consultation). Null until initialized. */
+  selectedStepKey: string | null;
+  setSelectedStepKey: (stepKey: string | null) => void;
 };
 
 const IGRPProcessContext = createContext<IGRPProcessContextValue | null>(null);
@@ -19,8 +34,22 @@ interface IGRPProcessProviderProps {
   children: ReactNode;
   params: IGRPStepConfigParams;
   config: IGRPProcessClientConfig;
-  /** Resolve step component. App does dynamic import with static prefix (e.g. `import(\`@/app/steps/${processKey}/${version}/${userTaskKey}\`)`). */
+  /** Resolve step component. App does dynamic import with static prefix. */
   resolveStepComponent?: IGRPResolveStepComponent | null;
+  /**
+   * Optional override. When omitted, inferred automatically:
+   * - no `userTaskInstanceId` → consultation (read-only, step navigation)
+   * - with `userTaskInstanceId` → execution
+   */
+  mode?: IGRPProcessMode;
+}
+
+function resolveProcessMode(
+  params: IGRPStepConfigParams,
+  mode?: IGRPProcessMode,
+): IGRPProcessMode {
+  if (mode) return mode;
+  return params.userTaskInstanceId ? "execution" : "consultation";
 }
 
 /**
@@ -31,12 +60,46 @@ export function IGRPProcessProvider({
   params,
   config,
   resolveStepComponent = null,
+  mode: modeProp,
 }: IGRPProcessProviderProps) {
+  const mode = resolveProcessMode(params, modeProp);
+  const readOnly = mode === "consultation";
   const processContext = useIGRPProcess(params, config);
+  const [selectedStepKey, setSelectedStepKey] = useState<string | null>(null);
+  const {
+    getFormDataByTaskKey,
+    getFormDataForTask: getFormDataForTaskBase,
+  } = processContext;
+
+  // In consultation, prefer history for the selected step so existing
+  // `getFormDataForTask({ fallbackToHistory: true })` callers keep working.
+  const getFormDataForTask = useCallback(
+    (opts?: IGRPGetFormDataForTaskOptions) => {
+      if (readOnly && selectedStepKey) {
+        const fromHistory = getFormDataByTaskKey(selectedStepKey);
+        if (fromHistory != null) return fromHistory;
+      }
+      return getFormDataForTaskBase(opts);
+    },
+    [
+      readOnly,
+      selectedStepKey,
+      getFormDataByTaskKey,
+      getFormDataForTaskBase,
+    ],
+  );
 
   return (
     <IGRPProcessContext.Provider
-      value={{ ...processContext, resolveStepComponent }}
+      value={{
+        ...processContext,
+        getFormDataForTask,
+        resolveStepComponent,
+        mode,
+        readOnly,
+        selectedStepKey,
+        setSelectedStepKey,
+      }}
     >
       {children}
     </IGRPProcessContext.Provider>

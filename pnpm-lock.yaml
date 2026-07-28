@@ -79,7 +79,7 @@ importers:
   packages/client:
     dependencies:
       '@igrp/platform-process-management-types':
-        specifier: 0.1.0-beta.19
+        specifier: latest
         version: 0.1.0-beta.19
     devDependencies:
       '@types/node':
@@ -87,7 +87,7 @@ importers:
         version: 24.10.4
       next-auth:
         specifier: ^4.24.0
-        version: 4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       prettier:
         specifier: ^3.6.2
         version: 3.7.4
@@ -105,7 +105,7 @@ importers:
         version: 24.10.4
       next-auth:
         specifier: ^4.24.0
-        version: 4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       prettier:
         specifier: ^3.6.2
         version: 3.7.4
@@ -125,14 +125,14 @@ importers:
         specifier: 0.1.0-beta.88
         version: 0.1.0-beta.88(next-auth@4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
       '@igrp/igrp-framework-react-design-system':
-        specifier: 0.1.0-beta.88
-        version: 0.1.0-beta.88(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: 0.1.0-beta.99
+        version: 0.1.0-beta.99(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@igrp/platform-process-management-client-ts':
         specifier: latest
-        version: 0.1.0-beta.18
+        version: 0.1.0-beta.19
       '@igrp/platform-process-management-types':
         specifier: latest
-        version: 0.1.0-beta.18
+        version: 0.1.0-beta.19
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -147,7 +147,7 @@ importers:
         version: 15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-auth:
         specifier: ^4.24.13
-        version: 4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-themes:
         specifier: 0.4.6
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1032,20 +1032,16 @@ packages:
     peerDependencies:
       next-auth: ^4.24.13
 
-  '@igrp/igrp-framework-react-design-system@0.1.0-beta.88':
-    resolution: {integrity: sha512-kpV5+sE/ZuOLWnmg84jNjuapw6KiJuahQoGZt13pxVILldRKgWyBZwc7XGH6xr84ODV5clvjv44gWNVFBAkqYQ==}
+  '@igrp/igrp-framework-react-design-system@0.1.0-beta.99':
+    resolution: {integrity: sha512-G7yVvFAfggR65C/Q1ENm9GhrCzO/y634wqaA92+oM708mnJdgRVJvdb80t9w2HYKCPHdwuUVw7Z/j1ApcPISXw==}
     engines: {node: '>=20.x.x'}
     peerDependencies:
-      next: ^15.5.9
-      react: ^19.2.3
-      react-dom: ^19.2.3
+      next: ^15.5.12
+      react: ^19.2.4
+      react-dom: ^19.2.4
 
-  '@igrp/platform-process-management-client-ts@0.1.0-beta.18':
-    resolution: {integrity: sha512-Sh+Qcb+BYYcsSm4bU8z7H64tHZ1U2CKQK0soOR+4g9dF9qo9l7B8Ys7KOUIjcgt9uoUK1KnDHODz1I71/eBK7w==}
-
-  '@igrp/platform-process-management-types@0.1.0-beta.18':
-    resolution: {integrity: sha512-E5HVNzsgkgj/JoXBdUiusggqGuzHCM+P6/sPd7IE0d+sQs9B+5GplJBtorQ9SVWc3nzNgkkA4MC98ebe/W6GOw==}
-    engines: {node: '>=20.x.x'}
+  '@igrp/platform-process-management-client-ts@0.1.0-beta.19':
+    resolution: {integrity: sha512-4OFRiXIrJRo/9cbNoPEzsy7vsZU5sj5+kR859idYxv94T91+kDOD79Fg5+BvpR/sN2Y7VTWU9B+mPmevlTLRMQ==}
 
   '@igrp/platform-process-management-types@0.1.0-beta.19':
     resolution: {integrity: sha512-ZX7ipIiUay/Nccjae35dc1PmlbWusn7oq4QCwshz9Kr+HAPJOCLx/5QXmGKPtyvzc/Vza7/ryL+yLy62II1raQ==}
@@ -4328,8 +4324,8 @@ packages:
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
 
-  lucide-react@0.562.0:
-    resolution: {integrity: sha512-82hOAu7y0dbVuFfmO4bYF1XEwYk/mEbM5E+b1jgci/udUBEE/R7LF5Ip0CCEmXe8AybRM8L+04eP+LGZeDvkiw==}
+  lucide-react@0.564.0:
+    resolution: {integrity: sha512-JJ8GVTQqFwuliifD48U6+h7DXEHdkhJ/E87kksGByII3qHxtPciVb8T8woQONHBQgHVOl7rSMrrip3SeVNy7Fg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -6617,18 +6613,18 @@ snapshots:
   '@igrp/framework-next-auth@0.1.0-beta.88(next-auth@4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:
       next: 15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      next-auth: 4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-auth: 4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
 
   '@igrp/framework-next-types@0.1.0-beta.88(next-auth@4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@igrp/framework-next-auth': 0.1.0-beta.88(next-auth@4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
-      next-auth: 4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-auth: 4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
     transitivePeerDependencies:
       - next
       - react
 
-  '@igrp/igrp-framework-react-design-system@0.1.0-beta.88(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@igrp/igrp-framework-react-design-system@0.1.0-beta.99(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@hookform/resolvers': 5.2.2(react-hook-form@7.71.1(react@19.2.4))
       '@origin-space/image-cropper': 0.1.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -6665,7 +6661,7 @@ snapshots:
       date-fns: 4.1.0
       embla-carousel-react: 8.6.0(react@19.2.4)
       input-otp: 1.4.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      lucide-react: 0.562.0(react@19.2.4)
+      lucide-react: 0.564.0(react@19.2.4)
       next: 15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next-themes: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react: 19.2.4
@@ -6676,7 +6672,7 @@ snapshots:
       react-resizable-panels: 3.0.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       recharts: 2.15.4(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       sonner: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      tailwind-merge: 3.4.0
+      tailwind-merge: 3.6.0
       tailwindcss: 4.1.18
       vaul: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.10))(@types/react@19.2.10)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       zod: 4.3.6
@@ -6684,11 +6680,9 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@igrp/platform-process-management-client-ts@0.1.0-beta.18':
+  '@igrp/platform-process-management-client-ts@0.1.0-beta.19':
     dependencies:
-      '@igrp/platform-process-management-types': 0.1.0-beta.18
-
-  '@igrp/platform-process-management-types@0.1.0-beta.18': {}
+      '@igrp/platform-process-management-types': 0.1.0-beta.19
 
   '@igrp/platform-process-management-types@0.1.0-beta.19': {}
 
@@ -9926,7 +9920,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  lucide-react@0.562.0(react@19.2.4):
+  lucide-react@0.564.0(react@19.2.4):
     dependencies:
       react: 19.2.4
 
@@ -10054,7 +10048,7 @@ snapshots:
 
   ncp@2.0.0: {}
 
-  next-auth@4.24.13(next@15.5.10(@babel/core@7.28.6)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next-auth@4.24.13(next@15.5.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@babel/runtime': 7.28.4
       '@panva/hkdf': 1.2.1
