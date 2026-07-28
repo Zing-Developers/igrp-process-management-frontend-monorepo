@@ -1,5 +1,5 @@
 "use client";
-import { IGRPLoadingSpinner } from "@igrp/igrp-framework-react-design-system/dist/components/horizon/loading-spiner";
+import { IGRPLoadingSpinner } from "@igrp/igrp-framework-react-design-system";
 import { useIGRPProcessContext } from "./igrp-process-context";
 import { IGRPProcessPageRenderer } from "./process-page-renderer";
 
@@ -7,13 +7,15 @@ function IGRPProcessPage() {
   const {
     stepConfig,
     isLoadingStepConfig,
+    stepConfigError,
     processKey,
     processInstanceId,
     userTaskKey,
     userTaskInstanceId,
+    mode,
   } = useIGRPProcessContext();
 
-  if (isLoadingStepConfig || !stepConfig) {
+  if (isLoadingStepConfig) {
     // Compact loader that stays inside the host shell layout — using
     // `h-screen` here used to take over the whole viewport on top of any
     // app chrome the consumer renders around <IGRPProcessPage />.
@@ -24,13 +26,36 @@ function IGRPProcessPage() {
     );
   }
 
+  if (stepConfigError || !stepConfig) {
+    const message =
+      stepConfigError?.message ||
+      "Não foi possível carregar a configuração do processo.";
+    return (
+      <div className="flex w-full flex-col items-center justify-center gap-2 py-16 px-4 text-center">
+        <p className="text-sm font-medium text-amber-600">
+          Erro ao carregar o processo
+        </p>
+        <p className="text-xs text-muted-foreground max-w-lg break-words">
+          {message}
+        </p>
+        {processInstanceId && (
+          <p className="text-xs text-muted-foreground/80 font-mono">
+            {processKey ? `${processKey} / ` : ""}
+            {processInstanceId}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <IGRPProcessPageRenderer
       stepConfig={stepConfig}
       processKey={processKey}
-      userTaskKey={userTaskKey}
+      userTaskKey={userTaskKey ?? ""}
       processInstanceId={processInstanceId}
-      userTaskInstanceId={userTaskInstanceId}
+      userTaskInstanceId={userTaskInstanceId ?? ""}
+      mode={mode}
     />
   );
 }

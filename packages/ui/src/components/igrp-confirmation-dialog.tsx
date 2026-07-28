@@ -2,6 +2,10 @@ import {
   cn,
   IGRPButton,
   IGRPButtonPrimitive,
+  IGRPCollapsibleContentPrimitive,
+  IGRPCollapsiblePrimitive,
+  IGRPCollapsibleTriggerPrimitive,
+  IGRPCopyTo,
   IGRPDialogContentPrimitive,
   IGRPDialogDescriptionPrimitive,
   IGRPDialogFooterPrimitive,
@@ -9,14 +13,8 @@ import {
   IGRPDialogPrimitive,
   IGRPDialogTitlePrimitive,
   IGRPIcon,
-  IGRPCopyTo,
+  IGRPTextAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@igrp/igrp-framework-react-design-system/dist/components/primitives/collapsible";
-import { Textarea } from "@igrp/igrp-framework-react-design-system/dist/components/primitives/textarea";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -134,8 +132,11 @@ export function IGRPConfirmationDialog({
           </IGRPDialogHeaderPrimitive>
         </div>
         {message && (
-          <Collapsible open={isMessageOpen} onOpenChange={setIsMessageOpen}>
-            <CollapsibleTrigger asChild>
+          <IGRPCollapsiblePrimitive
+            open={isMessageOpen}
+            onOpenChange={setIsMessageOpen}
+          >
+            <IGRPCollapsibleTriggerPrimitive asChild>
               <IGRPButton
                 variant="ghost"
                 className="w-full justify-center"
@@ -150,10 +151,10 @@ export function IGRPConfirmationDialog({
                   <IGRPIcon iconName="ChevronDown" />
                 )}
               </IGRPButton>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2">
+            </IGRPCollapsibleTriggerPrimitive>
+            <IGRPCollapsibleContentPrimitive className="space-y-2">
               <div className="flex justify-between gap-2">
-                <Textarea
+                <IGRPTextAreaPrimitive
                   value={message}
                   readOnly={true}
                   className="w-full flex-1"
@@ -161,8 +162,8 @@ export function IGRPConfirmationDialog({
                 />
                 <IGRPCopyTo value={message} />
               </div>
-            </CollapsibleContent>
-          </Collapsible>
+            </IGRPCollapsibleContentPrimitive>
+          </IGRPCollapsiblePrimitive>
         )}
         <IGRPDialogFooterPrimitive>
           <IGRPButtonPrimitive

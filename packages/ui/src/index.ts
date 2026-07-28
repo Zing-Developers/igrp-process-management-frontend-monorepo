@@ -1,6 +1,31 @@
 // Types
 export * from "./types";
 
+// Form key / discovery helpers (ui:shared:* vs ui:form:*)
+export {
+  DEFAULT_FORM_KEY,
+  formFromFormKey,
+  getFormDiscovery,
+  getFormKeyType,
+  getKeyFromFormKey,
+  getNameFromFormKey,
+  getNormalizeClassNameFromFormKey,
+  getNormalizedFormKey,
+  getVersionFromFormKey,
+  isFormFormKey,
+  isSharedFormKey,
+  isVersionFolderName,
+} from "./lib/form-key-utils";
+export type {
+  FormKeyType,
+  IGRPFormDiscovery,
+} from "./lib/form-key-utils";
+
+export {
+  isProcessInstanceUuid,
+  resolveProcessInstance,
+} from "./lib/resolve-process-instance";
+
 // Process actions (server actions – ficheiro tem "use server")
 export {
   fetchStepConfig,

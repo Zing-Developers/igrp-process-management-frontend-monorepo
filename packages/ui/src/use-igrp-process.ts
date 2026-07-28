@@ -114,11 +114,13 @@ export function useIGRPProcess(
   );
 
   useEffect(() => {
-    fetchStepConfig();
+    fetchStepConfig().catch(() => {
+      // Error is stored in `stepConfigError`; avoid unhandledRejection.
+    });
   }, [fetchStepConfig]);
 
   const getVariableNameForTask = useCallback(() => {
-    return `${userTaskInstanceId}_forms`;
+    return userTaskInstanceId ? `${userTaskInstanceId}_forms` : "";
   }, [userTaskInstanceId]);
 
   const getVariableForTask = useCallback(
@@ -204,8 +206,14 @@ export function useIGRPProcess(
     config,
 
     // Process context
-    processKey,
-    processInstanceId,
+    // In consultation, processKey/processInstanceId may come from the URL as a
+    // business number; after fetch they are taken from the loaded instance.
+    processKey:
+      processKey ||
+      stepConfigData?.processInstance?.procReleaseKey ||
+      "",
+    processInstanceId:
+      stepConfigData?.processInstance?.id || processInstanceId,
     userTaskInstanceId,
     userTaskKey,
 

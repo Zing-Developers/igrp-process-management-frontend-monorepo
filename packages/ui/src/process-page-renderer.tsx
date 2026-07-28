@@ -20,6 +20,7 @@ import {
 } from "@igrp/igrp-framework-react-design-system";
 import { ProcessDetailsCard } from "./components/process-details-card";
 import type {
+  Form,
   IGRPStepComponentConfig,
   IGRPStepComponentProps,
   IGRPStepMethods,
@@ -124,6 +125,12 @@ function StepResolver({
   return <Component config={config} />;
 }
 
+const DEFAULT_FORM: Form = {
+  type: "shared",
+  page: "default.v1",
+  version: "1",
+};
+
 export default function IGRPProcessPageRenderer({
   stepConfig,
   processKey,
@@ -131,6 +138,7 @@ export default function IGRPProcessPageRenderer({
   processInstanceId,
   userTaskInstanceId,
   resolveStepComponent: resolveStepComponentProp,
+  mode: modeProp = "execution",
 }: IGRPProcessPageRendererProps) {
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [stepMethods, setStepMethods] = useState<IGRPStepMethods | null>(null);
@@ -150,10 +158,23 @@ export default function IGRPProcessPageRenderer({
     saveTask,
     isLoading,
     resolveStepComponent: resolveStepComponentContext,
+    mode: modeContext,
+    selectedStepKey,
+    setSelectedStepKey,
   } = useIGRPProcessContext();
 
-  const { processInstance, steps, variables, form, activityProgress } =
-    stepConfig || {};
+  const mode = modeProp || modeContext || "execution";
+  const isConsultation = mode === "consultation";
+
+  const {
+    processInstance,
+    steps,
+    variables,
+    form,
+    activityProgress,
+    formsByStepKey,
+    taskIdsByStepKey,
+  } = stepConfig || {};
 
   const { name, version, statusDesc, number } = processInstance || {};
 
@@ -215,24 +236,70 @@ export default function IGRPProcessPageRenderer({
       "CURRENT",
     );
 
-    return orderedKeys.map((key) => {
+    return orderedKeys.map((key, index) => {
       const s = stepsByKey.get(key)!;
       const status = progressByActivity.get(key);
+      const stepNumber = index + 1;
       if (status === "CURRENT") {
-        return { ...s, isCompleted: false, isActive: true, isSkipped: false };
+        return {
+          ...s,
+          step: stepNumber,
+          isCompleted: false,
+          isActive: true,
+          isSkipped: false,
+        };
       }
       if (status === "COMPLETED") {
-        return { ...s, isCompleted: true, isActive: false, isSkipped: false };
+        return {
+          ...s,
+          step: stepNumber,
+          isCompleted: true,
+          isActive: false,
+          isSkipped: false,
+        };
       }
       // PENDING, or activity not visited yet by the engine.
       return {
         ...s,
+        step: stepNumber,
         isCompleted: !hasCurrent,
         isActive: false,
         isSkipped: false,
       };
     });
   }, [steps, activityProgress]);
+
+  // Consultation: enable click on COMPLETED + CURRENT by flipping isActive.
+  // IGRPStepperProcess uses `disabled={!isActive}`; visual state still comes
+  // from `completed={isCompleted}` + the controlled `currentStep` value.
+  const displaySteps = useMemo(() => {
+    if (!isConsultation || !effectiveSteps) return effectiveSteps;
+    return effectiveSteps.map((s) => ({
+      ...s,
+      isActive: s.isCompleted || s.isActive,
+    }));
+  }, [isConsultation, effectiveSteps]);
+
+  // Default selected step in consultation: CURRENT → last COMPLETED → first.
+  useEffect(() => {
+    if (!isConsultation || selectedStepKey || !effectiveSteps?.length) return;
+    const lastCompleted = [...effectiveSteps]
+      .reverse()
+      .find((s) => s.isCompleted)?.stepKey;
+    const initial =
+      effectiveUserTaskKey || lastCompleted || effectiveSteps[0]?.stepKey;
+    if (initial) setSelectedStepKey(initial);
+  }, [
+    isConsultation,
+    selectedStepKey,
+    effectiveSteps,
+    effectiveUserTaskKey,
+    setSelectedStepKey,
+  ]);
+
+  const viewedStepKey = isConsultation
+    ? selectedStepKey || effectiveUserTaskKey
+    : effectiveUserTaskKey;
 
   const resolveStepComponent =
     resolveStepComponentProp ?? resolveStepComponentContext ?? null;
@@ -356,12 +423,36 @@ export default function IGRPProcessPageRenderer({
   };
 
   const currentStep = useMemo(() => {
+    const key = viewedStepKey;
     return (
-      (effectiveSteps || []).findIndex(
-        (step: any) => step.stepKey === effectiveUserTaskKey,
-      ) + 1
+      (effectiveSteps || []).findIndex((step) => step.stepKey === key) + 1
     );
-  }, [effectiveSteps, effectiveUserTaskKey]);
+  }, [effectiveSteps, viewedStepKey]);
+
+  const handleStepChange = useCallback(
+    (_step: number, stepData: { stepKey: string }) => {
+      if (!isConsultation) return;
+      // Only allow navigation to visited steps (COMPLETED / CURRENT).
+      const target = effectiveSteps?.find((s) => s.stepKey === stepData.stepKey);
+      if (!target) return;
+      if (!target.isCompleted && !target.isActive) return;
+      setSelectedStepKey(stepData.stepKey);
+    },
+    [isConsultation, effectiveSteps, setSelectedStepKey],
+  );
+
+  const showActions =
+    !isConsultation && statusDesc != "COMPLETED" && !taskCompleted;
+
+  const selectedForm: Form =
+    (viewedStepKey && formsByStepKey?.[viewedStepKey]) ||
+    form ||
+    DEFAULT_FORM;
+
+  const selectedTaskInstanceId =
+    (viewedStepKey && taskIdsByStepKey?.[viewedStepKey]) ||
+    userTaskInstanceId ||
+    "";
 
   return (
     <div className="flex flex-col gap-6">
@@ -371,7 +462,10 @@ export default function IGRPProcessPageRenderer({
         iconBackButton={`ArrowLeft`}
         isSticky={true}
         showBackButton={true}
-        urlBackButton={urlBackTemp}
+        // Prefer browser history over a hardcoded basepath/my-tasks URL —
+        // consultation (and most execution entries) come from another page
+        // in the same app (e.g. gestão de evacuações).
+        backButtonUseBrowserBack={true}
       >
         <div className="flex gap-2">
           <IGRPButton
@@ -387,7 +481,7 @@ export default function IGRPProcessPageRenderer({
             )}
             <span className="sr-only">Toggle details</span>
           </IGRPButton>
-          {statusDesc != "COMPLETED" && !taskCompleted && (
+          {showActions && (
             <>
               <IGRPButton
                 variant="outline"
@@ -396,20 +490,24 @@ export default function IGRPProcessPageRenderer({
                 }}
                 iconName="Save"
                 showIcon={true}
+                loading={isLoading}
+                loadingText="Saving..."
                 disabled={isLoading}
               >
-                {isLoading ? "Saving..." : "Save"}
+                Save
               </IGRPButton>
               <IGRPButton
                 variant="default"
                 onClick={() => {
                   handleCompleteTask();
                 }}
-                disabled={isLoading}
                 showIcon={true}
                 iconName="CircleCheckBig"
+                loading={isLoading}
+                loadingText="Processing..."
+                disabled={isLoading}
               >
-                {isLoading ? "Processing..." : "Complete Task"}
+                Complete Task
               </IGRPButton>
             </>
           )}
@@ -454,25 +552,29 @@ export default function IGRPProcessPageRenderer({
       />
 
       <IGRPStepperProcess
-        steps={effectiveSteps}
+        steps={displaySteps}
         // Suppress the per-step loading spinner once the task is committed.
         // The success dialog (non-dismissable) already conveys "done" — leaving
         // the spinner on while the user reads it makes the step look stuck.
-        isLoading={isLoading && !taskCompleted}
+        isLoading={isLoading && !taskCompleted && !isConsultation}
         currentStep={currentStep}
+        onStepChange={isConsultation ? handleStepChange : undefined}
       >
         {(currentStepIndex: number) => {
-          const stepConfig = effectiveSteps[currentStepIndex - 1];
-          if (stepConfig?.stepKey !== effectiveUserTaskKey) return <></>;
+          const stepMeta = (displaySteps || [])[currentStepIndex - 1];
+          if (!stepMeta || stepMeta.stepKey !== viewedStepKey) return <></>;
 
           const stepComponentConfig: IGRPStepComponentConfig = {
             processKey,
             processInstanceId,
-            userTaskInstanceId,
+            userTaskInstanceId: selectedTaskInstanceId,
             variables,
             processName: name,
             processNumber: number,
-            onRegisterMethods: handleRegisterMethods,
+            onRegisterMethods: isConsultation
+              ? () => undefined
+              : handleRegisterMethods,
+            readOnly: isConsultation,
           };
 
           if (!resolveStepComponent) {
@@ -493,35 +595,37 @@ export default function IGRPProcessPageRenderer({
             );
           }
 
+          const lockContent = isConsultation || taskCompleted;
+          const dimContent = taskCompleted && !isConsultation;
+
           return (
             <IGRPCardPrimitive>
               <IGRPCardContentPrimitive
-                // Once the task is submitted, the step content stays mounted
-                // (so the success dialog can overlay it) but becomes
-                // uninteractive — no more keystrokes, clicks or focus moves
-                // until the user navigates away via the dialog.
+                // Consultation is always read-only. After submit in execution,
+                // content stays mounted (success dialog overlay) but locked.
                 className={
-                  taskCompleted
-                    ? "pointer-events-none select-none opacity-60"
+                  lockContent
+                    ? dimContent
+                      ? "pointer-events-none select-none opacity-60"
+                      : "pointer-events-none select-none"
                     : undefined
                 }
-                aria-disabled={taskCompleted}
+                aria-disabled={lockContent}
               >
                 <StepResolver
+                  key={viewedStepKey || "step"}
                   resolve={resolveStepComponent}
                   params={{
                     processKey,
                     version,
-                    userTaskKey,
+                    userTaskKey: viewedStepKey || userTaskKey,
                     processName: name,
-                    form: form || {
-                      type: "shared" as const,
-                      page: "default",
-                      version: "1",
-                    },
+                    form: selectedForm,
                   }}
                   config={stepComponentConfig}
-                  loadingFallback={<IGRPStepLoading userTaskKey={name} />}
+                  loadingFallback={
+                    <IGRPStepLoading userTaskKey={viewedStepKey || name} />
+                  }
                 />
               </IGRPCardContentPrimitive>
             </IGRPCardPrimitive>
