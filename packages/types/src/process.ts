@@ -1,19 +1,23 @@
-import { UserProfile, VariableParams } from "./shared";
-import { TaskVariables } from "./task";
+import { TaskAssignmentMode, TaskStatus, TaskVariables } from "./task";
+import { UserProfile } from "./shared";
 
+/** ProcessInstanceDTO.status */
 export type ProcessStatus =
   | "CREATED"
   | "RUNNING"
   | "SUSPENDED"
   | "CANCELED"
-  | "COMPLETED"
-  | "TERMINATED";
+  | "COMPLETED";
 
+/**
+ * Area-associated process definition (ProcessDefinitionDTO) plus optional
+ * deployment/list fields used across the UI.
+ */
 export type Process = {
   id: string;
   processKey: string;
-  name?: string; // Add this for compatibility
-  description?: string; // Add this for compatibility
+  name?: string;
+  description?: string;
   releaseId: string;
   areaId: string;
   status: string;
@@ -27,6 +31,19 @@ export type Process = {
   removedBy?: string | null;
   applicationBase?: string;
   deploymentId?: string;
+  candidateGroups?: string;
+};
+
+/** ProcessDeploymentListDTO — GET /process-definitions list item */
+export type ProcessDeploymentListItem = {
+  id: string;
+  processKey: string;
+  name?: string;
+  description?: string;
+  version?: string;
+  deploymentId?: string;
+  applicationBase?: string;
+  candidateGroups?: string;
 };
 
 export type ProcessFilter = {
@@ -38,6 +55,23 @@ export type ProcessFilter = {
   candidateGroups?: string;
 };
 
+/** ProcessVariableDTO */
+export type ProcessVariable = {
+  name: string;
+  value: unknown;
+};
+
+/** ProcessTaskAssignmentRuleDTO — start-time assignment rules */
+export interface ProcessTaskAssignmentRuleRequest {
+  taskKey: string;
+  assignee?: string;
+  candidateUsers?: string;
+  candidateGroups?: string;
+  assignmentMode?: TaskAssignmentMode;
+  priority?: number;
+}
+
+/** ProcessInstanceDTO */
 export type ProcessInstance = {
   id: string;
   procReleaseKey: string;
@@ -52,40 +86,63 @@ export type ProcessInstance = {
   endedAt: string;
   endedBy: string;
   canceledAt: string;
-  canceledBy: string;
+  /** OpenAPI field spelling */
+  cancelledBy: string;
+  /** @deprecated use cancelledBy — kept for back-compat with older payloads */
+  canceledBy?: string;
   priority: number;
   obsCancel: string;
   applicationBase: string;
   name: string;
   progress: string;
-  variables: Array<TaskVariables>;
+  variables: Array<TaskVariables | ProcessVariable>;
   userProfileStartedBy?: UserProfile;
   userProfileEndedBy?: UserProfile;
   userProfileCancelledBy?: UserProfile;
 };
 
+/** CreateProcessRequestDTO — POST /process-instances/create */
 export interface CreateProcessInstanceRequest {
-  processDefinitionId: string;
+  processDefinitionId?: string;
   processKey: string;
   applicationBase: string;
-  priority: number;
+  priority?: number;
   businessKey?: string;
-  variables?: Array<{ name: string; value: string }>;
 }
 
+/**
+ * StartProcessRequestDTO — POST /process-instances (create + start).
+ * Also used as the expanded create-and-start body.
+ */
+export interface CreateAndStartProcessRequest {
+  processDefinitionId?: string;
+  processKey: string;
+  applicationBase: string;
+  priority?: number;
+  businessKey?: string;
+  variables?: Array<ProcessVariable>;
+  assignmentRules?: ProcessTaskAssignmentRuleRequest[];
+}
+
+/**
+ * ProcessVariablesRequestDTO — POST /process-instances/{id}/start
+ */
 export interface StartProcessInstanceRequest {
-  variables?: Array<{ name: string; value: string }>;
+  variables?: Array<ProcessVariable>;
+  assignmentRules?: ProcessTaskAssignmentRuleRequest[];
 }
 
+/** ProcessArtifactRequestDTO (+ key for client path helper) */
 export interface CreateProcessArtifactRequest {
   name: string;
   key: string;
   formKey: string;
   candidateGroups?: string;
-  dueDate: string;
-  priority: number;
+  dueDate?: string;
+  priority?: number;
 }
 
+/** ProcessArtifactDTO */
 export interface ProcessArtifact {
   id: string;
   name: string;
@@ -93,8 +150,8 @@ export interface ProcessArtifact {
   processDefinitionId: string;
   formKey: string;
   candidateGroups?: string;
-  dueDate: string;
-  priority: number;
+  dueDate?: string;
+  priority?: number;
 }
 
 export interface ProcessDefinition {
@@ -108,6 +165,7 @@ export interface ProcessDefinition {
   candidateGroups: string;
 }
 
+/** ProcessSequenceDTO */
 export interface ProcessSequence {
   id: string;
   name: string;
@@ -117,16 +175,21 @@ export interface ProcessSequence {
   dateFormat: string;
   nextNumber: number;
   numberIncrement: number;
-  processDefinitionId: string;
+  processDefinitionKey: string;
+  separator?: string;
+  /** @deprecated use processDefinitionKey */
+  processDefinitionId?: string;
 }
 
+/** SequenceRequestDTO */
 export interface CreateProcessSequenceRequest {
   name: string;
   prefix: string;
   dateFormat: string;
   checkDigitSize: number;
   padding: number;
-  numberIncrement: number;
+  numberIncrement?: number;
+  separator?: string;
 }
 
 export type ProcessStats = {
@@ -150,35 +213,68 @@ export interface ProcessDefinitionSchema {
   candidateGroups: string;
 }
 
+/** TaskPriorityDTO */
 export interface Priority {
   code: string;
   label: string;
   weight: number;
   id?: string;
-  processDefinitionKey: string;
+  processDefinitionKey?: string;
   color?: string;
 }
 
-// POST /process-instances/event — trigger a process (message) event
+/** TaskPriorityRequestDTO — body for PUT priorities (path-scoped) */
+export interface TaskPriorityRequest {
+  code: string;
+  label: string;
+  weight: number;
+  id?: string;
+  color?: string;
+}
+
+/** ProcessEventDTO — POST /process-instances/event */
 export interface ProcessEventDTO {
   messageName: string;
   taskId?: string;
   businessKey?: string;
-  variables?: VariableParams;
+  variables?: Array<ProcessVariable>;
 }
 
-// POST /process-instances/{id}/timer/reschedule
+/** TimerRescheduleDTO — POST /process-instances/{id}/timer/reschedule */
 export interface TimerRescheduleDTO {
-  elementId: string;
+  elementId?: string;
   seconds: number;
 }
 
-// POST /process-definitions/deploy
+/** ProcessDeploymentRequestDTO — POST /process-definitions/deploy */
 export interface ProcessDeploymentRequestDTO {
-  name: string;
+  name?: string;
   description?: string;
   key: string;
-  resourceName?: string;
+  resourceName: string;
   bpmnXml: string;
   applicationBase: string;
+}
+
+/** ProcessDeploymentDTO — deploy response */
+export interface ProcessDeploymentDTO {
+  key?: string;
+  name?: string;
+  description?: string;
+  version?: string;
+  bpmnXml?: string;
+  bpmnUrl?: string;
+  bpmnSourceType?: string;
+  resourceName?: string;
+  deployed?: boolean;
+  deploymentId?: string;
+  deployedAt?: string;
+  applicationBase?: string;
+}
+
+/** ProcessInstanceTaskStatusDTO */
+export interface ProcessInstanceTaskStatus {
+  taskKey: string;
+  name?: string;
+  status?: TaskStatus;
 }
