@@ -6,12 +6,15 @@ import { BaseApiClient } from "./base-client";
 import {
   ApiResponse,
   Task,
-  TaskVariables,
   TaskStats,
+  TaskData,
+  TaskVariablesForms,
+  AssignTaskRequest,
   VariableParams,
   TaskAssignmentRuleDTO,
   TaskAssignmentRuleUpdateRequest,
   TaskAssignmentRuleFilters,
+  ConfigParameter,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
@@ -41,21 +44,9 @@ interface TaskActionParams {
   note?: string;
 }
 
-interface TaskActionBody {
-  user: string;
-  priority?: number;
-  note?: string;
-  candidateGroups?: string;
-}
-
 interface PaginationParams {
   page?: number;
   size?: number;
-}
-
-interface TaskCompletionBody {
-  variables?: Array<{ name: string; value: string }>;
-  forms?: Array<{ name: string; value: string }>;
 }
 
 interface TaskUnclaimBody {
@@ -89,15 +80,17 @@ export class TaskClient extends BaseApiClient {
   /**
    * GET /tasks-instances/{id}/variables - Get variables for a specific task instance by ID
    */
-  async getTaskVariablesById(id: string): Promise<ApiResponse<TaskVariables>> {
-    return this.get<TaskVariables>(`/tasks-instances/${id}/variables`);
+  async getTaskVariablesById(
+    id: string,
+  ): Promise<ApiResponse<TaskVariablesForms>> {
+    return this.get<TaskVariablesForms>(`/tasks-instances/${id}/variables`);
   }
 
   /**
    * GET /tasks-instances/status - Get task instance status options
    */
-  async getTaskInstancesStatus(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/tasks-instances/status");
+  async getTaskInstancesStatus(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/tasks-instances/status");
   }
 
   /**
@@ -125,28 +118,25 @@ export class TaskClient extends BaseApiClient {
   /**
    * GET /tasks-instances/event_type - Get task instance event types
    */
-  async getTaskInstanceEventTypes(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/tasks-instances/event_type");
+  async getTaskInstanceEventTypes(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/tasks-instances/event_type");
   }
 
   /**
-   * POST /tasks-instances/{id} - Complete a task
+   * POST /tasks-instances/{id}/complete - Complete a task
    */
   async completeTask(
     taskId: string,
-    body?: TaskCompletionBody,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/complete`, body);
+    body?: TaskData,
+  ): Promise<ApiResponse<Task>> {
+    return this.post<Task>(`/tasks-instances/${taskId}/complete`, body);
   }
 
   /**
-   * POST /tasks-instances/{id} - Save a task
+   * POST /tasks-instances/{id}/save - Save a task
    */
-  async saveTask(
-    taskId: string,
-    body?: TaskCompletionBody,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/save`, body);
+  async saveTask(taskId: string, body?: TaskData): Promise<ApiResponse<Task>> {
+    return this.post<Task>(`/tasks-instances/${taskId}/save`, body);
   }
 
   /**
@@ -182,7 +172,7 @@ export class TaskClient extends BaseApiClient {
    */
   async assignTask(
     taskId: string,
-    body: TaskActionBody,
+    body: AssignTaskRequest,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(`/tasks-instances/${taskId}/assign`, body);
   }
