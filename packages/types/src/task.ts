@@ -1,17 +1,20 @@
 import { UserProfile } from "./shared";
 
+/** TaskInstanceDTO.status */
 export type TaskStatus =
   | "CREATED"
   | "ASSIGNED"
+  | "SUSPENDED"
   | "COMPLETED"
-  | "CANCELED"
-  | "DELETED";
+  | "CANCELED";
 
+/** TaskInstanceDTO */
 export type Task = {
   id: string;
   taskKey: string;
   formKey: string;
   name: string;
+  externalId?: string;
   processInstanceId: string;
   processNumber: string;
   processName: string;
@@ -24,8 +27,10 @@ export type Task = {
   startedAt: string;
   endedAt: string;
   endedBy: string;
-  dueDate: string;
+  dueDate?: string;
   candidateGroups: string;
+  candidateUsers?: string;
+  searchTerms?: string;
   status: TaskStatus;
   statusDesc?: string;
   variables?: Array<TaskVariables>;
@@ -49,9 +54,31 @@ export type TaskInstanceEvent = {
   userProfilePerformedBy?: UserProfile;
 };
 
+/** TaskVariableDTO / ProcessVariableDTO */
 export type TaskVariables = {
   name: string;
-  value: string | number | boolean | object;
+  value: string | number | boolean | object | unknown;
+};
+
+/** TaskDataDTO — complete / save body */
+export type TaskData = {
+  variables?: Array<TaskVariables>;
+  forms?: Array<TaskVariables>;
+};
+
+/** TaskVariablesFormsDTO — GET /tasks-instances/{id}/variables */
+export type TaskVariablesForms = {
+  variables?: Array<TaskVariables>;
+  forms?: Array<TaskVariables>;
+};
+
+/** AssignTaskDTO */
+export type AssignTaskRequest = {
+  user?: string;
+  note?: string;
+  priority?: number;
+  candidateGroups?: string;
+  candidateUsers?: string;
 };
 
 export type TaskStats = {

@@ -4,6 +4,7 @@ import {
   Process,
   ProcessInstance,
   CreateProcessInstanceRequest,
+  CreateAndStartProcessRequest,
   CreateProcessArtifactRequest,
   ProcessArtifact,
   ProcessStats,
@@ -14,20 +15,28 @@ import {
   StartProcessInstanceRequest,
   ProcessDefinitionSchema,
   Priority,
+  TaskPriorityRequest,
   ProcessFilter,
   ProcessEventDTO,
   TimerRescheduleDTO,
   ProcessDeploymentRequestDTO,
+  ProcessDeploymentDTO,
+  ProcessDeploymentListItem,
+  ProcessInstanceTaskStatus,
+  ConfigParameter,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
   /**
-   * GET /process-definitions - Get all process definitions
+   * GET /process-definitions - Get all process definitions (deployments list)
    */
   async getProcesses(
     params?: ProcessFilter,
-  ): Promise<ApiResponse<PaginatedResponse<Process>>> {
-    return this.get<PaginatedResponse<Process>>("/process-definitions", params);
+  ): Promise<ApiResponse<PaginatedResponse<ProcessDeploymentListItem>>> {
+    return this.get<PaginatedResponse<ProcessDeploymentListItem>>(
+      "/process-definitions",
+      params,
+    );
   }
 
   /**
@@ -128,14 +137,7 @@ export class ProcessClient extends BaseApiClient {
       name?: string;
       procReleaseKey?: string;
       procReleaseId?: string;
-      status?:
-        | "CREATED"
-        | "RUNNING"
-        | "SUSPENDED"
-        | "CANCELED"
-        | "COMPLETED"
-        | "TERMINATED";
-      searchTerms?: string;
+      status?: "CREATED" | "RUNNING" | "SUSPENDED" | "CANCELED" | "COMPLETED";
       applicationBase?: string;
       dateFrom?: string;
       dateTo?: string;
@@ -168,37 +170,41 @@ export class ProcessClient extends BaseApiClient {
   /**
    * GET /process-instances/{id}/task-status - Get task status for a process instance
    */
-  async getProcessInstanceTaskStatus(id: string): Promise<ApiResponse<any>> {
-    return this.get<any>(`/process-instances/${id}/task-status`);
+  async getProcessInstanceTaskStatus(
+    id: string,
+  ): Promise<ApiResponse<ProcessInstanceTaskStatus[]>> {
+    return this.get<ProcessInstanceTaskStatus[]>(
+      `/process-instances/${id}/task-status`,
+    );
   }
 
   /**
    * GET /process-instances/status - Get process instances status options
    */
-  async getProcessInstancesStatus(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/process-instances/status");
+  async getProcessInstancesStatus(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/process-instances/status");
   }
 
   /**
-   * GET /process-definitions/{processDefinitionId}/sequence - Get sequence configuration for a process definition
+   * GET /process-definitions/{processDefinitionKey}/sequence - Get sequence configuration for a process definition
    */
   async getProcessSequence(
-    processDefinitionId: string,
+    processDefinitionKey: string,
   ): Promise<ApiResponse<ProcessSequence>> {
     return this.get<ProcessSequence>(
-      `/process-definitions/${processDefinitionId}/sequence`,
+      `/process-definitions/${processDefinitionKey}/sequence`,
     );
   }
 
   /**
-   * POST /process-definitions/{processDefinitionId}/sequence - Create sequence configuration for a process definition
+   * POST /process-definitions/{processDefinitionKey}/sequence - Create sequence configuration for a process definition
    */
   async createProcessSequence(
-    processDefinitionId: string,
+    processDefinitionKey: string,
     sequence: CreateProcessSequenceRequest,
   ): Promise<ApiResponse<ProcessSequence>> {
     return this.post<ProcessSequence>(
-      `/process-definitions/${processDefinitionId}/sequence`,
+      `/process-definitions/${processDefinitionKey}/sequence`,
       sequence,
     );
   }
@@ -211,16 +217,16 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
-   * POST /process-instances/create - Create and start a new process instance
+   * POST /process-instances - Create and start a new process instance
    */
   async createAndStartProcess(
-    body: CreateProcessInstanceRequest,
+    body: CreateAndStartProcessRequest,
   ): Promise<ApiResponse<ProcessInstance>> {
     return this.post<ProcessInstance>("/process-instances", body);
   }
 
   /**
-   * POST /process-instances/{processInstanceId}/create - Create a new process instance
+   * POST /process-instances/create - Create a new process instance (without starting)
    */
   async createProcessInstance(
     body: CreateProcessInstanceRequest,
@@ -229,7 +235,7 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
-   * POST /process-instances/{processInstanceId}/start - Start a new process instance
+   * POST /process-instances/{processInstanceId}/start - Start a process instance
    */
   async startProcessInstance(
     processInstanceId: string,
@@ -296,11 +302,11 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
-   * POST /process-definitions/{processKey}/priorities - Create a new priority for a process definition
+   * PUT /process-definitions/{processKey}/priorities - Create/replace priorities for a process definition
    */
   async createProcessDefinitionPriority(
     processKey: string,
-    priority: Priority[],
+    priority: TaskPriorityRequest[],
   ): Promise<ApiResponse<Priority[]>> {
     return this.put<Priority[]>(
       `/process-definitions/${processKey}/priorities`,
@@ -313,8 +319,8 @@ export class ProcessClient extends BaseApiClient {
    */
   async deployProcess(
     body: ProcessDeploymentRequestDTO,
-  ): Promise<ApiResponse<void>> {
-    return this.post<void>(`/process-definitions/deploy`, body);
+  ): Promise<ApiResponse<ProcessDeploymentDTO>> {
+    return this.post<ProcessDeploymentDTO>(`/process-definitions/deploy`, body);
   }
 
   /**
