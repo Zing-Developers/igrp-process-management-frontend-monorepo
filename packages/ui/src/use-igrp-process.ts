@@ -35,7 +35,10 @@ export function useIGRPProcess(
   const [stepConfigData, setStepConfigData] = useState<StepConfigResult | null>(
     null,
   );
-  const [isLoadingStepConfig, setIsLoadingStepConfig] = useState(false);
+  // Start as loading: fetch runs in useEffect after the first paint. If this
+  // were `false`, IGRPProcessPage would treat `!stepConfig` as an error and
+  // flash the fallback before the request begins.
+  const [isLoadingStepConfig, setIsLoadingStepConfig] = useState(true);
   const [stepConfigError, setStepConfigError] = useState<Error | null>(null);
 
   // Complete task state

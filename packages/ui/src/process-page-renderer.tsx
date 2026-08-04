@@ -595,22 +595,21 @@ export default function IGRPProcessPageRenderer({
             );
           }
 
-          const lockContent = isConsultation || taskCompleted;
-          const dimContent = taskCompleted && !isConsultation;
+          // Only lock pointer events after a successful submit in execution.
+          // Consultation stays interactive (links, expanders, PDF open, …) and
+          // relies on `readOnly` on the step config — `pointer-events-none`
+          // here used to kill all clicks while the stepper tabs still worked.
+          const lockContent = taskCompleted && !isConsultation;
 
           return (
             <IGRPCardPrimitive>
               <IGRPCardContentPrimitive
-                // Consultation is always read-only. After submit in execution,
-                // content stays mounted (success dialog overlay) but locked.
                 className={
                   lockContent
-                    ? dimContent
-                      ? "pointer-events-none select-none opacity-60"
-                      : "pointer-events-none select-none"
+                    ? "pointer-events-none select-none opacity-60"
                     : undefined
                 }
-                aria-disabled={lockContent}
+                aria-disabled={lockContent || isConsultation}
               >
                 <StepResolver
                   key={viewedStepKey || "step"}

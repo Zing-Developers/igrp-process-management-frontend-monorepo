@@ -15,7 +15,10 @@ function IGRPProcessPage() {
     mode,
   } = useIGRPProcessContext();
 
-  if (isLoadingStepConfig) {
+  // Pending (no data yet, no error) must look like loading — never the
+  // error fallback. That flash happened when isLoadingStepConfig was still
+  // false on the first paint before useEffect kicked off the fetch.
+  if (isLoadingStepConfig || (!stepConfig && !stepConfigError)) {
     // Compact loader that stays inside the host shell layout — using
     // `h-screen` here used to take over the whole viewport on top of any
     // app chrome the consumer renders around <IGRPProcessPage />.
