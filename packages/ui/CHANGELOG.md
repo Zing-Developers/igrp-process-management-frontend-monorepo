@@ -2,6 +2,23 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## 0.1.0-beta.40
+
+### Fixed
+
+- Consulta (`/process/view`): o conteúdo do step deixou de usar `pointer-events-none`.
+  Em consulta os cliques (links, expanders, abrir PDF, …) voltam a funcionar; o
+  modo read-only continua via `readOnly` no config do step. O lock de pointer
+  events mantém-se apenas após submit com sucesso em execução.
+
+## 0.1.0-beta.39
+
+### Fixed
+
+- Flash do fallback “Erro ao carregar o processo” no primeiro paint: `isLoadingStepConfig`
+  passa a iniciar a `true`, e `IGRPProcessPage` trata estado pending (`!stepConfig` sem erro)
+  como loading em vez de erro.
+
 ## 0.1.0-beta.21
 
 ### Added
