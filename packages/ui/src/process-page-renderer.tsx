@@ -30,6 +30,10 @@ import type {
 } from "./types";
 import { IGRPConfirmationDialog } from "./components/igrp-confirmation-dialog";
 import { useIGRPProcessContext } from "./igrp-process-context";
+import {
+  isExternalReturnUrl,
+  resolveTaskReturnTarget,
+} from "./lib/task-return-url";
 
 const IGRPStepLoading = ({ userTaskKey }: { userTaskKey: string }) => (
   <div className="flex flex-col items-center justify-center h-full">
@@ -161,6 +165,7 @@ export default function IGRPProcessPageRenderer({
     mode: modeContext,
     selectedStepKey,
     setSelectedStepKey,
+    config,
   } = useIGRPProcessContext();
 
   const mode = modeProp || modeContext || "execution";
@@ -304,14 +309,34 @@ export default function IGRPProcessPageRenderer({
   const resolveStepComponent =
     resolveStepComponentProp ?? resolveStepComponentContext ?? null;
 
-  const urlBackTemp = useMemo(() => {
-    const IGRP_BASE_PATH = process.env.NEXT_PUBLIC_IGRP_BASE_PATH;
-    const IGRP_APP_PAGE_TASK = process.env.NEXT_PUBLIC_IGRP_APP_PAGE_TASK || "";
-    if (IGRP_BASE_PATH) {
-      return `${window.location.origin}/apps/igrp-process-management/my-tasks`;
+  /**
+   * Saída do popup de sucesso: volta ao projecto de origem (`?returnUrl=`),
+   * senão à lista de tarefas configurada, senão ao history do browser.
+   * Resolvido no click (não em render) porque depende de `window`.
+   */
+  const handleReturnAfterComplete = useCallback(() => {
+    const target = resolveTaskReturnTarget({
+      configuredUrl: config?.taskReturnUrl,
+      search: window.location.search,
+      canGoBack: window.history.length > 1,
+    });
+
+    if (target.kind === "history-back") {
+      router.back();
+      return;
     }
-    return IGRP_APP_PAGE_TASK || `/`;
-  }, []);
+
+    // URLs absolutos apontam para outro app (basePath diferente) ou outro host:
+    // o router do Next aplicaria o basePath deste app e daria 404.
+    if (isExternalReturnUrl(target.href)) {
+      window.location.replace(target.href);
+      return;
+    }
+
+    // `replace` para o back não regressar à tarefa já submetida (que ficaria
+    // bloqueada e confusa).
+    router.replace(target.href as any);
+  }, [config?.taskReturnUrl, router]);
 
   // Callback to register step methods
   const handleRegisterMethods = useCallback((methods: IGRPStepMethods) => {
@@ -531,9 +556,7 @@ export default function IGRPProcessPageRenderer({
         labelBtnConfirm="Voltar"
         confirmDelete={async () => {
           setShowSuccessDialog(false);
-          // `replace` so the back button does not return to the completed
-          // task page (which would now be locked and confusing).
-          router.replace(urlBackTemp as any);
+          handleReturnAfterComplete();
         }}
         isCompleted={true}
       />

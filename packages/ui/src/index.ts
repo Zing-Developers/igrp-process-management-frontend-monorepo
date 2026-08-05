@@ -26,6 +26,14 @@ export {
   resolveProcessInstance,
 } from "./lib/resolve-process-instance";
 
+// Return URL após completar tarefa (origem do link / config runtime)
+export {
+  IGRP_RETURN_URL_PARAM,
+  isExternalReturnUrl,
+  resolveTaskReturnTarget,
+} from "./lib/task-return-url";
+export type { IGRPTaskReturnTarget } from "./lib/task-return-url";
+
 // Process actions (server actions – ficheiro tem "use server")
 export {
   fetchStepConfig,

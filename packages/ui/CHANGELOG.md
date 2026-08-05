@@ -2,6 +2,46 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## 0.1.0-beta.41
+
+### Fixed
+
+- Saída do popup "Tarefa completada com sucesso" voltava a `/` em cluster. O
+  destino deixou de depender do slug hardcoded
+  `/apps/igrp-process-management/my-tasks` e de `NEXT_PUBLIC_IGRP_BASE_PATH`
+  (que não existe nas apps — usam `NEXT_PUBLIC_BASE_PATH`).
+- URLs absolutos passam a navegar com `window.location.replace`. Com
+  `router.replace` o Next prefixava o basePath do app actual (ex.:
+  `/apps/core/apps/igrp-process-management/my-tasks` → 404).
+
+### Added
+
+- `?returnUrl=` no URL da tarefa: quem abre a tarefa declara a página de
+  origem e o popup volta exactamente para lá. Exportados
+  `IGRP_RETURN_URL_PARAM`, `resolveTaskReturnTarget` e `isExternalReturnUrl`.
+- `IGRPProcessClientConfig.taskReturnUrl`: fallback injectado pela app a partir
+  de `IGRP_APP_PAGE_TASK` (env do servidor, lida por request), para funcionar em
+  cluster.
+
+### Migração de `NEXT_PUBLIC_IGRP_APP_PAGE_TASK`
+
+`NEXT_PUBLIC_*` é inlined no `next build`, por isso a variável definida apenas
+no deployment do K8s nunca chegava ao browser. A lib deixou de ler env: passa a
+usar-se **só `IGRP_APP_PAGE_TASK`** (sem prefixo), lida no servidor pela app e
+passada em `config.taskReturnUrl`.
+
+```ts
+// layout.tsx (server component) da rota de execução
+const config = {
+  baseUrl: process.env.PROCESS_MANAGEMENT_CLIENT_BASE_URL ?? "",
+  accessToken: token?.accessToken ?? null,
+  taskReturnUrl: process.env.IGRP_APP_PAGE_TASK ?? "",
+};
+```
+
+Ordem de resolução: `?returnUrl=` → `config.taskReturnUrl` → history back →
+`/`.
+
 ## 0.1.0-beta.40
 
 ### Fixed
