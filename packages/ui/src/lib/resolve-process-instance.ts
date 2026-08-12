@@ -27,7 +27,7 @@ export async function resolveProcessInstance(
 ): Promise<ProcessInstance> {
   const trimmed = ref.trim();
   if (!trimmed) {
-    throw new Error("Process instance id or number is required");
+    throw new Error("É necessário o id ou o número da instância de processo");
   }
 
   if (isProcessInstanceUuid(trimmed)) {
@@ -41,7 +41,9 @@ export async function resolveProcessInstance(
   });
   const match = search.data?.content?.[0];
   if (!match) {
-    throw new Error(`No process instance found with number: ${trimmed}`);
+    throw new Error(
+      `Nenhuma instância de processo encontrada com o número: ${trimmed}`,
+    );
   }
   return match;
 }

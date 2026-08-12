@@ -88,10 +88,7 @@ export async function fetchStepConfig(
         }
       }
     } catch (error) {
-      console.warn(
-        "Could not load tasks for consultation form map:",
-        error,
-      );
+      console.warn("Could not load tasks for consultation form map:", error);
     }
 
     // Fallback: activityProgress activityInstanceId when task search misses a step
@@ -210,7 +207,7 @@ export async function callSaveTask(
     return {
       success: true,
       title: "Tarefa",
-      message: "Tarefa salva com sucesso!",
+      message: "Tarefa guardada com sucesso!",
     };
   } catch (error: unknown) {
     return handleError(error);
@@ -253,15 +250,15 @@ const parseSaveTaskError = (
   }
   if (!details)
     return {
-      title: "Error",
-      message: "Unknown error",
+      title: "Erro",
+      message: "Erro desconhecido",
     };
   const errorData = JSON.parse(details);
   return {
-    title: errorData.title || "Error",
+    title: errorData.title || "Erro",
     message:
       errorData.instance ||
       errorData.message ||
-      `Call completed with unknown error: ${JSON.stringify(error, null, 2)}`,
+      `Operação concluída com erro desconhecido: ${JSON.stringify(error, null, 2)}`,
   };
 };

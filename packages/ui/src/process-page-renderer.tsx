@@ -38,7 +38,7 @@ import {
 const IGRPStepLoading = ({ userTaskKey }: { userTaskKey: string }) => (
   <div className="flex flex-col items-center justify-center h-full">
     <IGRPLoadingSpinner />
-    <p className="text-sm text-gray-500">Loading {userTaskKey} step...</p>
+    <p className="text-sm text-gray-500">A carregar o passo {userTaskKey}...</p>
   </div>
 );
 
@@ -383,7 +383,9 @@ export default function IGRPProcessPageRenderer({
       return {
         success: false,
         error:
-          error instanceof Error ? error.message : "Unknown error occurred",
+          error instanceof Error
+            ? error.message
+            : "Ocorreu um erro desconhecido",
       };
     }
   };
@@ -397,19 +399,19 @@ export default function IGRPProcessPageRenderer({
     // any reentrant call (keyboard shortcut, programmatic dispatch, …) to
     // guarantee the task is submitted at most once per page load.
     if (taskCompleted || isLoading) {
-      return { success: false, error: "Already submitted" };
+      return { success: false, error: "Já submetido" };
     }
     try {
       // First, try to call the dynamic step's complete method
       let stepResult: IGRPStepResult = {
         success: false,
-        error: "Step is not ready",
+        error: "O passo ainda não está pronto",
       };
 
       if (stepMethods && stepMethods.completeStep) {
         stepResult = await stepMethods.completeStep();
         if (!stepResult.success) {
-          setErrorMessage(stepResult.error || "Error completing step");
+          setErrorMessage(stepResult.error || "Erro ao concluir o passo");
           setShowErrorDialog(true);
           return stepResult;
         }
@@ -439,7 +441,7 @@ export default function IGRPProcessPageRenderer({
       return stepResult;
     } catch (error) {
       const errorMsg =
-        error instanceof Error ? error.message : "Unknown error occurred";
+        error instanceof Error ? error.message : "Ocorreu um erro desconhecido";
       setErrorMessage(errorMsg);
       setShowErrorDialog(true);
       console.error("Complete task error:", error);
@@ -449,16 +451,16 @@ export default function IGRPProcessPageRenderer({
 
   const currentStep = useMemo(() => {
     const key = viewedStepKey;
-    return (
-      (effectiveSteps || []).findIndex((step) => step.stepKey === key) + 1
-    );
+    return (effectiveSteps || []).findIndex((step) => step.stepKey === key) + 1;
   }, [effectiveSteps, viewedStepKey]);
 
   const handleStepChange = useCallback(
     (_step: number, stepData: { stepKey: string }) => {
       if (!isConsultation) return;
       // Only allow navigation to visited steps (COMPLETED / CURRENT).
-      const target = effectiveSteps?.find((s) => s.stepKey === stepData.stepKey);
+      const target = effectiveSteps?.find(
+        (s) => s.stepKey === stepData.stepKey,
+      );
       if (!target) return;
       if (!target.isCompleted && !target.isActive) return;
       setSelectedStepKey(stepData.stepKey);
@@ -470,9 +472,7 @@ export default function IGRPProcessPageRenderer({
     !isConsultation && statusDesc != "COMPLETED" && !taskCompleted;
 
   const selectedForm: Form =
-    (viewedStepKey && formsByStepKey?.[viewedStepKey]) ||
-    form ||
-    DEFAULT_FORM;
+    (viewedStepKey && formsByStepKey?.[viewedStepKey]) || form || DEFAULT_FORM;
 
   const selectedTaskInstanceId =
     (viewedStepKey && taskIdsByStepKey?.[viewedStepKey]) ||
@@ -504,7 +504,7 @@ export default function IGRPProcessPageRenderer({
             ) : (
               <IGRPIcon iconName="ChevronDown" />
             )}
-            <span className="sr-only">Toggle details</span>
+            <span className="sr-only">Alternar detalhes</span>
           </IGRPButton>
           {showActions && (
             <>
@@ -516,10 +516,10 @@ export default function IGRPProcessPageRenderer({
                 iconName="Save"
                 showIcon={true}
                 loading={isLoading}
-                loadingText="Saving..."
+                loadingText="A guardar..."
                 disabled={isLoading}
               >
-                Save
+                Guardar
               </IGRPButton>
               <IGRPButton
                 variant="default"
@@ -529,10 +529,10 @@ export default function IGRPProcessPageRenderer({
                 showIcon={true}
                 iconName="CircleCheckBig"
                 loading={isLoading}
-                loadingText="Processing..."
+                loadingText="A processar..."
                 disabled={isLoading}
               >
-                Complete Task
+                Concluir Tarefa
               </IGRPButton>
             </>
           )}
