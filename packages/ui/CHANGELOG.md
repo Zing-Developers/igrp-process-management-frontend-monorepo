@@ -2,6 +2,16 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## 0.1.0-beta.42
+
+### Changed
+
+- Labels e mensagens da UI de execução/consulta de processo passam a
+  Português de Portugal: botões "Guardar" / "Concluir Tarefa", textos de
+  loading ("A guardar...", "A processar...", "A carregar o passo…"),
+  toasts e erros genéricos ("Erro", "Erro desconhecido", "Tarefa guardada
+  com sucesso!").
+
 ## 0.1.0-beta.41
 
 ### Fixed
