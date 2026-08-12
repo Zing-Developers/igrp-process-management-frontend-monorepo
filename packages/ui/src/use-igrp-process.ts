@@ -64,7 +64,9 @@ export function useIGRPProcess(
       return result;
     } catch (err) {
       const error =
-        err instanceof Error ? err : new Error("Failed to fetch step config");
+        err instanceof Error
+          ? err
+          : new Error("Não foi possível carregar a configuração do passo");
       setStepConfigError(error);
       throw error;
     } finally {
@@ -84,7 +86,9 @@ export function useIGRPProcess(
         return taskResult;
       } catch (err) {
         const error =
-          err instanceof Error ? err : new Error("Failed to complete task");
+          err instanceof Error
+            ? err
+            : new Error("Não foi possível concluir a tarefa");
         setCompleteTaskError(error);
         throw error;
       } finally {
@@ -106,7 +110,9 @@ export function useIGRPProcess(
         return taskResult;
       } catch (err) {
         const error =
-          err instanceof Error ? err : new Error("Failed to save task");
+          err instanceof Error
+            ? err
+            : new Error("Não foi possível guardar a tarefa");
         setSaveTaskError(error);
         throw error;
       } finally {
@@ -212,11 +218,8 @@ export function useIGRPProcess(
     // In consultation, processKey/processInstanceId may come from the URL as a
     // business number; after fetch they are taken from the loaded instance.
     processKey:
-      processKey ||
-      stepConfigData?.processInstance?.procReleaseKey ||
-      "",
-    processInstanceId:
-      stepConfigData?.processInstance?.id || processInstanceId,
+      processKey || stepConfigData?.processInstance?.procReleaseKey || "",
+    processInstanceId: stepConfigData?.processInstance?.id || processInstanceId,
     userTaskInstanceId,
     userTaskKey,
 

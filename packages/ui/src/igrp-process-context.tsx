@@ -66,10 +66,8 @@ export function IGRPProcessProvider({
   const readOnly = mode === "consultation";
   const processContext = useIGRPProcess(params, config);
   const [selectedStepKey, setSelectedStepKey] = useState<string | null>(null);
-  const {
-    getFormDataByTaskKey,
-    getFormDataForTask: getFormDataForTaskBase,
-  } = processContext;
+  const { getFormDataByTaskKey, getFormDataForTask: getFormDataForTaskBase } =
+    processContext;
 
   // In consultation, prefer history for the selected step so existing
   // `getFormDataForTask({ fallbackToHistory: true })` callers keep working.
@@ -81,12 +79,7 @@ export function IGRPProcessProvider({
       }
       return getFormDataForTaskBase(opts);
     },
-    [
-      readOnly,
-      selectedStepKey,
-      getFormDataByTaskKey,
-      getFormDataForTaskBase,
-    ],
+    [readOnly, selectedStepKey, getFormDataByTaskKey, getFormDataForTaskBase],
   );
 
   return (

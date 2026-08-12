@@ -16,10 +16,7 @@ export {
   isSharedFormKey,
   isVersionFolderName,
 } from "./lib/form-key-utils";
-export type {
-  FormKeyType,
-  IGRPFormDiscovery,
-} from "./lib/form-key-utils";
+export type { FormKeyType, IGRPFormDiscovery } from "./lib/form-key-utils";
 
 export {
   isProcessInstanceUuid,
