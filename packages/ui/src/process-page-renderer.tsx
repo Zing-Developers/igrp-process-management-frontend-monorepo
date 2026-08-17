@@ -221,8 +221,13 @@ export default function IGRPProcessPageRenderer({
     const stepsByKey = new Map(steps.map((s) => [s.stepKey, s]));
     const orderedKeys: string[] = [];
     (activityProgress || []).forEach((a) => {
-      if (stepsByKey.has(a.activityId) && !orderedKeys.includes(a.activityId)) {
-        orderedKeys.push(a.activityId);
+      const activityId = a.activityId;
+      if (
+        activityId &&
+        stepsByKey.has(activityId) &&
+        !orderedKeys.includes(activityId)
+      ) {
+        orderedKeys.push(activityId);
       }
     });
     // Defensive: any step that never showed up in `activityProgress` keeps
@@ -235,7 +240,9 @@ export default function IGRPProcessPageRenderer({
 
     const progressByActivity = new Map<string, string>();
     (activityProgress || []).forEach((a) => {
-      progressByActivity.set(a.activityId, a.status);
+      if (a.activityId) {
+        progressByActivity.set(a.activityId, a.status ?? "");
+      }
     });
     const hasCurrent = Array.from(progressByActivity.values()).includes(
       "CURRENT",
@@ -423,6 +430,10 @@ export default function IGRPProcessPageRenderer({
           userTaskInstanceId,
           variables: stepResult.variables,
           forms: stepResult.forms,
+          processInstanceId,
+          processKey,
+          processName: name,
+          processNumber: number,
         });
         if (result?.success) {
           // Latch FIRST so the buttons are hidden before the dialog renders,

@@ -1,6 +1,7 @@
 "use server";
 
 import type {
+  CompleteTaskParams,
   Form,
   IGRPProcessClientConfig,
   IGRPStepConfigParams,
@@ -8,6 +9,7 @@ import type {
 } from "./types";
 import { getIGRPProcessClient } from "./lib/api-client";
 import { formFromFormKey } from "./lib/form-key-utils";
+import { notifyNextTaskInApp } from "./lib/notify-next-task";
 import { resolveProcessInstance } from "./lib/resolve-process-instance";
 
 export async function fetchStepConfig(
@@ -39,33 +41,23 @@ export async function fetchStepConfig(
     (item: any) => item.type === "USER_TASK",
   );
 
-  const userTaskKey = processInstanceTaskStatus.data.some(
-    (item: { status: string }) => item.status === "CURRENT",
-  )
-    ? processInstanceTaskStatus.data.find(
-        (item: { status: string }) => item.status === "CURRENT",
-      )?.taskKey
-    : null;
+  const userTaskKey =
+    processInstanceTaskStatus.data.find(
+      (item) => String(item.status) === "CURRENT",
+    )?.taskKey ?? null;
 
-  const steps = processInstanceTaskStatus.data.map(
-    (
-      item: {
-        name: string;
-        description: string;
-        status: string;
-        taskKey: string;
-      },
-      index: number,
-    ) => ({
+  const steps = processInstanceTaskStatus.data.map((item, index) => {
+    const status = String(item.status ?? "");
+    return {
       step: index + 1,
-      title: item.name,
-      description: item.description,
-      isCompleted: item.status === "COMPLETED",
-      isActive: item.status === "CURRENT",
-      isSkipped: item.status === "CREATED",
+      title: item.name ?? "",
+      description: (item as { description?: string }).description ?? "",
+      isCompleted: status === "COMPLETED",
+      isActive: status === "CURRENT",
+      isSkipped: status === "CREATED",
       stepKey: item.taskKey,
-    }),
-  );
+    };
+  });
 
   if (!params.userTaskInstanceId) {
     const formsByStepKey: Record<string, Form> = {};
@@ -141,32 +133,49 @@ export async function fetchStepConfig(
   };
 }
 
+/** Backend TaskDataDTO.forEach NPEs when variables/forms are omitted (Jackson → null). */
+function toTaskDataPayload(
+  variables?: Array<{ name: string; value: string }>,
+  forms?: Array<{ name: string; value: string }>,
+) {
+  const keep = (item: { value: string }) =>
+    item.value !== "" && item.value !== undefined;
+  return {
+    variables: (variables ?? []).filter(keep),
+    forms: (forms ?? []).filter(keep),
+  };
+}
+
 export async function callCompleteTask(
   {
     userTaskInstanceId,
     variables,
     forms,
-  }: {
-    userTaskInstanceId: string;
-    variables?: Array<{ name: string; value: string }>;
-    forms?: Array<{ name: string; value: string }>;
-  },
+    processInstanceId,
+    processKey,
+    processName,
+    processNumber,
+  }: CompleteTaskParams,
   config: IGRPProcessClientConfig,
 ) {
   try {
     const processManagementClient = await getIGRPProcessClient(config);
 
-    const filteredVariables = variables?.filter(
-      (variable) => variable.value !== "" && variable.value !== undefined,
-    );
-    const filteredForms = forms?.filter(
-      (form) => form.value !== "" && form.value !== undefined,
+    await processManagementClient.tasks.completeTask(
+      userTaskInstanceId,
+      toTaskDataPayload(variables, forms),
     );
 
-    await processManagementClient.tasks.completeTask(userTaskInstanceId, {
-      variables: filteredVariables,
-      forms: filteredForms,
+    // Complete already succeeded — IN_APP is best-effort but must run
+    // before the server action returns (void work is dropped by Next.js).
+    await notifyNextTaskInApp(processManagementClient, {
+      completedUserTaskInstanceId: userTaskInstanceId,
+      processInstanceId,
+      processKey,
+      processName,
+      processNumber,
     });
+
     return {
       success: true,
       title: "Tarefa completada com sucesso!",
@@ -192,18 +201,10 @@ export async function callSaveTask(
   try {
     const processManagementClient = await getIGRPProcessClient(config);
 
-    const filteredVariables = variables?.filter(
-      (variable) => variable.value !== "" && variable.value !== undefined,
+    await processManagementClient.tasks.saveTask(
+      userTaskInstanceId,
+      toTaskDataPayload(variables, forms),
     );
-
-    const filteredForms = forms?.filter(
-      (form) => form.value !== "" && form.value !== undefined,
-    );
-
-    await processManagementClient.tasks.saveTask(userTaskInstanceId, {
-      variables: filteredVariables,
-      forms: filteredForms,
-    });
     return {
       success: true,
       title: "Tarefa",

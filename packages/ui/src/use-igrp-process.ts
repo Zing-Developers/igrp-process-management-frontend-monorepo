@@ -152,8 +152,8 @@ export function useIGRPProcess(
 
       const latest = matches.reduce(
         (acc: ActivityProgress, current: ActivityProgress) => {
-          const accTime = new Date(acc.endTime).getTime();
-          const currentTime = new Date(current.endTime).getTime();
+          const accTime = new Date(acc.endTime ?? 0).getTime();
+          const currentTime = new Date(current.endTime ?? 0).getTime();
 
           if (Number.isNaN(accTime) && !Number.isNaN(currentTime))
             return current;
