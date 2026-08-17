@@ -149,3 +149,28 @@ function MyStep() {
 
 **Retro-compatibilidade:** chamadas sem args (`getFormDataForTask()`) mantêm
 **exactamente** o comportamento legacy — sem fallback.
+
+## IN_APP after complete (`igrp-task-next`)
+
+`callCompleteTask` sends a best-effort **IN_APP** notification to the
+**assignee of the next user-task** after `POST /complete` succeeds. A
+Notification Service failure never fails the complete.
+
+`IGRP_NOTIFY_NEXT_TASK` defaults to **true** (unset = on). Only
+`IGRP_NOTIFY_NEXT_TASK=false` disables. Also requires Notification Service
+env (M2M). The skip that ignored the completer when they own the next
+step is commented out.
+
+Consumer env (same names as INSS Core):
+
+| Variable                                           | Role                                                |
+| -------------------------------------------------- | --------------------------------------------------- |
+| `IGRP_NOTIFY_NEXT_TASK`                            | default on; set `false` to disable                  |
+| `NOTIFICATION_SERVICE_BASE_URL`                    | Notification Service                                |
+| `IGRP_ACCESS_MANAGEMENT_API` or `IGRP_AUTH_ISSUER` | M2M token endpoint                                  |
+| `IGRP_M2M_CLIENT_ID` / `IGRP_M2M_CLIENT_SECRET`    | `client_credentials`                                |
+| `IGRP_APP_CODE`                                    | `applicationCode` on send (consumer app, e.g. CORE) |
+| `IGRP_SERVICE_ID`                                  | optional `X-Machine-Service-ID`                     |
+
+Template: publish `igrp-task-next` (IN_APP, `pt-CV`) in Notifications UI
+before expecting inbox items.
