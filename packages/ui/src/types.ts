@@ -45,6 +45,11 @@ export interface IGRPCompleteTaskParams {
   userTaskInstanceId: string;
   variables?: Array<{ name: string; value: string }>;
   forms?: Array<{ name: string; value: string }>;
+  /** Used after complete to resolve the next assignee for IN_APP notify. */
+  processInstanceId?: string;
+  processKey?: string;
+  processName?: string;
+  processNumber?: string;
 }
 
 export interface IGRPSaveTaskParams {
@@ -238,6 +243,10 @@ export interface CompleteTaskParams {
   userTaskInstanceId: string;
   variables?: Array<{ name: string; value: string }>;
   forms?: Array<{ name: string; value: string }>;
+  processInstanceId?: string;
+  processKey?: string;
+  processName?: string;
+  processNumber?: string;
 }
 
 export interface SaveTaskParams {
