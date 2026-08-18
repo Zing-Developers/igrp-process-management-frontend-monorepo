@@ -4,6 +4,8 @@ Todas as alterações relevantes a este package são documentadas neste ficheiro
 
 ## Unreleased
 
+## 0.1.0-beta.50
+
 ### Added
 
 - `IGRPProcessClientConfig.summaryPage`: quando a app passa um path (ex.

@@ -150,6 +150,23 @@ function MyStep() {
 **Retro-compatibilidade:** chamadas sem args (`getFormDataForTask()`) mantêm
 **exactamente** o comportamento legacy — sem fallback.
 
+## Summary page after complete (`config.summaryPage`)
+
+When the consuming app sets `summaryPage` on `IGRPProcessClientConfig`
+(e.g. `/process/resumo`), a successful complete navigates to
+`{summaryPage}/{processInstanceId}` and does **not** show the success
+dialog. Omit the field to keep the green modal (Voltar / `returnUrl` /
+`taskReturnUrl`).
+
+```ts
+const config = {
+  baseUrl: process.env.PROCESS_MANAGEMENT_CLIENT_BASE_URL ?? "",
+  accessToken: token?.accessToken ?? null,
+  taskReturnUrl: process.env.IGRP_APP_PAGE_TASK ?? "",
+  summaryPage: "/process/resumo",
+};
+```
+
 ## IN_APP after complete (`igrp-task-next`)
 
 `callCompleteTask` sends a best-effort **IN_APP** notification to the
