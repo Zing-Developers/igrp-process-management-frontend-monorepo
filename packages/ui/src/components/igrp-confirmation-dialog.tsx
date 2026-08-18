@@ -13,7 +13,6 @@ import {
   IGRPDialogPrimitive,
   IGRPDialogTitlePrimitive,
   IGRPIcon,
-  IGRPTextAreaPrimitive,
 } from "@igrp/igrp-framework-react-design-system";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -70,6 +69,7 @@ export function IGRPConfirmationDialog({
 
   useEffect(() => {
     if (open) {
+      setIsMessageOpen(false);
       const timer = setTimeout(() => setShowIcon(true), 50);
       return () => clearTimeout(timer);
     }
@@ -92,7 +92,7 @@ export function IGRPConfirmationDialog({
   return (
     <IGRPDialogPrimitive open={open} onOpenChange={handleOpenChange}>
       <IGRPDialogContentPrimitive
-        className={cn("space-y-4", isCompleted ? "max-w-md" : "")}
+        className="w-full max-w-md overflow-hidden space-y-4"
         showCloseButton={dismissable}
         onEscapeKeyDown={(e) => {
           if (!dismissable) e.preventDefault();
@@ -122,11 +122,11 @@ export function IGRPConfirmationDialog({
               )}
             />
           </div>
-          <IGRPDialogHeaderPrimitive>
-            <IGRPDialogTitlePrimitive className="text-center">
+          <IGRPDialogHeaderPrimitive className="min-w-0 max-w-full">
+            <IGRPDialogTitlePrimitive className="text-center break-words">
               {textHeader}
             </IGRPDialogTitlePrimitive>
-            <IGRPDialogDescriptionPrimitive className="text-center">
+            <IGRPDialogDescriptionPrimitive className="text-center break-words">
               {description}
             </IGRPDialogDescriptionPrimitive>
           </IGRPDialogHeaderPrimitive>
@@ -152,14 +152,11 @@ export function IGRPConfirmationDialog({
                 )}
               </IGRPButton>
             </IGRPCollapsibleTriggerPrimitive>
-            <IGRPCollapsibleContentPrimitive className="space-y-2">
-              <div className="flex justify-between gap-2">
-                <IGRPTextAreaPrimitive
-                  value={message}
-                  readOnly={true}
-                  className="w-full flex-1"
-                  rows={4}
-                />
+            <IGRPCollapsibleContentPrimitive className="min-w-0 space-y-2">
+              <div className="flex min-w-0 items-start gap-2">
+                <pre className="min-w-0 flex-1 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded-md border bg-muted/50 p-3 text-xs text-muted-foreground">
+                  {message}
+                </pre>
                 <IGRPCopyTo value={message} />
               </div>
             </IGRPCollapsibleContentPrimitive>
