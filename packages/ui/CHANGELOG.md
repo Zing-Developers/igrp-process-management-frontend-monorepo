@@ -54,6 +54,24 @@ Todas as alterações relevantes a este package são documentadas neste ficheiro
   `{summaryPage}/{processInstanceId}` **sem** o modal de sucesso. Sem este
   campo o modal verde (Voltar / `returnUrl` / `taskReturnUrl`) mantém-se.
 
+## 0.1.0-beta.44
+
+### Fixed
+
+- Modal de erro da tarefa deixava de ter `max-width` e o texto técnico (NPE
+  Java numa linha) esticava o diálogo. O modal fica limitado a `max-w-md`,
+  os detalhes quebram/scrollam, e a mensagem de erro deixa de mostrar o
+  stack Java em cru.
+
+## 0.1.0-beta.43
+
+### Fixed
+
+- Completar/guardar tarefa sem variáveis deixava de enviar `variables`/`forms`
+  (`undefined` → omitido no JSON). O backend (`TaskDataDTO.getVariables()`)
+  recebia `null` e rebentava com NPE no `forEach`. O payload passa a enviar
+  sempre listas (`[]` quando o step não devolve variáveis).
+
 ## 0.1.0-beta.42
 
 ### Changed
