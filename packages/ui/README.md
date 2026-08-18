@@ -150,6 +150,31 @@ function MyStep() {
 **Retro-compatibilidade:** chamadas sem args (`getFormDataForTask()`) mantêm
 **exactamente** o comportamento legacy — sem fallback.
 
+## Process Management app URLs (`processManagementAppHref`)
+
+One env: the Process Management **app** base (not the API). The lib concatenates
+`/my-tasks`, `/available-tasks` and `/process-map`. A legacy value that still
+ends with one of those paths is stripped to the base.
+
+```ts
+import {
+  processManagementAppHref,
+  processManagementAppUrls,
+} from "@igrp/platform-process-management-client-ui";
+
+const app = process.env.IGRP_APP_PAGE_TASK; // e.g. https://host/apps/igrp-process-management
+
+const config = {
+  baseUrl: process.env.PROCESS_MANAGEMENT_CLIENT_BASE_URL ?? "",
+  accessToken: token?.accessToken ?? null,
+  taskReturnUrl: processManagementAppHref("my-tasks", app),
+  summaryPage: "/process/resumo",
+};
+
+const { myTasksUrl, availableTasksUrl, processMapUrl } =
+  processManagementAppUrls(app);
+```
+
 ## Summary page after complete (`config.summaryPage`)
 
 When the consuming app sets `summaryPage` on `IGRPProcessClientConfig`
@@ -162,16 +187,20 @@ dialog. Omit the field to keep the green modal (Voltar / `returnUrl` /
 const config = {
   baseUrl: process.env.PROCESS_MANAGEMENT_CLIENT_BASE_URL ?? "",
   accessToken: token?.accessToken ?? null,
-  taskReturnUrl: process.env.IGRP_APP_PAGE_TASK ?? "",
+  taskReturnUrl: processManagementAppHref(
+    "my-tasks",
+    process.env.IGRP_APP_PAGE_TASK,
+  ),
   summaryPage: "/process/resumo",
 };
 ```
 
 ## IN_APP after complete (`igrp-task-next`)
 
-`callCompleteTask` sends a best-effort **IN_APP** notification to the
-**assignee of the next user-task** after `POST /complete` succeeds. A
-Notification Service failure never fails the complete.
+`callCompleteTask` sends a best-effort **IN_APP** notification after
+`POST /complete` succeeds. Assignee → `recipients: [{ userId }]`. Sem
+assignee → `groups: [{ roleCode }]` with `candidateGroups` **as the BPMN
+stores them**. A Notification Service failure never fails the complete.
 
 `IGRP_NOTIFY_NEXT_TASK` defaults to **true** (unset = on). Only
 `IGRP_NOTIFY_NEXT_TASK=false` disables. Also requires Notification Service

@@ -8,6 +8,7 @@ import {
   useState,
   type ComponentType,
 } from "react";
+import { flushSync } from "react-dom";
 import {
   IGRPPageHeader,
   IGRPButton,
@@ -35,6 +36,15 @@ import {
   resolveSummaryPageHref,
   resolveTaskReturnTarget,
 } from "./lib/task-return-url";
+
+/** Let the browser paint the button spinner before heavy `completeStep` work. */
+function yieldForPaint(): Promise<void> {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      setTimeout(resolve, 0);
+    });
+  });
+}
 
 const IGRPStepLoading = ({ userTaskKey }: { userTaskKey: string }) => (
   <div className="flex flex-col items-center justify-center h-full">
@@ -155,6 +165,10 @@ export default function IGRPProcessPageRenderer({
   //  - locking the step content so the user can't keep editing
   //  - opening the success dialog as non-dismissable (user must press Voltar)
   const [taskCompleted, setTaskCompleted] = useState(false);
+  // Covers `saveStep` / `completeStep` (app) before the lib's save/complete
+  // server actions set `isLoading`. Without this the buttons stay idle until
+  // recibo / APIs / notify-next-task finish their first await.
+  const [isActionPending, setIsActionPending] = useState(false);
 
   const { igrpToast } = useIGRPToast();
   const router = useRouter();
@@ -168,6 +182,8 @@ export default function IGRPProcessPageRenderer({
     setSelectedStepKey,
     config,
   } = useIGRPProcessContext();
+
+  const isBusy = isLoading || isActionPending;
 
   const mode = modeProp || modeContext || "execution";
   const isConsultation = mode === "consultation";
@@ -355,6 +371,13 @@ export default function IGRPProcessPageRenderer({
 
   // Handle save action
   const handleSave = async () => {
+    if (taskCompleted || isBusy) {
+      return { success: false, error: "Já submetido" };
+    }
+    flushSync(() => {
+      setIsActionPending(true);
+    });
+    await yieldForPaint();
     try {
       // Call the dynamic step's save method
       if (stepMethods && stepMethods.saveStep) {
@@ -397,6 +420,8 @@ export default function IGRPProcessPageRenderer({
             ? error.message
             : "Ocorreu um erro desconhecido",
       };
+    } finally {
+      setIsActionPending(false);
     }
   };
 
@@ -408,9 +433,14 @@ export default function IGRPProcessPageRenderer({
     // Defense in depth: even if the buttons are hidden after success, swallow
     // any reentrant call (keyboard shortcut, programmatic dispatch, …) to
     // guarantee the task is submitted at most once per page load.
-    if (taskCompleted || isLoading) {
+    if (taskCompleted || isBusy) {
       return { success: false, error: "Já submetido" };
     }
+    flushSync(() => {
+      setIsActionPending(true);
+    });
+    await yieldForPaint();
+    let succeeded = false;
     try {
       // First, try to call the dynamic step's complete method
       let stepResult: IGRPStepResult = {
@@ -443,6 +473,7 @@ export default function IGRPProcessPageRenderer({
           // and any in-flight click that races with the response is rejected
           // by the guard above.
           setTaskCompleted(true);
+          succeeded = true;
           const summaryHref = resolveSummaryPageHref(
             config?.summaryPage,
             processInstanceId,
@@ -468,6 +499,8 @@ export default function IGRPProcessPageRenderer({
       setShowErrorDialog(true);
       console.error("Complete task error:", error);
       return { success: false, error: errorMsg };
+    } finally {
+      if (!succeeded) setIsActionPending(false);
     }
   };
 
@@ -537,9 +570,9 @@ export default function IGRPProcessPageRenderer({
                 }}
                 iconName="Save"
                 showIcon={true}
-                loading={isLoading}
+                loading={isBusy}
                 loadingText="A guardar..."
-                disabled={isLoading}
+                disabled={isBusy}
               >
                 Guardar
               </IGRPButton>
@@ -550,9 +583,9 @@ export default function IGRPProcessPageRenderer({
                 }}
                 showIcon={true}
                 iconName="CircleCheckBig"
-                loading={isLoading}
+                loading={isBusy}
                 loadingText="A processar..."
-                disabled={isLoading}
+                disabled={isBusy}
               >
                 Concluir Tarefa
               </IGRPButton>
@@ -601,7 +634,7 @@ export default function IGRPProcessPageRenderer({
         // Suppress the per-step loading spinner once the task is committed.
         // The success dialog (non-dismissable) already conveys "done" — leaving
         // the spinner on while the user reads it makes the step look stuck.
-        isLoading={isLoading && !taskCompleted && !isConsultation}
+        isLoading={isBusy && !taskCompleted && !isConsultation}
         currentStep={currentStep}
         onStepChange={isConsultation ? handleStepChange : undefined}
       >
@@ -644,7 +677,8 @@ export default function IGRPProcessPageRenderer({
           // Consultation stays interactive (links, expanders, PDF open, …) and
           // relies on `readOnly` on the step config — `pointer-events-none`
           // here used to kill all clicks while the stepper tabs still worked.
-          const lockContent = taskCompleted && !isConsultation;
+          const lockContent =
+            (taskCompleted || isActionPending) && !isConsultation;
 
           return (
             <IGRPCardPrimitive>

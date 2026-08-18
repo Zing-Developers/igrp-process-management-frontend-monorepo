@@ -130,9 +130,11 @@ export interface IGRPProcessClientConfig {
    * tarefa não traz `?returnUrl=` (ex.: lista de tarefas do process-management
    * em cluster: `https://<host>/apps/igrp-process-management/my-tasks`).
    *
-   * Deve ser lido pela app no servidor a partir de `IGRP_APP_PAGE_TASK` e
-   * passado por request — variáveis `NEXT_PUBLIC_*` são inlined no build e não
-   * apanham o env do cluster.
+   * Deve ser lido pela app no servidor a partir de `IGRP_APP_PAGE_TASK`
+   * (base da app Process Management) e passado com
+   * `processManagementAppHref("my-tasks", process.env.IGRP_APP_PAGE_TASK)`.
+   * Variáveis `NEXT_PUBLIC_*` são inlined no build e não apanham o env do
+   * cluster.
    */
   taskReturnUrl?: string;
   /**
