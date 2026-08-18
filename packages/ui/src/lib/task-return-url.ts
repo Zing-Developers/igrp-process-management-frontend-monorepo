@@ -73,6 +73,20 @@ export function resolveTaskReturnTarget({
   return { kind: "url", href: "/" };
 }
 
+/**
+ * `{summaryPage}/{processInstanceId}` when the app opted into a post-complete
+ * summary. `null` when `summaryPage` is omitted (keep the success dialog).
+ */
+export function resolveSummaryPageHref(
+  summaryPage: string | null | undefined,
+  processInstanceId: string,
+): string | null {
+  const base = sanitizeReturnUrl(summaryPage);
+  const id = String(processInstanceId ?? "").trim();
+  if (!base || !id) return null;
+  return `${base.replace(/\/+$/, "")}/${encodeURIComponent(id)}`;
+}
+
 /** `true` quando o href aponta para fora do app Next actual (outro app/host). */
 export function isExternalReturnUrl(href: string): boolean {
   return /^https?:\/\//i.test(href);
