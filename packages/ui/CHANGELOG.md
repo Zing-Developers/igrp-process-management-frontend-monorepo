@@ -4,6 +4,47 @@ Todas as alterações relevantes a este package são documentadas neste ficheiro
 
 ## Unreleased
 
+## 0.1.0-beta.55
+
+### Fixed
+
+- IN_APP `igrp-task-next`: o NS exige exactamente um de `template` ou `inline`
+  (RF-04/RF-05). Envia o template publicado; se faltar ou falhar o render,
+  tenta de novo só com `inline`.
+
+## 0.1.0-beta.54
+
+### Changed
+
+- IN_APP `igrp-task-next`: assunto `{{taskName}} · {{numeroProcesso}}`, título
+  `{{processName}}`, corpo com o número do processo. Envia `inline` para não
+  depender de um template que só diz "Nova tarefa".
+
+## 0.1.0-beta.53
+
+### Changed
+
+- IN_APP da tarefa seguinte: `candidateGroups` do BPMN vão como `groups[].roleCode`
+  (string tal como o engine grava). Sem assignee e sem groups, o notify é
+  ignorado. Já não se usa `startedBy` como destinatário.
+
+## 0.1.0-beta.52
+
+### Added
+
+- `processManagementAppHref` / `processManagementAppUrls`: um único URL base
+  da app Process Management; a lib concatena `/my-tasks`, `/available-tasks`
+  e `/process-map` (valores legados com esses sufixos são normalizados).
+
+## 0.1.0-beta.51
+
+### Fixed
+
+- Guardar / Concluir Tarefa passam a mostrar loading no clique, antes de
+  `saveStep`/`completeStep` da app e da notificação da tarefa seguinte.
+  O spinner do stepper também liga no clique (`isBusy`), não só quando a
+  server action `completeTask` começa.
+
 ## 0.1.0-beta.50
 
 ### Added
