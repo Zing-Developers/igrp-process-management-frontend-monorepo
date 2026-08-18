@@ -32,6 +32,14 @@ export {
 } from "./lib/task-return-url";
 export type { IGRPTaskReturnTarget } from "./lib/task-return-url";
 
+export {
+  IGRP_PROCESS_MANAGEMENT_PAGES,
+  processManagementAppHref,
+  processManagementAppUrls,
+  resolveProcessManagementAppBase,
+} from "./lib/process-management-app-url";
+export type { IGRPProcessManagementPage } from "./lib/process-management-app-url";
+
 // Process actions (server actions – ficheiro tem "use server")
 export {
   fetchStepConfig,

@@ -1,7 +1,9 @@
 import {
+  ApiClientError,
   Channel,
   ChannelStrategy,
   ClientCredentialsTokenProvider,
+  IgrpNotificationErrorCode,
   NotificationClient,
 } from "@igrp/platform-notification-client-ts";
 import type {
@@ -79,8 +81,7 @@ function resolveActivityUserId(activity: ActivityProgress): string | undefined {
 }
 
 function resolveTaskUserId(task: Task): string | undefined {
-  const assignee = (task as Task & { assignee?: string }).assignee?.trim();
-  return assignee || task.startedBy?.trim() || undefined;
+  return (task as Task & { assignee?: string }).assignee?.trim() || undefined;
 }
 
 function splitGroups(value: string | string[] | undefined): string[] {
@@ -90,6 +91,98 @@ function splitGroups(value: string | string[] | undefined): string[] {
     .split(/[,;]/)
     .map((part) => part.trim())
     .filter(Boolean);
+}
+
+/** Subject/title/body for IN_APP — no repeated "Nova tarefa". */
+export function buildTaskNextInline(input: {
+  taskName: string;
+  processName?: string;
+  processNumber?: string;
+}) {
+  const taskName = input.taskName.trim() || "Tarefa";
+  const processName = input.processName?.trim() || "";
+  const processNumber = input.processNumber?.trim() || "";
+  const subject = processNumber ? `${taskName} · ${processNumber}` : taskName;
+  const title =
+    processName && processName !== taskName
+      ? processName
+      : processNumber && processNumber !== taskName
+        ? processNumber
+        : "";
+  const processBit = processNumber
+    ? `processo ${processNumber}${processName ? ` (${processName})` : ""}`
+    : processName || "um processo";
+  return {
+    subject,
+    title,
+    body: `Tem uma nova tarefa no ${processBit}: ${taskName}.`,
+  };
+}
+
+function shouldFallbackToInline(error: unknown): boolean {
+  if (!(error instanceof ApiClientError)) return false;
+  return (
+    error.is(IgrpNotificationErrorCode.TEMPLATE_NOT_FOUND) ||
+    error.is(IgrpNotificationErrorCode.TEMPLATE_ERROR)
+  );
+}
+
+/**
+ * NS RF-04/RF-05: exactly one of `template` or `inline` — never both.
+ * Prefer the published `igrp-task-next` template; retry with inline if it is
+ * missing or fails to render.
+ */
+async function sendTaskNextNotification(
+  notificationClient: NotificationClient,
+  input: {
+    applicationCode: string;
+    businessKey: string;
+    userId?: string;
+    groups: string[];
+    variables: {
+      taskName: string;
+      processName: string;
+      numeroProcesso: string;
+      processKey: string;
+    };
+    idempotencyKey: string;
+    inline: ReturnType<typeof buildTaskNextInline>;
+  },
+) {
+  const shared = {
+    applicationCode: input.applicationCode,
+    businessKey: input.businessKey,
+    category: IGRP_TASK_NEXT_CATEGORY,
+    channelStrategy: ChannelStrategy.SPECIFIC,
+    channels: [Channel.IN_APP],
+    recipients: input.userId ? [{ userId: input.userId }] : undefined,
+    groups:
+      !input.userId && input.groups.length > 0
+        ? input.groups.map((roleCode) => ({ roleCode }))
+        : undefined,
+    variables: input.variables,
+    idempotencyKey: input.idempotencyKey,
+  };
+
+  try {
+    return await notificationClient.notifications.send({
+      ...shared,
+      template: {
+        code: IGRP_TASK_NEXT_TEMPLATE_CODE,
+        locale: IGRP_TASK_NEXT_TEMPLATE_LOCALE,
+      },
+    });
+  } catch (error) {
+    if (!shouldFallbackToInline(error)) throw error;
+    console.warn(
+      `${LOG_PREFIX} template unavailable, retrying with inline`,
+      error,
+    );
+    return await notificationClient.notifications.send({
+      ...shared,
+      inline: input.inline,
+    });
+  }
 }
 
 let m2mTokenProvider: ClientCredentialsTokenProvider | undefined;
@@ -247,9 +340,18 @@ export async function notifyNextTaskInApp(
       const userId =
         resolveActivityUserId(next) ||
         (matchingTask ? resolveTaskUserId(matchingTask) : undefined);
+      // BPMN `candidateGroups` is a comma-separated string — use the tokens
+      // as-is (`roleCode`). Do not remap to department codes.
       const groups = splitGroups(
         next.candidateGroups ?? matchingTask?.candidateGroups,
       );
+
+      if (!userId && groups.length === 0) {
+        console.warn(
+          `${LOG_PREFIX} skip: next task "${next.activityName || next.activityId}" has no assignee or candidateGroups`,
+        );
+        continue;
+      }
 
       // Disregarded: do not skip when the next assignee is the user who just
       // completed (they still "have access" to the next etapa).
@@ -262,21 +364,17 @@ export async function notifyNextTaskInApp(
 
       const taskName = next.activityName || matchingTask?.name || "Tarefa";
       const businessKey = processNumber || canonicalInstanceId;
+      const inline = buildTaskNextInline({
+        taskName,
+        processName,
+        processNumber: businessKey,
+      });
 
-      const response = await notificationClient.notifications.send({
+      const response = await sendTaskNextNotification(notificationClient, {
         applicationCode,
         businessKey,
-        category: IGRP_TASK_NEXT_CATEGORY,
-        channelStrategy: ChannelStrategy.SPECIFIC,
-        channels: [Channel.IN_APP],
-        recipients: userId ? [{ userId }] : undefined,
-        groups: !userId
-          ? groups.map((departmentCode) => ({ departmentCode }))
-          : undefined,
-        template: {
-          code: IGRP_TASK_NEXT_TEMPLATE_CODE,
-          locale: IGRP_TASK_NEXT_TEMPLATE_LOCALE,
-        },
+        userId,
+        groups,
         variables: {
           taskName,
           processName,
@@ -284,11 +382,13 @@ export async function notifyNextTaskInApp(
           processKey,
         },
         idempotencyKey: `igrp-task-next:${next.activityInstanceId || matchingTask?.id || `${businessKey}:${next.activityId}:${userId || groups.join("+")}`}`,
+        inline,
       });
       sent += 1;
       console.warn(`${LOG_PREFIX} sent`, {
         notificationId: response.data.id,
         userId,
+        roleCodes: userId ? undefined : groups,
         taskName,
         businessKey,
         applicationCode,
