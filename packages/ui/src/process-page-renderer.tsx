@@ -32,6 +32,7 @@ import { IGRPConfirmationDialog } from "./components/igrp-confirmation-dialog";
 import { useIGRPProcessContext } from "./igrp-process-context";
 import {
   isExternalReturnUrl,
+  resolveSummaryPageHref,
   resolveTaskReturnTarget,
 } from "./lib/task-return-url";
 
@@ -321,6 +322,17 @@ export default function IGRPProcessPageRenderer({
    * senão à lista de tarefas configurada, senão ao history do browser.
    * Resolvido no click (não em render) porque depende de `window`.
    */
+  const goToHref = useCallback(
+    (href: string) => {
+      if (isExternalReturnUrl(href)) {
+        window.location.replace(href);
+        return;
+      }
+      router.replace(href as any);
+    },
+    [router],
+  );
+
   const handleReturnAfterComplete = useCallback(() => {
     const target = resolveTaskReturnTarget({
       configuredUrl: config?.taskReturnUrl,
@@ -333,17 +345,8 @@ export default function IGRPProcessPageRenderer({
       return;
     }
 
-    // URLs absolutos apontam para outro app (basePath diferente) ou outro host:
-    // o router do Next aplicaria o basePath deste app e daria 404.
-    if (isExternalReturnUrl(target.href)) {
-      window.location.replace(target.href);
-      return;
-    }
-
-    // `replace` para o back não regressar à tarefa já submetida (que ficaria
-    // bloqueada e confusa).
-    router.replace(target.href as any);
-  }, [config?.taskReturnUrl, router]);
+    goToHref(target.href);
+  }, [config?.taskReturnUrl, goToHref, router]);
 
   // Callback to register step methods
   const handleRegisterMethods = useCallback((methods: IGRPStepMethods) => {
@@ -440,6 +443,14 @@ export default function IGRPProcessPageRenderer({
           // and any in-flight click that races with the response is rejected
           // by the guard above.
           setTaskCompleted(true);
+          const summaryHref = resolveSummaryPageHref(
+            config?.summaryPage,
+            processInstanceId,
+          );
+          if (summaryHref) {
+            goToHref(summaryHref);
+            return stepResult;
+          }
           setShowSuccessDialog(true);
         } else {
           setErrorMessage(

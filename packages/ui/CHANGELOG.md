@@ -2,6 +2,15 @@
 
 Todas as alterações relevantes a este package são documentadas neste ficheiro.
 
+## Unreleased
+
+### Added
+
+- `IGRPProcessClientConfig.summaryPage`: quando a app passa um path (ex.
+  `/process/resumo`), após concluir a tarefa a lib navega para
+  `{summaryPage}/{processInstanceId}` **sem** o modal de sucesso. Sem este
+  campo o modal verde (Voltar / `returnUrl` / `taskReturnUrl`) mantém-se.
+
 ## 0.1.0-beta.42
 
 ### Changed
