@@ -27,6 +27,7 @@ export {
 export {
   IGRP_RETURN_URL_PARAM,
   isExternalReturnUrl,
+  resolveSummaryPageHref,
   resolveTaskReturnTarget,
 } from "./lib/task-return-url";
 export type { IGRPTaskReturnTarget } from "./lib/task-return-url";

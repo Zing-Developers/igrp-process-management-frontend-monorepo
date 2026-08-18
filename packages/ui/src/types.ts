@@ -135,6 +135,13 @@ export interface IGRPProcessClientConfig {
    * apanham o env do cluster.
    */
   taskReturnUrl?: string;
+  /**
+   * Página de resumo após concluir a tarefa (ex.: `/process/resumo`).
+   * Quando definido, a lib **não** mostra o modal de sucesso e navega para
+   * `{summaryPage}/{processInstanceId}`. Quando omitido, o modal verde
+   * (Voltar / `returnUrl` / `taskReturnUrl`) mantém-se.
+   */
+  summaryPage?: string;
 }
 
 export interface IGRPProcessPageRendererProps {
