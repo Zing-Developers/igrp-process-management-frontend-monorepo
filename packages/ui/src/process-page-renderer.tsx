@@ -492,7 +492,7 @@ export default function IGRPProcessPageRenderer({
         // in the same app (e.g. gestão de evacuações).
         backButtonUseBrowserBack={true}
       >
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 min-w-0">
           <IGRPButton
             variant="ghost"
             onClick={() => setIsDetailsOpen(!isDetailsOpen)}
