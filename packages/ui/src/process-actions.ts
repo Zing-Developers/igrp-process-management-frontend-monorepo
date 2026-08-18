@@ -138,7 +138,7 @@ function toTaskDataPayload(
   variables?: Array<{ name: string; value: string }>,
   forms?: Array<{ name: string; value: string }>,
 ) {
-  const keep = (item: { value: string }) =>
+  const keep = (item: { name: string; value: string }) =>
     item.value !== "" && item.value !== undefined;
   return {
     variables: (variables ?? []).filter(keep),
@@ -254,12 +254,33 @@ const parseSaveTaskError = (
       title: "Erro",
       message: "Erro desconhecido",
     };
-  const errorData = JSON.parse(details);
+  let errorData: { title?: string; message?: string; instance?: string } = {};
+  try {
+    errorData = JSON.parse(details);
+  } catch {
+    return { title: "Erro", message: "Erro desconhecido" };
+  }
+
+  const raw = [errorData.title, errorData.message, errorData.instance]
+    .filter(Boolean)
+    .join(" ");
+
+  if (/getVariables\(\)|Cannot invoke.*List\.forEach/i.test(raw)) {
+    return {
+      title: "Erro",
+      message:
+        "Não foi possível concluir a tarefa. Tente novamente. Se o erro persistir, contacte o suporte.",
+    };
+  }
+
+  const looksTechnical = /cannot invoke|exception|nullpointer|failed to /i.test(
+    raw,
+  );
   return {
-    title: errorData.title || "Erro",
+    title: looksTechnical ? "Erro" : errorData.title || "Erro",
     message:
-      errorData.instance ||
       errorData.message ||
-      `Operação concluída com erro desconhecido: ${JSON.stringify(error, null, 2)}`,
+      errorData.instance ||
+      "Não foi possível concluir a operação.",
   };
 };
