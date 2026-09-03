@@ -10,6 +10,7 @@ import {
   Process,
   UpdateAreaRequest,
   ProcessData,
+  ConfigParameter,
 } from "@igrp/platform-process-management-types";
 
 export class AreaClient extends BaseApiClient {
@@ -38,8 +39,8 @@ export class AreaClient extends BaseApiClient {
   /**
    * GET /areas/status - Get area status options
    */
-  async getAreaStatus(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/areas/status");
+  async getAreaStatus(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/areas/status");
   }
 
   /**

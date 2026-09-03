@@ -10,10 +10,10 @@
     "composite": true,
     "outDir": "./dist",
     "paths": {
-      "@igrp/platform-process-management-client-ts": ["packages/@igrp/client/src/index.ts"],
-      "@igrp/platform-process-management-client-ts/*": ["packages/@igrp/client/src/*"],
-      "@igrp/platform-process-management-types": ["packages/@igrp/types/src/index.ts"],
-      "@igrp/platform-process-management-types/*": ["packages/@igrp/types/src/*"]
+      "@igrp/platform-process-management-client-ts": ["packages/client/src/index.ts"],
+      "@igrp/platform-process-management-client-ts/*": ["packages/client/src/*"],
+      "@igrp/platform-process-management-types": ["packages/types/src/index.ts"],
+      "@igrp/platform-process-management-types/*": ["packages/types/src/*"]
     }
   },
   "include": [
@@ -26,7 +26,7 @@
     "**/*.js"
   ],
   "references": [
-    { "path": "../packages/@igrp/types" },
-    { "path": "../packages/@igrp/client" }
+    { "path": "../packages/types" },
+    { "path": "../packages/client" }
   ]
 }
