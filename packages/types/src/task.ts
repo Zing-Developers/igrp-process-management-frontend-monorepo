@@ -1,4 +1,4 @@
-import type { UserProfile } from "./shared.js";
+import type { AuditMetadata, UserProfile } from "./shared.js";
 import type { PaginatedResponse } from "./response.js";
 
 /** TaskInstanceDTO.status */
@@ -10,7 +10,7 @@ export type TaskStatus =
   | "CANCELED";
 
 /** TaskInstanceDTO */
-export type Task = {
+export type Task = AuditMetadata & {
   id: string;
   taskKey: string;
   formKey: string;
@@ -47,7 +47,8 @@ export type Task = {
 export type TaskInstanceDTO = Partial<Task>;
 export type TaskInstanceListDTO = Partial<Task>;
 
-export type TaskInstanceEvent = {
+/** TaskInstanceEventListDTO */
+export type TaskInstanceEvent = AuditMetadata & {
   id: string;
   eventType: string;
   status: string;
@@ -98,7 +99,8 @@ export type TaskStats = {
 
 export type TaskAssignmentMode = "ALWAYS" | "ONE_TIME";
 
-export interface TaskAssignmentRuleDTO {
+/** TaskAssignmentRuleListDTO */
+export interface TaskAssignmentRuleDTO extends AuditMetadata {
   id?: string;
   processDefinitionKey?: string;
   processInstanceId?: string;

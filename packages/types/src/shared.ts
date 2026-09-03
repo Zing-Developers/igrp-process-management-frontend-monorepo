@@ -35,6 +35,21 @@ export type UserProfileDTO = {
 
 export type UserProfile = UserProfileDTO;
 
+/**
+ * Audit metadata carried by most persisted DTOs in the process-runtime API
+ * (`createdAt` / `updatedAt` / `createdBy` / `updatedBy` plus the resolved
+ * user profiles). Every field is optional — list projections and lightweight
+ * responses frequently omit them.
+ */
+export interface AuditMetadata {
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  userProfileCreatedBy?: UserProfile;
+  userProfileUpdatedBy?: UserProfile;
+}
+
 /** ConfigParameterDTO — status / event_type option lists. */
 export type ConfigParameter = {
   label: string;
