@@ -1,6 +1,6 @@
 {
   "name": "@irn/platform-process-management-client-ts",
-  "version": "0.1.0-beta.20",
+  "version": "0.1.0-beta.21",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
