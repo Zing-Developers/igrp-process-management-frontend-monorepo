@@ -1,31 +1,24 @@
-import {
-  PaginatedResponse,
-  PostResponse,
-} from "@igrp/platform-process-management-types/dist/response";
-import { BaseApiClient } from "./base-client";
-import {
+import { BaseApiClient } from "./base-client.js";
+import type {
   ApiResponse,
+  PaginatedResponse,
   Area,
   CreateAreaRequest,
   Process,
   UpdateAreaRequest,
   ProcessData,
   ConfigParameter,
+  AreaQuery,
+  AreaProcessDefinitionQuery,
 } from "@igrp/platform-process-management-types";
 
 export class AreaClient extends BaseApiClient {
   /**
    * GET /areas - Get all areas with optional filters
    */
-  async getAreas(params?: {
-    code?: string;
-    name?: string;
-    applicationBase?: string;
-    status?: string;
-    parentId?: string;
-    page?: number;
-    size?: number;
-  }): Promise<ApiResponse<PaginatedResponse<Area>>> {
+  async getAreas(
+    params?: AreaQuery,
+  ): Promise<ApiResponse<PaginatedResponse<Area>>> {
     return this.get<PaginatedResponse<Area>>("/areas", params);
   }
 
@@ -33,7 +26,7 @@ export class AreaClient extends BaseApiClient {
    * GET /areas/{id} - Get a specific area by ID
    */
   async getAreaById(id: string): Promise<ApiResponse<Area>> {
-    return this.get<Area>(`/areas/${id}`);
+    return this.get<Area>(`/areas/${this.encodePath(id)}`);
   }
 
   /**
@@ -57,14 +50,14 @@ export class AreaClient extends BaseApiClient {
     id: string,
     area: UpdateAreaRequest,
   ): Promise<ApiResponse<Area>> {
-    return this.put<Area>(`/areas/${id}`, area);
+    return this.put<Area>(`/areas/${this.encodePath(id)}`, area);
   }
 
   /**
    * DELETE /areas/{id} - Delete an area
    */
-  async deleteArea(id: string): Promise<ApiResponse<PostResponse>> {
-    return this.delete<PostResponse>(`/areas/${id}`);
+  async deleteArea(id: string): Promise<ApiResponse<void>> {
+    return this.delete<void>(`/areas/${this.encodePath(id)}`);
   }
 
   /**
@@ -72,16 +65,10 @@ export class AreaClient extends BaseApiClient {
    */
   async getAreaProcesses(
     areaId: string,
-    params?: {
-      processKey?: string;
-      status?: string;
-      releaseId?: string;
-      page?: number;
-      size?: number;
-    },
+    params?: AreaProcessDefinitionQuery,
   ): Promise<ApiResponse<PaginatedResponse<Process>>> {
     return this.get<PaginatedResponse<Process>>(
-      `/areas/${areaId}/process-definitions`,
+      `/areas/${this.encodePath(areaId)}/process-definitions`,
       params,
     );
   }
@@ -94,7 +81,7 @@ export class AreaClient extends BaseApiClient {
     processData: ProcessData,
   ): Promise<ApiResponse<Process>> {
     return this.post<Process>(
-      `/areas/${areaId}/process-definitions`,
+      `/areas/${this.encodePath(areaId)}/process-definitions`,
       processData,
     );
   }
@@ -107,7 +94,7 @@ export class AreaClient extends BaseApiClient {
     processDefinitionId: string,
   ): Promise<ApiResponse<void>> {
     return this.delete<void>(
-      `/areas/${areaId}/process-definitions/${processDefinitionId}`,
+      `/areas/${this.encodePath(areaId)}/process-definitions/${this.encodePath(processDefinitionId)}`,
     );
   }
 }

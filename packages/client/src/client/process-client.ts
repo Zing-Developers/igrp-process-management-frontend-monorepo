@@ -1,5 +1,5 @@
-import { BaseApiClient } from "./base-client";
-import {
+import { BaseApiClient } from "./base-client.js";
+import type {
   ApiResponse,
   Process,
   ProcessInstance,
@@ -11,7 +11,6 @@ import {
   ProcessSequence,
   CreateProcessSequenceRequest,
   PaginatedResponse,
-  VariableParams,
   StartProcessInstanceRequest,
   ProcessDefinitionSchema,
   Priority,
@@ -24,6 +23,9 @@ import {
   ProcessDeploymentListItem,
   ProcessInstanceTaskStatus,
   ConfigParameter,
+  ProcessArtifactRequestDTO,
+  ProcessInstanceSearchQuery,
+  VariablesFilterDTO,
 } from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
@@ -40,36 +42,45 @@ export class ProcessClient extends BaseApiClient {
   }
 
   /**
-   * GET /process-definitions/{id} - Get a specific process definition by ID
+   * @deprecated This operation is not present in the current OpenAPI contract.
    */
   async getProcessById(id: string): Promise<ApiResponse<Process>> {
-    return this.get<Process>(`/process-definitions/${id}`);
+    return this.get<Process>(`/process-definitions/${this.encodePath(id)}`);
   }
 
   /**
-   * POST /process-definitions/{processDefinitionId}/artifacts - Create a new process artifact
+   * @deprecated Artifact creation is not present in the current OpenAPI contract.
    */
   async createProcessArtifact(
     processDefinitionId: string,
     artifact: CreateProcessArtifactRequest,
   ): Promise<ApiResponse<ProcessArtifact>> {
     return this.post<ProcessArtifact>(
-      `/process-definitions/${processDefinitionId}/artifacts`,
+      `/process-definitions/${this.encodePath(processDefinitionId)}/artifacts`,
       artifact,
     );
   }
 
   /**
-   * POST /process-definitions/{processDefinitionId}/artifacts - Create a new process artifact
+   * @deprecated use configureProcessArtifact(id, taskKey, artifact).
    */
   async updateProcessArtifact(
     processDefinitionId: string,
     artifact: CreateProcessArtifactRequest,
   ): Promise<ApiResponse<ProcessArtifact>> {
-    const { key, ...rest } = artifact;
+    const { key, ...body } = artifact;
+    return this.configureProcessArtifact(processDefinitionId, key, body);
+  }
+
+  /** PUT /process-definitions/{id}/artifacts/{taskKey}. */
+  async configureProcessArtifact(
+    id: string,
+    taskKey: string,
+    artifact: ProcessArtifactRequestDTO,
+  ): Promise<ApiResponse<ProcessArtifact>> {
     return this.put<ProcessArtifact>(
-      `/process-definitions/${processDefinitionId}/artifacts/${key}`,
-      rest,
+      `/process-definitions/${this.encodePath(id)}/artifacts/${this.encodePath(taskKey)}`,
+      artifact,
     );
   }
 
@@ -80,7 +91,7 @@ export class ProcessClient extends BaseApiClient {
     processDefinitionId: string,
   ): Promise<ApiResponse<ProcessArtifact[]>> {
     return this.get<ProcessArtifact[]>(
-      `/process-definitions/${processDefinitionId}/artifacts`,
+      `/process-definitions/${this.encodePath(processDefinitionId)}/artifacts`,
     );
   }
 
@@ -91,7 +102,7 @@ export class ProcessClient extends BaseApiClient {
     processDefinitionId: string,
   ): Promise<ApiResponse<ProcessArtifact[]>> {
     return this.get<ProcessArtifact[]>(
-      `/process-definitions/${processDefinitionId}/deployed-artifacts`,
+      `/process-definitions/${this.encodePath(processDefinitionId)}/deployed-artifacts`,
     );
   }
 
@@ -99,7 +110,9 @@ export class ProcessClient extends BaseApiClient {
    * DELETE /process-definitions/artifacts/{artifactId} - Delete a specific process artifact
    */
   async deleteProcessArtifact(artifactId: string): Promise<ApiResponse<void>> {
-    return this.delete<void>(`/process-definitions/artifacts/${artifactId}`);
+    return this.delete<void>(
+      `/process-definitions/artifacts/${this.encodePath(artifactId)}`,
+    );
   }
 
   /**
@@ -110,7 +123,7 @@ export class ProcessClient extends BaseApiClient {
     candidateGroups: string,
   ): Promise<ApiResponse<void>> {
     return this.post<void>(
-      `/process-definitions/${processDefinitionId}/assign`,
+      `/process-definitions/${this.encodePath(processDefinitionId)}/assign`,
       { candidateGroups },
     );
   }
@@ -123,37 +136,22 @@ export class ProcessClient extends BaseApiClient {
     candidateGroups: string,
   ): Promise<ApiResponse<void>> {
     return this.post<void>(
-      `/process-definitions/${processDefinitionId}/unassign`,
+      `/process-definitions/${this.encodePath(processDefinitionId)}/unassign`,
       { candidateGroups },
     );
   }
 
   /**
-   * GET /process-instances - Get process instances with optional filters
+   * POST /process-instances/search - Get process instances with optional filters
    */
   async getProcessInstances(
-    params?: {
-      number?: string;
-      name?: string;
-      procReleaseKey?: string;
-      procReleaseId?: string;
-      status?: "CREATED" | "RUNNING" | "SUSPENDED" | "CANCELED" | "COMPLETED";
-      applicationBase?: string;
-      dateFrom?: string;
-      dateTo?: string;
-      page?: number;
-      size?: number;
-    },
-    body?: {
-      variables?: VariableParams;
-    },
+    params?: ProcessInstanceSearchQuery,
+    body: VariablesFilterDTO = {},
   ): Promise<ApiResponse<PaginatedResponse<ProcessInstance>>> {
     // Backend requires a request body, so send at least an empty object
-    const requestBody = body || {};
-
     return this.post<PaginatedResponse<ProcessInstance>>(
       "/process-instances/search",
-      requestBody,
+      body,
       params,
     );
   }
@@ -164,7 +162,9 @@ export class ProcessClient extends BaseApiClient {
   async getProcessInstanceById(
     id: string,
   ): Promise<ApiResponse<ProcessInstance>> {
-    return this.get<ProcessInstance>(`/process-instances/${id}`);
+    return this.get<ProcessInstance>(
+      `/process-instances/${this.encodePath(id)}`,
+    );
   }
 
   /**
@@ -174,7 +174,7 @@ export class ProcessClient extends BaseApiClient {
     id: string,
   ): Promise<ApiResponse<ProcessInstanceTaskStatus[]>> {
     return this.get<ProcessInstanceTaskStatus[]>(
-      `/process-instances/${id}/task-status`,
+      `/process-instances/${this.encodePath(id)}/task-status`,
     );
   }
 
@@ -192,7 +192,7 @@ export class ProcessClient extends BaseApiClient {
     processDefinitionKey: string,
   ): Promise<ApiResponse<ProcessSequence>> {
     return this.get<ProcessSequence>(
-      `/process-definitions/${processDefinitionKey}/sequence`,
+      `/process-definitions/${this.encodePath(processDefinitionKey)}/sequence`,
     );
   }
 
@@ -204,7 +204,7 @@ export class ProcessClient extends BaseApiClient {
     sequence: CreateProcessSequenceRequest,
   ): Promise<ApiResponse<ProcessSequence>> {
     return this.post<ProcessSequence>(
-      `/process-definitions/${processDefinitionKey}/sequence`,
+      `/process-definitions/${this.encodePath(processDefinitionKey)}/sequence`,
       sequence,
     );
   }
@@ -242,7 +242,7 @@ export class ProcessClient extends BaseApiClient {
     body: StartProcessInstanceRequest,
   ): Promise<ApiResponse<ProcessInstance>> {
     return this.post<ProcessInstance>(
-      `/process-instances/${processInstanceId}/start`,
+      `/process-instances/${this.encodePath(processInstanceId)}/start`,
       body,
     );
   }
@@ -251,14 +251,18 @@ export class ProcessClient extends BaseApiClient {
    * DELETE /process-definitions/{id}/archive - Archive a process definition
    */
   async archiveProcessDefinition(id: string): Promise<ApiResponse<void>> {
-    return this.delete<void>(`/process-definitions/${id}/archive`);
+    return this.delete<void>(
+      `/process-definitions/${this.encodePath(id)}/archive`,
+    );
   }
 
   /**
    * POST /process-definitions/{id}/unarchive - Unarchive a process definition
    */
   async unarchiveProcessDefinition(id: string): Promise<ApiResponse<void>> {
-    return this.post<void>(`/process-definitions/${id}/unarchive`);
+    return this.post<void>(
+      `/process-definitions/${this.encodePath(id)}/unarchive`,
+    );
   }
 
   /**
@@ -268,12 +272,12 @@ export class ProcessClient extends BaseApiClient {
     id: string,
   ): Promise<ApiResponse<ProcessDefinitionSchema>> {
     return this.get<ProcessDefinitionSchema>(
-      `/process-definitions/${id}/export`,
+      `/process-definitions/${this.encodePath(id)}/export`,
     );
   }
 
   /**
-   * GET /process-definitions/{id}/import - Import a process definition
+   * POST /process-definitions/import - Import a process definition
    */
   async importProcessDefinition(
     body: ProcessDefinitionSchema,
@@ -287,7 +291,9 @@ export class ProcessClient extends BaseApiClient {
   async deleteProcessDefinitionPriority(
     id: string,
   ): Promise<ApiResponse<void>> {
-    return this.delete<void>(`/process-definitions/priorities/${id}`);
+    return this.delete<void>(
+      `/process-definitions/priorities/${this.encodePath(id)}`,
+    );
   }
 
   /**
@@ -297,7 +303,7 @@ export class ProcessClient extends BaseApiClient {
     processKey: string,
   ): Promise<ApiResponse<Priority[]>> {
     return this.get<Priority[]>(
-      `/process-definitions/${processKey}/priorities`,
+      `/process-definitions/${this.encodePath(processKey)}/priorities`,
     );
   }
 
@@ -309,7 +315,7 @@ export class ProcessClient extends BaseApiClient {
     priority: TaskPriorityRequest[],
   ): Promise<ApiResponse<Priority[]>> {
     return this.put<Priority[]>(
-      `/process-definitions/${processKey}/priorities`,
+      `/process-definitions/${this.encodePath(processKey)}/priorities`,
       priority,
     );
   }
@@ -326,8 +332,10 @@ export class ProcessClient extends BaseApiClient {
   /**
    * POST /process-instances/event - Trigger a process (message) event
    */
-  async triggerProcessEvent(body: ProcessEventDTO): Promise<ApiResponse<void>> {
-    return this.post<void>(`/process-instances/event`, body);
+  async triggerProcessEvent(
+    body: ProcessEventDTO,
+  ): Promise<ApiResponse<string>> {
+    return this.post<string>(`/process-instances/event`, body);
   }
 
   /**
@@ -337,6 +345,9 @@ export class ProcessClient extends BaseApiClient {
     id: string,
     body: TimerRescheduleDTO,
   ): Promise<ApiResponse<void>> {
-    return this.post<void>(`/process-instances/${id}/timer/reschedule`, body);
+    return this.post<void>(
+      `/process-instances/${this.encodePath(id)}/timer/reschedule`,
+      body,
+    );
   }
 }

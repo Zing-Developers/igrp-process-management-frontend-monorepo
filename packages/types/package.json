@@ -12,17 +12,20 @@
   ],
   "author": "IGRP Team",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "tsc --watch",
     "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
-    "format": "prettier --write .",
-    "release": "pnpm build && yarn publish --no-git-tag-version --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
+    "format": "prettier --write \"src/**/*.ts\" package.json tsconfig.json",
+    "release": "pnpm build && pnpm publish --registry=https://nexus-1.zingaistudio.com/repository/npm-repo/ --tag latest"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",

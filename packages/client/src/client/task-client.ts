@@ -1,80 +1,45 @@
-import {
-  PaginatedResponse,
-  PostResponse,
-} from "@igrp/platform-process-management-types/dist/response";
-import { BaseApiClient } from "./base-client";
-import {
+import { BaseApiClient } from "./base-client.js";
+import type {
   ApiResponse,
+  PaginatedResponse,
   Task,
   TaskStats,
   TaskData,
   TaskVariablesForms,
   AssignTaskRequest,
-  VariableParams,
+  VariablesFilterDTO,
   TaskAssignmentRuleDTO,
   TaskAssignmentRuleUpdateRequest,
   TaskAssignmentRuleFilters,
   ConfigParameter,
+  TaskSearchQuery,
+  MyTasksQuery,
+  PaginationQuery,
+  UnclaimTaskRequest,
 } from "@igrp/platform-process-management-types";
-
-// Shared interfaces for parameter types
-interface TaskQueryParams {
-  processInstanceId?: string;
-  processNumber?: string;
-  /** @deprecated the API filters by processReleaseKey; kept for back-compat */
-  processKey?: string;
-  processReleaseKey?: string;
-  candidateGroups?: string;
-  candidateUsers?: string;
-  name?: string;
-  priority?: number;
-  processName?: string;
-  user?: string;
-  status?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  applicationBase?: string;
-  page?: number;
-  size?: number;
-  filterByCurrentUser?: boolean;
-}
-
-interface TaskActionParams {
-  user?: string;
-  note?: string;
-}
-
-interface PaginationParams {
-  page?: number;
-  size?: number;
-}
-
-interface TaskUnclaimBody {
-  note?: string;
-}
 
 export class TaskClient extends BaseApiClient {
   /**
    * GET /tasks-instances/{id} - Get a specific task instance by ID
    */
   async getTaskById(id: string): Promise<ApiResponse<Task>> {
-    return this.get<Task>(`/tasks-instances/${id}`);
+    return this.get<Task>(`/tasks-instances/${this.encodePath(id)}`);
   }
 
   /**
-   * GET /tasks-instances - Get all task instances with optional filters
+   * POST /tasks-instances/search - Get task instances with optional filters
    */
   async getTasks(
-    params?: TaskQueryParams,
-    body?: {
-      variables?: VariableParams;
-    },
+    params?: TaskSearchQuery,
+    body: VariablesFilterDTO = {},
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-    const requestBody = body || {};
+    const { processKey, ...query } = params ?? {};
     return this.post<PaginatedResponse<Task>>(
       "/tasks-instances/search",
-      requestBody,
-      params,
+      body,
+      processKey && !query.processReleaseKey
+        ? { ...query, processReleaseKey: processKey }
+        : query,
     );
   }
   /**
@@ -83,7 +48,9 @@ export class TaskClient extends BaseApiClient {
   async getTaskVariablesById(
     id: string,
   ): Promise<ApiResponse<TaskVariablesForms>> {
-    return this.get<TaskVariablesForms>(`/tasks-instances/${id}/variables`);
+    return this.get<TaskVariablesForms>(
+      `/tasks-instances/${this.encodePath(id)}/variables`,
+    );
   }
 
   /**
@@ -94,23 +61,15 @@ export class TaskClient extends BaseApiClient {
   }
 
   /**
-   * GET /tasks-instances/me - Get tasks assigned to current user
+   * POST /tasks-instances/me - Get tasks for the current user
    */
   async getMyTasks(
-    params?: TaskQueryParams,
-    body?: {
-      variables?: VariableParams;
-    },
+    params?: MyTasksQuery,
+    body: VariablesFilterDTO = {},
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-    // Add current user to filters
-    const requestBody = body || {};
-    params = {
-      ...params,
-      status: "ASSIGNED",
-    };
     return this.post<PaginatedResponse<Task>>(
       "/tasks-instances/me",
-      requestBody,
+      body,
       params,
     );
   }
@@ -129,14 +88,20 @@ export class TaskClient extends BaseApiClient {
     taskId: string,
     body?: TaskData,
   ): Promise<ApiResponse<Task>> {
-    return this.post<Task>(`/tasks-instances/${taskId}/complete`, body);
+    return this.post<Task>(
+      `/tasks-instances/${this.encodePath(taskId)}/complete`,
+      body ?? {},
+    );
   }
 
   /**
    * POST /tasks-instances/{id}/save - Save a task
    */
   async saveTask(taskId: string, body?: TaskData): Promise<ApiResponse<Task>> {
-    return this.post<Task>(`/tasks-instances/${taskId}/save`, body);
+    return this.post<Task>(
+      `/tasks-instances/${this.encodePath(taskId)}/save`,
+      body ?? {},
+    );
   }
 
   /**
@@ -144,27 +109,19 @@ export class TaskClient extends BaseApiClient {
    */
   async unclaimTask(
     taskId: string,
-    body?: TaskUnclaimBody,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(
-      `/tasks-instances/${taskId}/unclaim`,
+    body: UnclaimTaskRequest = {},
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(
+      `/tasks-instances/${this.encodePath(taskId)}/unclaim`,
       body,
-      undefined,
     );
   }
 
   /**
    * POST /tasks-instances/{id}/claim - Claim a task
    */
-  async claimTask(
-    taskId: string,
-    params: TaskActionParams,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(
-      `/tasks-instances/${taskId}/claim`,
-      undefined,
-      params,
-    );
+  async claimTask(taskId: string): Promise<ApiResponse<void>> {
+    return this.post<void>(`/tasks-instances/${this.encodePath(taskId)}/claim`);
   }
 
   /**
@@ -173,15 +130,18 @@ export class TaskClient extends BaseApiClient {
   async assignTask(
     taskId: string,
     body: AssignTaskRequest,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/assign`, body);
+  ): Promise<ApiResponse<void>> {
+    return this.post<void>(
+      `/tasks-instances/${this.encodePath(taskId)}/assign`,
+      body,
+    );
   }
 
   /**
    * Get available tasks (unassigned) - using the main endpoint with filters
    */
   async getAvailableTasks(
-    params?: TaskQueryParams,
+    params?: TaskSearchQuery,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     // Filter for unassigned tasks
     params = {
@@ -196,7 +156,7 @@ export class TaskClient extends BaseApiClient {
    */
   async getTasksByProcessInstance(
     processInstanceId: string,
-    params?: PaginationParams,
+    params?: PaginationQuery,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.getTasks({ ...params, processInstanceId: processInstanceId });
   }
@@ -220,7 +180,7 @@ export class TaskClient extends BaseApiClient {
    */
   async getTasksByUser(
     userId: string,
-    params?: PaginationParams,
+    params?: PaginationQuery,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.getTasks({ ...params, user: userId });
   }
@@ -245,7 +205,7 @@ export class TaskClient extends BaseApiClient {
     body: TaskAssignmentRuleUpdateRequest,
   ): Promise<ApiResponse<TaskAssignmentRuleDTO>> {
     return this.put<TaskAssignmentRuleDTO>(
-      `/tasks-instances/assignment-rules/${id}`,
+      `/tasks-instances/assignment-rules/${this.encodePath(id)}`,
       body,
     );
   }
@@ -254,6 +214,8 @@ export class TaskClient extends BaseApiClient {
    * DELETE /tasks-instances/assignment-rules/{id} - Delete a task assignment rule
    */
   async deleteTaskAssignmentRule(id: string): Promise<ApiResponse<void>> {
-    return this.delete<void>(`/tasks-instances/assignment-rules/${id}`);
+    return this.delete<void>(
+      `/tasks-instances/assignment-rules/${this.encodePath(id)}`,
+    );
   }
 }

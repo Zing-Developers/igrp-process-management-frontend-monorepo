@@ -1,5 +1,5 @@
-import { BaseApiClient } from "./base-client";
-import {
+import { BaseApiClient } from "./base-client.js";
+import type {
   ActivityEvent,
   ActivityProgress,
   ApiResponse,
@@ -7,33 +7,35 @@ import {
 
 export class ActivityClient extends BaseApiClient {
   /**
-   * GET /activities - Get all activities with optional filters
+   * GET /activities/{id} - Get a specific activity by ID
    */
   async getActivityById(id: string): Promise<ApiResponse<ActivityEvent>> {
-    return this.get<ActivityEvent>(`/activities/${id}`);
+    return this.get<ActivityEvent>(`/activities/${this.encodePath(id)}`);
   }
 
   /**
-   * GET /activities/{id} - Get a specific activity by ID
+   * GET /activities/progress - Get process activity progress
    */
   async getActivityProgress(
     processInstanceId: string,
     type?: string,
   ): Promise<ApiResponse<ActivityProgress[]>> {
-    return this.get<ActivityProgress[]>(
-      `/activities/progress?processIdentifier=${processInstanceId}${type ? `&type=${type}` : ""}`,
-    );
+    return this.get<ActivityProgress[]>("/activities/progress", {
+      processIdentifier: processInstanceId,
+      type,
+    });
   }
 
   /**
-   * GET /areas/status - Get area status options
+   * GET /activities/instances - Get activity instances for a process
    */
   async getActivityInstances(
     processInstanceId: string,
     type?: string,
   ): Promise<ApiResponse<ActivityEvent[]>> {
-    return this.get<ActivityEvent[]>(
-      `/activities/instances?processIdentifier=${processInstanceId}${type ? `&type=${type}` : ""}`,
-    );
+    return this.get<ActivityEvent[]>("/activities/instances", {
+      processIdentifier: processInstanceId,
+      type,
+    });
   }
 }

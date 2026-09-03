@@ -1,23 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ProcessManagementClient } from '../packages/@igrp/client/src/client/process-management-client';
-import { ProcessClient } from '../packages/@igrp/client/src/client/process-client';
-import { TaskClient } from '../packages/@igrp/client/src/client/task-client';
-import { AreaClient } from '../packages/@igrp/client/src/client/area-client';
-import type { ApiClientConfig } from '@igrp/platform-process-management-types';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { ProcessManagementClient } from "../packages/client/src/client/process-management-client";
+import { ProcessClient } from "../packages/client/src/client/process-client";
+import { TaskClient } from "../packages/client/src/client/task-client";
+import { AreaClient } from "../packages/client/src/client/area-client";
+import { ActivityClient } from "../packages/client/src/client/activity-client";
+import { M2MKeyClient } from "../packages/client/src/client/m2m-key-client";
+import type { ApiClientConfig } from "../packages/types/src/response";
 
 // Mock all client classes
-vi.mock('../packages/@igrp/client/src/client/process-client');
-vi.mock('../packages/@igrp/client/src/client/task-client');
-vi.mock('../packages/@igrp/client/src/client/area-client');
+vi.mock("../packages/client/src/client/process-client");
+vi.mock("../packages/client/src/client/task-client");
+vi.mock("../packages/client/src/client/area-client");
+vi.mock("../packages/client/src/client/activity-client");
+vi.mock("../packages/client/src/client/m2m-key-client");
 
-describe('ProcessManagementClient', () => {
+describe("ProcessManagementClient", () => {
   let client: ProcessManagementClient;
   const mockConfig: ApiClientConfig = {
-    baseUrl: 'https://api.example.com',
+    baseUrl: "https://api.example.com",
     timeout: 5000,
     headers: {
-      'Authorization': 'Bearer test-token'
-    }
+      Authorization: "Bearer test-token",
+    },
   };
 
   beforeEach(() => {
@@ -25,41 +29,49 @@ describe('ProcessManagementClient', () => {
     client = new ProcessManagementClient(mockConfig);
   });
 
-  describe('constructor', () => {
-    it('should initialize all client instances', () => {
+  describe("constructor", () => {
+    it("should initialize all client instances", () => {
       expect(ProcessClient).toHaveBeenCalledWith(mockConfig);
       expect(TaskClient).toHaveBeenCalledWith(mockConfig);
       expect(AreaClient).toHaveBeenCalledWith(mockConfig);
+      expect(ActivityClient).toHaveBeenCalledWith(mockConfig);
+      expect(M2MKeyClient).toHaveBeenCalledWith(mockConfig);
     });
 
-    it('should expose client instances as public properties', () => {
+    it("should expose client instances as public properties", () => {
       expect(client.processes).toBeInstanceOf(ProcessClient);
       expect(client.tasks).toBeInstanceOf(TaskClient);
       expect(client.areas).toBeInstanceOf(AreaClient);
+      expect(client.activities).toBeInstanceOf(ActivityClient);
+      expect(client.m2mKeys).toBeInstanceOf(M2MKeyClient);
     });
   });
 
-  describe('create static method', () => {
-    it('should create a new ProcessManagementClient instance', () => {
+  describe("create static method", () => {
+    it("should create a new ProcessManagementClient instance", () => {
       const newClient = ProcessManagementClient.create(mockConfig);
-      
+
       expect(newClient).toBeInstanceOf(ProcessManagementClient);
       expect(newClient.processes).toBeInstanceOf(ProcessClient);
       expect(newClient.tasks).toBeInstanceOf(TaskClient);
       expect(newClient.areas).toBeInstanceOf(AreaClient);
+      expect(newClient.activities).toBeInstanceOf(ActivityClient);
+      expect(newClient.m2mKeys).toBeInstanceOf(M2MKeyClient);
     });
 
-    it('should pass configuration to all sub-clients', () => {
+    it("should pass configuration to all sub-clients", () => {
       ProcessManagementClient.create(mockConfig);
-      
+
       expect(ProcessClient).toHaveBeenCalledWith(mockConfig);
       expect(TaskClient).toHaveBeenCalledWith(mockConfig);
       expect(AreaClient).toHaveBeenCalledWith(mockConfig);
+      expect(ActivityClient).toHaveBeenCalledWith(mockConfig);
+      expect(M2MKeyClient).toHaveBeenCalledWith(mockConfig);
     });
   });
 
-  describe('integration', () => {
-    it('should allow access to all client methods', () => {
+  describe("integration", () => {
+    it("should allow access to all client methods", () => {
       // Mock some methods to verify they exist
       const mockProcessMethod = vi.fn();
       const mockTaskMethod = vi.fn();
@@ -70,9 +82,9 @@ describe('ProcessManagementClient', () => {
       (client.areas as any).getAreas = mockAreaMethod;
 
       // Verify methods are accessible
-      expect(typeof client.processes.getProcesses).toBe('function');
-      expect(typeof client.tasks.getTasks).toBe('function');
-      expect(typeof client.areas.getAreas).toBe('function');
+      expect(typeof client.processes.getProcesses).toBe("function");
+      expect(typeof client.tasks.getTasks).toBe("function");
+      expect(typeof client.areas.getAreas).toBe("function");
     });
   });
 });

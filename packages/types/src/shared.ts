@@ -11,24 +11,34 @@ export type VariableOperator =
   | "LIKE_IGNORE_CASE";
 
 /** VariablesExpressionDTO — filter expression used in search bodies. */
-export type VariableParams = Array<{
+export interface VariablesExpressionDTO {
   name: string;
-  operator: VariableOperator | string;
+  operator: VariableOperator;
   value: unknown;
-}>;
+}
 
-export type UserProfile = {
-  id: string;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  sub: string;
+export type VariableParams = VariablesExpressionDTO[];
+
+export interface VariablesFilterDTO {
+  variables?: VariableParams;
+}
+
+export type UserProfileDTO = {
+  id?: string;
+  username?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  fullName?: string;
+  sub?: string;
 };
+
+export type UserProfile = UserProfileDTO;
 
 /** ConfigParameterDTO — status / event_type option lists. */
 export type ConfigParameter = {
   label: string;
   value: string;
 };
+
+export type ConfigParameterDTO = ConfigParameter;

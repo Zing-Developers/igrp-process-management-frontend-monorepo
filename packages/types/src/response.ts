@@ -11,7 +11,7 @@ export interface PaginatedResponse<T> {
   totalPages: number;
   first: boolean;
   last: boolean;
-  empty?: boolean; // Make this optional since the API doesn't always include it
+  empty?: boolean;
 }
 
 // API Response wrapper types
@@ -24,7 +24,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
   message: string;
   status: number;
-  details?: any;
+  details?: unknown;
 }
 
 // API Client Configuration
@@ -32,4 +32,6 @@ export interface ApiClientConfig {
   baseUrl: string;
   timeout?: number;
   headers?: Record<string, string>;
+  /** Resolve headers immediately before each request (for rotating bearer tokens). */
+  getHeaders?: () => Record<string, string> | Promise<Record<string, string>>;
 }

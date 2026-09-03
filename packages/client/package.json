@@ -1,15 +1,15 @@
 {
-  "name": "@irn/platform-process-management-client-ts",
+  "name": "@igrp/platform-process-management-client-ts",
   "version": "0.1.0-beta.20",
   "type": "module",
-  "main": "./dist/index.umd.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.umd.cjs"
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -19,8 +19,8 @@
     "dev": "tsc --watch",
     "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "format": "prettier --write .",
-    "release": "pnpm build && yarn publish --no-git-tag-version --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
+    "format": "prettier --write \"src/**/*.ts\" package.json tsconfig.json",
+    "release": "pnpm build && pnpm publish --no-git-checks --registry=https://sonatype.nosi.cv/repository/igrp/ --tag latest"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
@@ -30,6 +30,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@igrp/platform-process-management-types": "latest"
+    "@igrp/platform-process-management-types": "workspace:*"
   }
 }
