@@ -1,9 +1,7 @@
 import {
-  ApiClientError,
   Channel,
   ChannelStrategy,
   ClientCredentialsTokenProvider,
-  IgrpNotificationErrorCode,
   NotificationClient,
 } from "@igrp/platform-notification-client-ts";
 import type {
@@ -93,7 +91,7 @@ function splitGroups(value: string | string[] | undefined): string[] {
     .filter(Boolean);
 }
 
-/** Subject/title/body for IN_APP — no repeated "Nova tarefa". */
+/** Subject/title/body for IN_APP — title is the task name, not a generic label. */
 export function buildTaskNextInline(input: {
   taskName: string;
   processName?: string;
@@ -103,34 +101,20 @@ export function buildTaskNextInline(input: {
   const processName = input.processName?.trim() || "";
   const processNumber = input.processNumber?.trim() || "";
   const subject = processNumber ? `${taskName} · ${processNumber}` : taskName;
-  const title =
-    processName && processName !== taskName
-      ? processName
-      : processNumber && processNumber !== taskName
-        ? processNumber
-        : "";
   const processBit = processNumber
     ? `processo ${processNumber}${processName ? ` (${processName})` : ""}`
     : processName || "um processo";
   return {
     subject,
-    title,
+    title: taskName,
     body: `Tem uma nova tarefa no ${processBit}: ${taskName}.`,
   };
 }
 
-function shouldFallbackToInline(error: unknown): boolean {
-  if (!(error instanceof ApiClientError)) return false;
-  return (
-    error.is(IgrpNotificationErrorCode.TEMPLATE_NOT_FOUND) ||
-    error.is(IgrpNotificationErrorCode.TEMPLATE_ERROR)
-  );
-}
-
 /**
  * NS RF-04/RF-05: exactly one of `template` or `inline` — never both.
- * Prefer the published `igrp-task-next` template; retry with inline if it is
- * missing or fails to render.
+ * Send inline so IN_APP title is the task name (not a published template
+ * hardcoded as "Nova tarefa").
  */
 async function sendTaskNextNotification(
   notificationClient: NotificationClient,
@@ -164,25 +148,10 @@ async function sendTaskNextNotification(
     idempotencyKey: input.idempotencyKey,
   };
 
-  try {
-    return await notificationClient.notifications.send({
-      ...shared,
-      template: {
-        code: IGRP_TASK_NEXT_TEMPLATE_CODE,
-        locale: IGRP_TASK_NEXT_TEMPLATE_LOCALE,
-      },
-    });
-  } catch (error) {
-    if (!shouldFallbackToInline(error)) throw error;
-    console.warn(
-      `${LOG_PREFIX} template unavailable, retrying with inline`,
-      error,
-    );
-    return await notificationClient.notifications.send({
-      ...shared,
-      inline: input.inline,
-    });
-  }
+  return await notificationClient.notifications.send({
+    ...shared,
+    inline: input.inline,
+  });
 }
 
 let m2mTokenProvider: ClientCredentialsTokenProvider | undefined;
