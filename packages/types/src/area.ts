@@ -1,9 +1,10 @@
 import type { Process } from "./process.js";
+import type { AuditMetadata } from "./shared.js";
 import type { PaginatedResponse } from "./response.js";
 
 export type AreaStatus = "ACTIVE" | "INACTIVE";
 
-export interface AreaDTO {
+export interface AreaDTO extends AuditMetadata {
   id: string;
   code: string;
   name: string;
@@ -12,10 +13,6 @@ export interface AreaDTO {
   status: AreaStatus;
   statusDesc?: string;
   process?: Process[];
-  createdAt?: string;
-  updatedAt?: string;
-  createdBy?: string;
-  updatedBy?: string;
   description?: string;
   color?: string;
 }

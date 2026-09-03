@@ -1,4 +1,4 @@
-import type { UserProfileDTO } from "./shared.js";
+import type { AuditMetadata, UserProfileDTO } from "./shared.js";
 
 /** CreateRequest — POST /m2m-keys. */
 export interface CreateM2MKeyRequest {
@@ -18,7 +18,7 @@ export interface CreatedM2MKeyResponse {
 }
 
 /** KeySummary — returned by GET /m2m-keys. */
-export interface M2MKeySummary {
+export interface M2MKeySummary extends AuditMetadata {
   id?: string;
   clientName?: string;
   keyPrefix?: string;
@@ -26,9 +26,6 @@ export interface M2MKeySummary {
   email?: string;
   active?: boolean;
   expiresAt?: string;
-  createdAt?: string;
-  createdBy?: string;
-  userProfileCreatedBy?: UserProfileDTO;
   lastUsedAt?: string;
   revokedAt?: string;
   revokedBy?: string;
