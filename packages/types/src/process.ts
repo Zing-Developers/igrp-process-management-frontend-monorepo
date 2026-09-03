@@ -1,5 +1,6 @@
-import { TaskAssignmentMode, TaskStatus, TaskVariables } from "./task";
-import { UserProfile } from "./shared";
+import type { TaskAssignmentMode, TaskStatus, TaskVariables } from "./task.js";
+import type { UserProfile } from "./shared.js";
+import type { PaginatedResponse } from "./response.js";
 
 /** ProcessInstanceDTO.status */
 export type ProcessStatus =
@@ -20,12 +21,12 @@ export type Process = {
   description?: string;
   releaseId: string;
   areaId: string;
-  status: string;
-  statusDesc: string;
+  status?: string;
+  statusDesc?: string;
   version: string;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
-  createdBy: string;
+  createdBy?: string;
   updatedBy?: string;
   removedAt?: string | null;
   removedBy?: string | null;
@@ -46,14 +47,7 @@ export type ProcessDeploymentListItem = {
   candidateGroups?: string;
 };
 
-export type ProcessFilter = {
-  applicationBase?: string;
-  processName?: string;
-  page?: number;
-  size?: number;
-  filterByCurrentUser?: boolean;
-  candidateGroups?: string;
-};
+export type ProcessFilter = ProcessDefinitionQuery;
 
 /** ProcessVariableDTO */
 export type ProcessVariable = {
@@ -70,6 +64,8 @@ export interface ProcessTaskAssignmentRuleRequest {
   assignmentMode?: TaskAssignmentMode;
   priority?: number;
 }
+
+export type ProcessTaskAssignmentRuleDTO = ProcessTaskAssignmentRuleRequest;
 
 /** ProcessInstanceDTO */
 export type ProcessInstance = {
@@ -132,14 +128,18 @@ export interface StartProcessInstanceRequest {
   assignmentRules?: ProcessTaskAssignmentRuleRequest[];
 }
 
-/** ProcessArtifactRequestDTO (+ key for client path helper) */
-export interface CreateProcessArtifactRequest {
+/** ProcessArtifactRequestDTO — taskKey is supplied in the request path. */
+export interface ProcessArtifactRequestDTO {
   name: string;
-  key: string;
   formKey: string;
   candidateGroups?: string;
   dueDate?: string;
   priority?: number;
+}
+
+/** @deprecated POST artifact creation is not part of the current OpenAPI contract. */
+export interface CreateProcessArtifactRequest extends ProcessArtifactRequestDTO {
+  key: string;
 }
 
 /** ProcessArtifactDTO */
@@ -201,17 +201,19 @@ export type ProcessStats = {
   totalCanceledProcess: number;
 };
 
-export interface ProcessDefinitionSchema {
+export interface ProcessPackageDTO {
   processKey: string;
   processName: string;
-  processVersion: string;
-  processDescription: string;
+  processVersion?: string;
+  processDescription?: string;
   bpmnXml: string;
   applicationBase: string;
-  artifacts: ProcessArtifact[];
-  sequence: ProcessSequence;
-  candidateGroups: string;
+  artifacts?: ProcessArtifact[];
+  sequence?: ProcessSequence;
+  candidateGroups?: string;
 }
+
+export type ProcessDefinitionSchema = ProcessPackageDTO;
 
 /** TaskPriorityDTO */
 export interface Priority {
@@ -234,7 +236,7 @@ export interface TaskPriorityRequest {
 
 /** ProcessEventDTO — POST /process-instances/event */
 export interface ProcessEventDTO {
-  messageName: string;
+  messageName?: string;
   taskId?: string;
   businessKey?: string;
   variables?: Array<ProcessVariable>;
@@ -278,3 +280,50 @@ export interface ProcessInstanceTaskStatus {
   name?: string;
   status?: TaskStatus;
 }
+
+export interface ProcessInstanceSearchQuery {
+  number?: string;
+  name?: string;
+  procReleaseKey?: string;
+  procReleaseId?: string;
+  status?: ProcessStatus;
+  applicationBase?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface ProcessDefinitionQuery {
+  applicationBase?: string;
+  processName?: string;
+  page?: number;
+  size?: number;
+  filterByCurrentUser?: boolean;
+  candidateGroups?: string;
+}
+
+export interface AssignProcessRequest {
+  candidateGroups: string;
+}
+
+export type ProcessDefinitionDTO = Process;
+export type ProcessDeploymentListDTO = ProcessDeploymentListItem;
+export type ProcessVariableDTO = Partial<ProcessVariable>;
+export type ProcessArtifactDTO = Partial<ProcessArtifact>;
+export type ProcessSequenceDTO = Partial<ProcessSequence>;
+export type SequenceRequestDTO = CreateProcessSequenceRequest;
+export type AssignProcessDTO = AssignProcessRequest;
+export type TaskPriorityDTO = Partial<Priority>;
+export type TaskPriorityRequestDTO = TaskPriorityRequest;
+export type ProcessInstanceDTO = Partial<ProcessInstance>;
+export type ProcessInstanceStatsDTO = Partial<ProcessStats>;
+export type ProcessInstanceTaskStatusDTO = ProcessInstanceTaskStatus;
+export type ProcessInstanceListPageDTO = PaginatedResponse<ProcessInstanceDTO>;
+export type ProcessDeploymentListPageDTO =
+  PaginatedResponse<ProcessDeploymentListDTO>;
+export type ProcessDefinitionListPageDTO =
+  PaginatedResponse<ProcessDefinitionDTO>;
+export type CreateProcessRequestDTO = CreateProcessInstanceRequest;
+export type StartProcessRequestDTO = CreateAndStartProcessRequest;
+export type ProcessVariablesRequestDTO = StartProcessInstanceRequest;

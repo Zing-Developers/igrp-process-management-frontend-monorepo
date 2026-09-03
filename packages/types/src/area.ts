@@ -1,16 +1,17 @@
-import { Process } from "./process";
+import type { Process } from "./process.js";
+import type { PaginatedResponse } from "./response.js";
 
 export type AreaStatus = "ACTIVE" | "INACTIVE";
 
-export interface Area {
+export interface AreaDTO {
   id: string;
   code: string;
   name: string;
   applicationBase: string;
-  areaId?: string; // Parent area ID for subareas
-  status: AreaStatus | string;
-  statusDesc: string;
-  process?: Process[]; // Array of processes associated with this area
+  areaId: string;
+  status: AreaStatus;
+  statusDesc?: string;
+  process?: Process[];
   createdAt?: string;
   updatedAt?: string;
   createdBy?: string;
@@ -18,6 +19,8 @@ export interface Area {
   description?: string;
   color?: string;
 }
+
+export type Area = AreaDTO;
 
 /** AreaRequestDTO */
 export interface CreateAreaRequest {
@@ -31,8 +34,8 @@ export interface CreateAreaRequest {
 
 /** AreaRequestDTO (partial update) */
 export interface UpdateAreaRequest {
-  code?: string;
-  name?: string;
+  code: string;
+  name: string;
   description?: string;
   applicationBase: string;
   parentId?: string;
@@ -48,6 +51,29 @@ export interface AreaWithProcesses extends Area {
 export interface ProcessData {
   processKey: string;
   releaseId: string;
-  version: string;
+  version?: string;
   name: string;
 }
+
+export type AreaRequestDTO = CreateAreaRequest;
+export type ProcessDefinitionRequestDTO = ProcessData;
+
+export interface AreaQuery {
+  code?: string;
+  name?: string;
+  applicationBase?: string;
+  status?: string;
+  parentId?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface AreaProcessDefinitionQuery {
+  processKey?: string;
+  status?: string;
+  releaseId?: string;
+  page?: number;
+  size?: number;
+}
+
+export type AreaListPageDTO = PaginatedResponse<AreaDTO>;
