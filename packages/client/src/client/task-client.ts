@@ -6,15 +6,28 @@ import { BaseApiClient } from "./base-client";
 import {
   ApiResponse,
   Task,
-  TaskVariables,
   TaskStats,
+  TaskData,
+  TaskVariablesForms,
+  AssignTaskRequest,
+  VariableParams,
+  TaskAssignmentRuleDTO,
+  TaskAssignmentRuleUpdateRequest,
+  TaskAssignmentRuleFilters,
+  ConfigParameter,
 } from "@igrp/platform-process-management-types";
 
 // Shared interfaces for parameter types
 interface TaskQueryParams {
   processInstanceId?: string;
   processNumber?: string;
+  /** @deprecated the API filters by processReleaseKey; kept for back-compat */
   processKey?: string;
+  processReleaseKey?: string;
+  candidateGroups?: string;
+  candidateUsers?: string;
+  name?: string;
+  priority?: number;
   processName?: string;
   user?: string;
   status?: string;
@@ -23,16 +36,11 @@ interface TaskQueryParams {
   applicationBase?: string;
   page?: number;
   size?: number;
+  filterByCurrentUser?: boolean;
 }
 
 interface TaskActionParams {
   user?: string;
-  note?: string;
-}
-
-interface TaskActionBody {
-  user: string;
-  priority?: number;
   note?: string;
 }
 
@@ -41,9 +49,8 @@ interface PaginationParams {
   size?: number;
 }
 
-interface TaskCompletionBody {
-  variables?: Array<{ name: string; value: string }>;
-  forms?: Array<{ name: string; value: string }>;
+interface TaskUnclaimBody {
+  note?: string;
 }
 
 export class TaskClient extends BaseApiClient {
@@ -59,21 +66,31 @@ export class TaskClient extends BaseApiClient {
    */
   async getTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
-    return this.get<PaginatedResponse<Task>>("/tasks-instances", params);
+    const requestBody = body || {};
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/search",
+      requestBody,
+      params,
+    );
   }
   /**
    * GET /tasks-instances/{id}/variables - Get variables for a specific task instance by ID
    */
-  async getTaskVariablesById(id: string): Promise<ApiResponse<TaskVariables>> {
-    return this.get<TaskVariables>(`/tasks-instances/${id}/variables`);
+  async getTaskVariablesById(
+    id: string,
+  ): Promise<ApiResponse<TaskVariablesForms>> {
+    return this.get<TaskVariablesForms>(`/tasks-instances/${id}/variables`);
   }
 
   /**
    * GET /tasks-instances/status - Get task instance status options
    */
-  async getTaskInstancesStatus(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/tasks-instances/status");
+  async getTaskInstancesStatus(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/tasks-instances/status");
   }
 
   /**
@@ -81,30 +98,45 @@ export class TaskClient extends BaseApiClient {
    */
   async getMyTasks(
     params?: TaskQueryParams,
+    body?: {
+      variables?: VariableParams;
+    },
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     // Add current user to filters
+    const requestBody = body || {};
     params = {
       ...params,
       status: "ASSIGNED",
     };
-    return this.get<PaginatedResponse<Task>>("/tasks-instances/me", params);
+    return this.post<PaginatedResponse<Task>>(
+      "/tasks-instances/me",
+      requestBody,
+      params,
+    );
   }
 
   /**
    * GET /tasks-instances/event_type - Get task instance event types
    */
-  async getTaskInstanceEventTypes(): Promise<ApiResponse<any[]>> {
-    return this.get<any[]>("/tasks-instances/event_type");
+  async getTaskInstanceEventTypes(): Promise<ApiResponse<ConfigParameter[]>> {
+    return this.get<ConfigParameter[]>("/tasks-instances/event_type");
   }
 
   /**
-   * POST /tasks-instances/{id} - Complete a task
+   * POST /tasks-instances/{id}/complete - Complete a task
    */
   async completeTask(
     taskId: string,
-    body?: TaskCompletionBody,
-  ): Promise<ApiResponse<PostResponse>> {
-    return this.post<PostResponse>(`/tasks-instances/${taskId}/complete`, body);
+    body?: TaskData,
+  ): Promise<ApiResponse<Task>> {
+    return this.post<Task>(`/tasks-instances/${taskId}/complete`, body);
+  }
+
+  /**
+   * POST /tasks-instances/{id}/save - Save a task
+   */
+  async saveTask(taskId: string, body?: TaskData): Promise<ApiResponse<Task>> {
+    return this.post<Task>(`/tasks-instances/${taskId}/save`, body);
   }
 
   /**
@@ -112,12 +144,12 @@ export class TaskClient extends BaseApiClient {
    */
   async unclaimTask(
     taskId: string,
-    note?: string,
+    body?: TaskUnclaimBody,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(
       `/tasks-instances/${taskId}/unclaim`,
+      body,
       undefined,
-      { note },
     );
   }
 
@@ -140,7 +172,7 @@ export class TaskClient extends BaseApiClient {
    */
   async assignTask(
     taskId: string,
-    body: TaskActionBody,
+    body: AssignTaskRequest,
   ): Promise<ApiResponse<PostResponse>> {
     return this.post<PostResponse>(`/tasks-instances/${taskId}/assign`, body);
   }
@@ -191,5 +223,37 @@ export class TaskClient extends BaseApiClient {
     params?: PaginationParams,
   ): Promise<ApiResponse<PaginatedResponse<Task>>> {
     return this.getTasks({ ...params, user: userId });
+  }
+
+  /**
+   * GET /tasks-instances/assignment-rules - List task assignment rules
+   */
+  async getTaskAssignmentRules(
+    params?: TaskAssignmentRuleFilters,
+  ): Promise<ApiResponse<PaginatedResponse<TaskAssignmentRuleDTO>>> {
+    return this.get<PaginatedResponse<TaskAssignmentRuleDTO>>(
+      "/tasks-instances/assignment-rules",
+      params,
+    );
+  }
+
+  /**
+   * PUT /tasks-instances/assignment-rules/{id} - Update a task assignment rule
+   */
+  async updateTaskAssignmentRule(
+    id: string,
+    body: TaskAssignmentRuleUpdateRequest,
+  ): Promise<ApiResponse<TaskAssignmentRuleDTO>> {
+    return this.put<TaskAssignmentRuleDTO>(
+      `/tasks-instances/assignment-rules/${id}`,
+      body,
+    );
+  }
+
+  /**
+   * DELETE /tasks-instances/assignment-rules/{id} - Delete a task assignment rule
+   */
+  async deleteTaskAssignmentRule(id: string): Promise<ApiResponse<void>> {
+    return this.delete<void>(`/tasks-instances/assignment-rules/${id}`);
   }
 }
