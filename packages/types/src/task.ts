@@ -1,4 +1,5 @@
-import { UserProfile } from "./shared";
+import type { UserProfile } from "./shared.js";
+import type { PaginatedResponse } from "./response.js";
 
 /** TaskInstanceDTO.status */
 export type TaskStatus =
@@ -43,6 +44,9 @@ export type Task = {
   userProfileEndedBy?: UserProfile;
 };
 
+export type TaskInstanceDTO = Partial<Task>;
+export type TaskInstanceListDTO = Partial<Task>;
+
 export type TaskInstanceEvent = {
   id: string;
   eventType: string;
@@ -57,7 +61,7 @@ export type TaskInstanceEvent = {
 /** TaskVariableDTO / ProcessVariableDTO */
 export type TaskVariables = {
   name: string;
-  value: string | number | boolean | object | unknown;
+  value: unknown;
 };
 
 /** TaskDataDTO — complete / save body */
@@ -95,18 +99,18 @@ export type TaskStats = {
 export type TaskAssignmentMode = "ALWAYS" | "ONE_TIME";
 
 export interface TaskAssignmentRuleDTO {
-  id: string;
-  processDefinitionKey: string;
-  processInstanceId: string;
-  taskDefinitionKey: string;
-  assignee: string;
-  candidateUsers: string;
-  candidateGroups: string;
-  assignmentMode: TaskAssignmentMode;
-  priority: number;
-  consumed: boolean;
-  active: boolean;
-  createdByTask: string;
+  id?: string;
+  processDefinitionKey?: string;
+  processInstanceId?: string;
+  taskDefinitionKey?: string;
+  assignee?: string;
+  candidateUsers?: string;
+  candidateGroups?: string;
+  assignmentMode?: TaskAssignmentMode;
+  priority?: number;
+  consumed?: boolean;
+  active?: boolean;
+  createdByTask?: string;
 }
 
 export interface TaskAssignmentRuleUpdateRequest {
@@ -129,3 +133,61 @@ export interface TaskAssignmentRuleFilters {
   page?: number;
   size?: number;
 }
+
+export interface TaskSearchQuery {
+  processInstanceId?: string;
+  processNumber?: string;
+  processReleaseKey?: string;
+  /** @deprecated use processReleaseKey. */
+  processKey?: string;
+  applicationBase?: string;
+  candidateGroups?: string;
+  candidateUsers?: string;
+  user?: string;
+  status?: TaskStatus | string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  size?: number;
+  name?: string;
+  processName?: string;
+  filterByCurrentUser?: boolean;
+  priority?: number;
+}
+
+export interface MyTasksQuery {
+  processInstanceId?: string;
+  processNumber?: string;
+  applicationBase?: string;
+  processName?: string;
+  status?: TaskStatus | string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  size?: number;
+  processReleaseKey?: string;
+  name?: string;
+  priority?: number;
+}
+
+export interface PaginationQuery {
+  page?: number;
+  size?: number;
+}
+
+export interface UnclaimTaskRequest {
+  note?: string;
+}
+
+export type TaskVariableDTO = Partial<TaskVariables>;
+export type TaskDataDTO = TaskData;
+export type TaskVariablesFormsDTO = TaskVariablesForms;
+export type AssignTaskDTO = AssignTaskRequest;
+export type UnclaimTaskDTO = UnclaimTaskRequest;
+export type TaskInstanceStatsDTO = Partial<TaskStats>;
+export type TaskAssignmentRuleListDTO = TaskAssignmentRuleDTO;
+export type TaskInstanceEventListDTO = Partial<TaskInstanceEvent>;
+export type TaskAssignmentRuleUpdateDTO = TaskAssignmentRuleUpdateRequest;
+export type TaskInstanceListPageDTO = PaginatedResponse<TaskInstanceListDTO>;
+export type TaskAssignmentRuleListPageDTO =
+  PaginatedResponse<TaskAssignmentRuleListDTO>;

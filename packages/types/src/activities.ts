@@ -1,18 +1,20 @@
-import { UserProfile } from "./shared";
-import { TaskVariables } from "./task";
+import type { UserProfile } from "./shared.js";
+import type { TaskVariables } from "./task.js";
 
 /** ActivityDTO */
 export interface ActivityEvent {
-  id: string;
-  name: string;
-  description: string;
-  processInstanceId: string;
-  parentId: string;
-  parentProcessInstanceId: string;
-  status: string;
-  type: string;
+  id?: string;
+  name?: string;
+  description?: string;
+  processInstanceId?: string;
+  parentId?: string;
+  parentProcessInstanceId?: string;
+  status?: string;
+  type?: string;
   variables?: TaskVariables[];
 }
+
+export type ActivityDTO = ActivityEvent;
 
 /** ActivityProgressDTO */
 export interface ActivityProgress {
@@ -38,3 +40,5 @@ export interface ActivityProgress {
   forms?: TaskVariables[];
   userProfileAssignee?: UserProfile;
 }
+
+export type ActivityProgressDTO = ActivityProgress;
