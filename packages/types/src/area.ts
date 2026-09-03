@@ -1,12 +1,14 @@
 import { Process } from "./process";
 
+export type AreaStatus = "ACTIVE" | "INACTIVE";
+
 export interface Area {
   id: string;
   code: string;
   name: string;
   applicationBase: string;
   areaId?: string; // Parent area ID for subareas
-  status: string;
+  status: AreaStatus | string;
   statusDesc: string;
   process?: Process[]; // Array of processes associated with this area
   createdAt?: string;
@@ -14,22 +16,27 @@ export interface Area {
   createdBy?: string;
   updatedBy?: string;
   description?: string;
+  color?: string;
 }
 
+/** AreaRequestDTO */
 export interface CreateAreaRequest {
   code: string;
   name: string;
   description?: string;
   applicationBase: string;
-  parentId?: string; // Parent area ID for creating subareas
+  parentId?: string;
+  color?: string;
 }
 
+/** AreaRequestDTO (partial update) */
 export interface UpdateAreaRequest {
   code?: string;
   name?: string;
   description?: string;
   applicationBase: string;
   parentId?: string;
+  color?: string;
 }
 
 export interface AreaWithProcesses extends Area {
@@ -37,7 +44,7 @@ export interface AreaWithProcesses extends Area {
   subareas?: AreaWithProcesses[];
 }
 
-// New type for process data structure used in area-client
+// Process data structure used in area-client
 export interface ProcessData {
   processKey: string;
   releaseId: string;

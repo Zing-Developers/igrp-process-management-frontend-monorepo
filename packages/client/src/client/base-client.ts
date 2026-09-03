@@ -28,13 +28,13 @@ export class BaseApiClient {
     const queryString = params ? this.buildQueryString(params) : "";
     const url = `${this.baseUrl}${endpoint}${queryString ? `?${queryString}` : ""}`;
 
-    console.debug("[API Request]", {
+    /* console.debug("[API Request]", {
       url,
       method,
       headers: this.defaultHeaders,
       body,
       params,
-    });
+    }); */
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
@@ -52,11 +52,11 @@ export class BaseApiClient {
       const response = await fetch(url, requestOptions);
       clearTimeout(timeoutId);
 
-      console.debug("[API Response]", {
+      /* console.debug("[API Response]", {
         status: response.status,
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries()),
-      });
+      }); */
 
       if (!response.ok) {
         await this.handleErrorResponse(response);
@@ -64,7 +64,7 @@ export class BaseApiClient {
 
       const data = await this.parseResponse<T>(response);
 
-      console.debug("[API Response Data]", data);
+      //console.debug("[API Response Data]", data);
 
       return {
         data,
