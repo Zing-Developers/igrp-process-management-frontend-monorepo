@@ -127,15 +127,17 @@ export class BaseApiClient {
   protected async put<T>(
     endpoint: string,
     body?: unknown,
+    params?: object,
   ): Promise<ApiResponse<T>> {
-    return this.httpClient.put<T>(endpoint, body);
+    return this.httpClient.put<T>(endpoint, body, params);
   }
 
   protected async delete<T>(
     endpoint: string,
     body?: unknown,
+    params?: object,
   ): Promise<ApiResponse<T>> {
-    return this.httpClient.delete<T>(endpoint, body);
+    return this.httpClient.delete<T>(endpoint, body, params);
   }
 
   private async parseResponse<T>(response: Response): Promise<T> {

@@ -1,5 +1,5 @@
 import type { TaskAssignmentMode, TaskStatus, TaskVariables } from "./task.js";
-import type { UserProfile } from "./shared.js";
+import type { AuditMetadata, UserProfile } from "./shared.js";
 import type { PaginatedResponse } from "./response.js";
 
 /** ProcessInstanceDTO.status */
@@ -10,24 +10,23 @@ export type ProcessStatus =
   | "CANCELED"
   | "COMPLETED";
 
+/** ProcessDefinitionDTO.status */
+export type ProcessDefinitionStatus = "ACTIVE" | "INACTIVE";
+
 /**
  * Area-associated process definition (ProcessDefinitionDTO) plus optional
  * deployment/list fields used across the UI.
  */
-export type Process = {
+export type Process = AuditMetadata & {
   id: string;
   processKey: string;
   name?: string;
   description?: string;
   releaseId: string;
   areaId: string;
-  status?: string;
+  status?: ProcessDefinitionStatus;
   statusDesc?: string;
   version: string;
-  createdAt?: string;
-  updatedAt?: string;
-  createdBy?: string;
-  updatedBy?: string;
   removedAt?: string | null;
   removedBy?: string | null;
   applicationBase?: string;
@@ -68,7 +67,7 @@ export interface ProcessTaskAssignmentRuleRequest {
 export type ProcessTaskAssignmentRuleDTO = ProcessTaskAssignmentRuleRequest;
 
 /** ProcessInstanceDTO */
-export type ProcessInstance = {
+export type ProcessInstance = AuditMetadata & {
   id: string;
   procReleaseKey: string;
   procReleaseId: string;
@@ -143,7 +142,7 @@ export interface CreateProcessArtifactRequest extends ProcessArtifactRequestDTO 
 }
 
 /** ProcessArtifactDTO */
-export interface ProcessArtifact {
+export interface ProcessArtifact extends AuditMetadata {
   id: string;
   name: string;
   key: string;
@@ -154,19 +153,8 @@ export interface ProcessArtifact {
   priority?: number;
 }
 
-export interface ProcessDefinition {
-  id: string;
-  processKey: string;
-  name: string;
-  description: string;
-  version: string;
-  deploymentId: string;
-  applicationBase: string;
-  candidateGroups: string;
-}
-
 /** ProcessSequenceDTO */
-export interface ProcessSequence {
+export interface ProcessSequence extends AuditMetadata {
   id: string;
   name: string;
   prefix: string;
@@ -216,7 +204,7 @@ export interface ProcessPackageDTO {
 export type ProcessDefinitionSchema = ProcessPackageDTO;
 
 /** TaskPriorityDTO */
-export interface Priority {
+export interface Priority extends AuditMetadata {
   code: string;
   label: string;
   weight: number;
