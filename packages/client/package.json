@@ -1,5 +1,5 @@
 {
-  "name": "@igrp/platform-process-management-client-ts",
+  "name": "@irn/platform-process-management-client-ts",
   "version": "0.1.0-beta.20",
   "type": "module",
   "main": "./dist/index.umd.cjs",
