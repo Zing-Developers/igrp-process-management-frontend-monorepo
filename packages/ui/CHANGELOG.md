@@ -4,6 +4,11 @@ Todas as alterações relevantes a este package são documentadas neste ficheiro
 
 ## Unreleased
 
+### Changed
+
+- IN_APP `igrp-task-next`: título da inbox é o nome da tarefa (`taskName`),
+  enviado em `inline` para não usar o template genérico "Nova tarefa".
+
 ## 0.1.0-beta.55
 
 ### Fixed

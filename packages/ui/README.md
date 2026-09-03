@@ -218,5 +218,7 @@ Consumer env (same names as INSS Core):
 | `IGRP_APP_CODE`                                    | `applicationCode` on send (consumer app, e.g. CORE) |
 | `IGRP_SERVICE_ID`                                  | optional `X-Machine-Service-ID`                     |
 
-Template: publish `igrp-task-next` (IN_APP, `pt-CV`) in Notifications UI
-before expecting inbox items.
+Template: IN_APP title is the **task name** (`inline.title`). Publish
+`igrp-task-next` (IN_APP, `pt-CV`) in Notifications UI only if you want a
+shared body; the send uses `inline` so the title is not a generic
+"Nova tarefa".
