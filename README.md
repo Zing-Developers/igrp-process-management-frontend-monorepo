@@ -10,8 +10,8 @@ A TypeScript client library and type definitions for interacting with the iGRP P
 ## Installation
 
 ```bash
-npm install @igrp/platform-process-management-client-ts
-npm install @igrp/platform-process-management-types
+npm install @irn/platform-process-management-client-ts
+npm install @irn/platform-process-management-types
 ```
 
 ## Configuration
@@ -51,12 +51,12 @@ igrp-process-manager-frontend-monorepo/
 ### Basic Usage
 
 ```typescript
-import { ProcessManagementClient } from "@igrp/platform-process-management-client-ts";
+import { ProcessManagementClient } from "@irn/platform-process-management-client-ts";
 import type {
   Process,
   Task,
   Area,
-} from "@igrp/platform-process-management-types";
+} from "@irn/platform-process-management-types";
 
 // Create a client instance
 const client = ProcessManagementClient.create({
@@ -257,7 +257,7 @@ Methods for managing areas:
 
 ## Type Definitions
 
-The `@igrp/platform-process-management-types` package provides comprehensive TypeScript definitions:
+The `@irn/platform-process-management-types` package provides comprehensive TypeScript definitions:
 
 ### Core Types
 
@@ -279,7 +279,7 @@ The `@igrp/platform-process-management-types` package provides comprehensive Typ
 The client provides a standardized error handling mechanism:
 
 ```typescript
-import { ApiClientError } from "@igrp/platform-process-management-client-ts";
+import { ApiClientError } from "@irn/platform-process-management-client-ts";
 
 try {
   const processes = await client.processes.getProcesses();
@@ -385,7 +385,7 @@ MIT License - see the LICENSE file for details.
 
 ## Packages
 
-- **@igrp/platform-process-management-client-ts**: Main client library
-- **@igrp/platform-process-management-types**: TypeScript type definitions
+- **@irn/platform-process-management-client-ts**: Main client library
+- **@irn/platform-process-management-types**: TypeScript type definitions
 
 Both packages are published to the NOSI registry at `https://sonatype.nosi.cv/repository/igrp/`
