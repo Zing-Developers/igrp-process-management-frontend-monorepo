@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Area } from '@igrp/platform-process-management-types'
+import { Area } from '@irn/platform-process-management-types'
 import { AreaFormData, AreaModalState } from '../../types'
 
 export function useAreaForm() {

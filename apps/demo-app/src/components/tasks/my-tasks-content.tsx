@@ -5,12 +5,12 @@ import {
   getMyTasks, 
   completeTask, 
   claimTask 
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   Task, 
   TaskPriority,
   PaginatedResponse 
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 import { 
   CheckSquare, 
   Clock, 
