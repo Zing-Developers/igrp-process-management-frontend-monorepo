@@ -10,10 +10,10 @@
     "composite": true,
     "outDir": "./dist",
     "paths": {
-      "@igrp/platform-process-management-client-ts": ["packages/client/src/index.ts"],
-      "@igrp/platform-process-management-client-ts/*": ["packages/client/src/*"],
-      "@igrp/platform-process-management-types": ["packages/types/src/index.ts"],
-      "@igrp/platform-process-management-types/*": ["packages/types/src/*"]
+      "@irn/platform-process-management-client-ts": ["packages/client/src/index.ts"],
+      "@irn/platform-process-management-client-ts/*": ["packages/client/src/*"],
+      "@irn/platform-process-management-types": ["packages/types/src/index.ts"],
+      "@irn/platform-process-management-types/*": ["packages/types/src/*"]
     }
   },
   "include": [
