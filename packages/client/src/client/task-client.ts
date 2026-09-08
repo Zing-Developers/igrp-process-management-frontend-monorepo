@@ -16,7 +16,7 @@ import type {
   MyTasksQuery,
   PaginationQuery,
   UnclaimTaskRequest,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 
 export class TaskClient extends BaseApiClient {
   /**

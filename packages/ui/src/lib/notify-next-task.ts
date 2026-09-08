@@ -7,7 +7,7 @@ import {
 import type {
   ActivityProgress,
   Task,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 
 import type { getIGRPProcessClient } from "./api-client";
 import { resolveProcessInstance } from "./resolve-process-instance";

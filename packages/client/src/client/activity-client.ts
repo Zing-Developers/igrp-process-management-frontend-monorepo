@@ -3,7 +3,7 @@ import type {
   ActivityEvent,
   ActivityProgress,
   ApiResponse,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 
 export class ActivityClient extends BaseApiClient {
   /**

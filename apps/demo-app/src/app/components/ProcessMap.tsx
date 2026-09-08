@@ -4,17 +4,17 @@ import { useEffect, useState } from 'react'
 import { 
   getProcessById, 
   startProcess 
-} from '@irn/platform-process-management-client-ts'
+} from '@igrp/platform-process-management-client-ts'
 import {
   getAreas,
   getAreaProcesses
-} from '@irn/platform-process-management-client-ts'
+} from '@igrp/platform-process-management-client-ts'
 import { 
   Process, 
   PaginatedResponse, 
   ProcessInstance,
   Area
-} from '@irn/platform-process-management-types'
+} from '@igrp/platform-process-management-types'
 import { 
   Play, 
   Search, 
