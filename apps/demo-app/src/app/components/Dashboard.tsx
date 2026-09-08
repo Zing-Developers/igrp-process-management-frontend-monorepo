@@ -6,12 +6,12 @@ import {
   getTasks, 
   getMyTasks, 
   getAvailableTasks 
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   Process, 
   Task, 
   PaginatedResponse 
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 import { 
   Activity, 
   CheckSquare, 
