@@ -10,7 +10,7 @@ import type {
   ConfigParameter,
   AreaQuery,
   AreaProcessDefinitionQuery,
-} from "@igrp/platform-process-management-types";
+} from "@irn/platform-process-management-types";
 
 export class AreaClient extends BaseApiClient {
   /**

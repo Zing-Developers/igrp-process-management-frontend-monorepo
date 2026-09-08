@@ -22,10 +22,10 @@ importers:
 
   apps/demo-app:
     dependencies:
-      '@igrp/platform-process-management-client-ts':
+      '@irn/platform-process-management-client-ts':
         specifier: workspace:*
         version: link:../../packages/client
-      '@igrp/platform-process-management-types':
+      '@irn/platform-process-management-types':
         specifier: workspace:*
         version: link:../../packages/types
       clsx:
@@ -77,7 +77,7 @@ importers:
 
   packages/client:
     dependencies:
-      '@igrp/platform-process-management-types':
+      '@irn/platform-process-management-types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
@@ -129,10 +129,10 @@ importers:
       '@igrp/platform-notification-client-ts':
         specifier: 0.2.0-beta.3
         version: 0.2.0-beta.3
-      '@igrp/platform-process-management-client-ts':
+      '@irn/platform-process-management-client-ts':
         specifier: workspace:*
         version: link:../client
-      '@igrp/platform-process-management-types':
+      '@irn/platform-process-management-types':
         specifier: workspace:*
         version: link:../types
       class-variance-authority:
