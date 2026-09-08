@@ -1,7 +1,7 @@
 import { AreaService } from '../../services/area.service'
 import { AreaFormData, ExtendedArea } from '../../types'
 import { organizeAreasHierarchy, getAllAreasFlat } from '../../utils/area-hierarchy'
-import { CreateAreaRequest, UpdateAreaRequest } from '@igrp/platform-process-management-types'
+import { CreateAreaRequest, UpdateAreaRequest } from '@irn/platform-process-management-types'
 
 export function useAreaOperations(
   areas: ExtendedArea[], 
