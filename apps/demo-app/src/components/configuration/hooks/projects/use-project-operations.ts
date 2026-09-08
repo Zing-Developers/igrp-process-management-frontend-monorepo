@@ -1,6 +1,6 @@
 import { ProjectService } from '../../services/project.service'
 import { AreaProjectsMap } from '../../types'
-import { CreateAreaProjectRequest } from '@igrp/platform-process-management-types'
+import { CreateAreaProjectRequest } from '@irn/platform-process-management-types'
 
 export function useProjectOperations(
   areaProjects: AreaProjectsMap,

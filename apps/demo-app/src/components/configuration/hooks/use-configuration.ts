@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Project, AreaProject } from '@igrp/platform-process-management-types'
+import { Project, AreaProject } from '@irn/platform-process-management-types'
 import { ExtendedArea, AreaProjectsMap } from '../types'
 import { AreaService } from '../services/area.service'
 import { ProjectService } from '../services/project.service'

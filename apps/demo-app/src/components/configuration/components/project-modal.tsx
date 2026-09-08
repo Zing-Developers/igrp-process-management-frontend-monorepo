@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Search, X } from 'lucide-react'
-import { Project } from '@igrp/platform-process-management-types'
+import { Project } from '@irn/platform-process-management-types'
 import { ProjectList } from './project-list'
 
 interface ProjectModalProps {
