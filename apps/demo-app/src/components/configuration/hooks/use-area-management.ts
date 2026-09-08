@@ -3,12 +3,12 @@ import {
   createArea, 
   updateArea, 
   deleteArea,
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   Area, 
   CreateAreaRequest, 
   UpdateAreaRequest,
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 
 interface AreaFormData {
   code: string

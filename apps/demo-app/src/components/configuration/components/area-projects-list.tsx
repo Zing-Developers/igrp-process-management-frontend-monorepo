@@ -1,5 +1,5 @@
 import { FileText, X } from 'lucide-react'
-import { Project, AreaProject } from '@igrp/platform-process-management-types'
+import { Project, AreaProject } from '@irn/platform-process-management-types'
 
 interface ProjectsListProps {
   areaProjects: AreaProject[]

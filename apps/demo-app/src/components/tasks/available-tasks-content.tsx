@@ -5,8 +5,8 @@ import {
   getAvailableTasks, 
   getTaskById, 
   claimTask 
-} from '@igrp/platform-process-management-client-ts'
-import { Task } from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-client-ts'
+import { Task } from '@irn/platform-process-management-types'
 import { 
   Clock, 
   User, 
