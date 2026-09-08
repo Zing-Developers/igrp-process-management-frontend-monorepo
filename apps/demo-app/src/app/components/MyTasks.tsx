@@ -7,7 +7,7 @@ import {
   completeTask, 
   releaseTask 
 } from '@igrp/platform-process-management-client-ts'
-import { Task, PaginatedResponse } from '@igrp/platform-process-management-types'
+import { Task, PaginatedResponse } from '@irn/platform-process-management-types'
 import { 
   CheckCircle, 
   Clock, 
