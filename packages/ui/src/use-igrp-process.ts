@@ -17,7 +17,7 @@ import type {
   IGRPGetFormDataForTaskOptions,
   IGRPFormEntry,
 } from "./types";
-import type { ActivityProgress } from "@igrp/platform-process-management-types";
+import type { ActivityProgress } from "@irn/platform-process-management-types";
 
 /**
  * Unified hook for process management operations.

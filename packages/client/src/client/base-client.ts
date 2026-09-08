@@ -1,7 +1,7 @@
 import type {
   ApiClientConfig,
   ApiResponse,
-} from "@igrp/platform-process-management-types";
+} from "@irn/platform-process-management-types";
 
 export class BaseApiClient {
   protected baseUrl: string;
