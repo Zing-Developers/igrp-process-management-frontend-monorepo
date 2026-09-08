@@ -1,4 +1,4 @@
-import { ProcessManagementClient } from "@irn/platform-process-management-client-ts";
+import { ProcessManagementClient } from "@igrp/platform-process-management-client-ts";
 import type { IGRPProcessClientConfig } from "../types";
 
 let clientInstance: ProcessManagementClient | null = null;

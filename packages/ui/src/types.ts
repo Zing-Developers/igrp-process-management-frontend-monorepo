@@ -5,7 +5,7 @@ import type {
   ActivityProgress,
   ProcessInstance,
   Task,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 
 export interface IGRPFetchStepConfigResult {
   name: string;

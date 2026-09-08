@@ -3,7 +3,7 @@ import type {
   CreateM2MKeyRequest,
   CreatedM2MKeyResponse,
   M2MKeySummary,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 import { BaseApiClient } from "./base-client.js";
 
 export class M2MKeyClient extends BaseApiClient {
