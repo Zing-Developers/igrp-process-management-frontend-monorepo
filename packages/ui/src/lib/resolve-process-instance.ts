@@ -1,4 +1,4 @@
-import type { ProcessInstance } from "@irn/platform-process-management-types";
+import type { ProcessInstance } from "@igrp/platform-process-management-types";
 import type { getIGRPProcessClient } from "./api-client";
 
 type ProcessManagementClient = Awaited<ReturnType<typeof getIGRPProcessClient>>;

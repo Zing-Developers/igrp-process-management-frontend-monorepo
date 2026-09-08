@@ -5,8 +5,8 @@ import {
   getAvailableTasks, 
   getTaskById, 
   claimTask 
-} from '@irn/platform-process-management-client-ts'
-import { Task, PaginatedResponse } from '@irn/platform-process-management-types'
+} from '@igrp/platform-process-management-client-ts'
+import { Task, PaginatedResponse } from '@igrp/platform-process-management-types'
 import { 
   Clock, 
   User, 

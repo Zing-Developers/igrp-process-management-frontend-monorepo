@@ -26,7 +26,7 @@ import type {
   ProcessArtifactRequestDTO,
   ProcessInstanceSearchQuery,
   VariablesFilterDTO,
-} from "@irn/platform-process-management-types";
+} from "@igrp/platform-process-management-types";
 
 export class ProcessClient extends BaseApiClient {
   /**
