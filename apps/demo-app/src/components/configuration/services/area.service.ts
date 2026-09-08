@@ -4,12 +4,12 @@ import {
   deleteArea,
   getAreas,
   getSubareas,
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   Area, 
   CreateAreaRequest, 
   UpdateAreaRequest,
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 
 export class AreaService {
   static async createArea(areaData: CreateAreaRequest): Promise<Area> {

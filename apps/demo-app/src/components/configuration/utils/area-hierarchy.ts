@@ -1,4 +1,4 @@
-import { Area } from '@igrp/platform-process-management-types'
+import { Area } from '@irn/platform-process-management-types'
 import { ExtendedArea } from '../types'
 
 /**

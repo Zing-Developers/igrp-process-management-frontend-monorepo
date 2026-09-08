@@ -4,11 +4,11 @@ import {
   removeProjectFromArea,
   getAreaProjects,
   getAllAreaProjects,
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   AreaProject,
   CreateAreaProjectRequest,
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 
 export class ProjectService {
   static async getAllProjects(page: number = 0, size: number = 100) {

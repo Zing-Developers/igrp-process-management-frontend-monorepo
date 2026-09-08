@@ -27,7 +27,7 @@ import {
   associateProjectToArea,
   removeProjectFromArea,
   getAreaProjects
-} from '@igrp/platform-process-management-client-ts'
+} from '@irn/platform-process-management-client-ts'
 import { 
   Area, 
   CreateAreaRequest, 
@@ -36,7 +36,7 @@ import {
   AreaProject,
   CreateAreaProjectRequest,
   AreaWithProjects
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 
 interface ExpandedAreas {
   [key: string]: boolean

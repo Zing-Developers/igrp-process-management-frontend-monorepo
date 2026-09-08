@@ -1,4 +1,4 @@
-import { Area, Project, AreaProject } from '@igrp/platform-process-management-types'
+import { Area, Project, AreaProject } from '@irn/platform-process-management-types'
 import { AreaCard } from './area-card'
 
 interface ExtendedArea extends Area {
