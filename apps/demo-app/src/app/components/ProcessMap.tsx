@@ -14,7 +14,7 @@ import {
   PaginatedResponse, 
   ProcessInstance,
   Area
-} from '@igrp/platform-process-management-types'
+} from '@irn/platform-process-management-types'
 import { 
   Play, 
   Search, 

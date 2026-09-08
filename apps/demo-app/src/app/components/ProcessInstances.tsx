@@ -10,7 +10,7 @@ import {
   getProcessInstancesStatus,
   getRunningProcessInstances
 } from '@igrp/platform-process-management-client-ts'
-import { ProcessInstance, PaginatedResponse } from '@igrp/platform-process-management-types'
+import { ProcessInstance, PaginatedResponse } from '@irn/platform-process-management-types'
 import { 
   Search, 
   Filter, 
