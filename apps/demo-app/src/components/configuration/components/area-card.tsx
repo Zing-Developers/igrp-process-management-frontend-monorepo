@@ -7,7 +7,7 @@ import {
   Edit2,
   Trash2,
 } from 'lucide-react'
-import { Area, Project, AreaProject } from '@igrp/platform-process-management-types'
+import { Area, Project, AreaProject } from '@irn/platform-process-management-types'
 import { ProjectsList } from './area-projects-list'
 
 interface ExtendedArea extends Area {

@@ -1,4 +1,4 @@
-import type { ApiClientConfig } from "@igrp/platform-process-management-types";
+import type { ApiClientConfig } from "@irn/platform-process-management-types";
 import { ProcessClient } from "./process-client.js";
 import { TaskClient } from "./task-client.js";
 import { AreaClient } from "./area-client.js";

@@ -1,4 +1,4 @@
-import { Project } from '@igrp/platform-process-management-types'
+import { Project } from '@irn/platform-process-management-types'
 
 interface ProjectListProps {
   projects: Project[]
