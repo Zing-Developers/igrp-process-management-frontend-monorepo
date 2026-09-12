@@ -1,0 +1,4 @@
+interface:
+  display_name: "Process Runtime SDK Sync"
+  short_description: "Sync and release the Process Runtime SDK"
+  default_prompt: "Use $process-runtime-sdk-sync to refresh the Process Runtime OpenAPI contract and synchronize the TypeScript SDK packages."

@@ -33,6 +33,11 @@ export interface M2MKeySummary extends AuditMetadata {
 }
 
 // OpenAPI schema-name aliases.
+export type M2mKeyRequestDTO = CreateM2MKeyRequest;
+export type M2mKeyCreatedDTO = CreatedM2MKeyResponse;
+export type M2mKeySummaryDTO = M2MKeySummary;
+
+// Legacy schema-name aliases retained for backward compatibility.
 export type CreateRequest = CreateM2MKeyRequest;
 export type CreatedResponse = CreatedM2MKeyResponse;
 export type KeySummary = M2MKeySummary;
