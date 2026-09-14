@@ -13,3 +13,4 @@ export * from "./area.js";
 export * from "./shared.js";
 export * from "./activities.js";
 export * from "./m2m.js";
+export * from "./email-access-mapping.js";

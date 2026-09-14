@@ -52,5 +52,6 @@ Thumbs.db
 *.config.d.ts
 *.config.*.map
 packages/client/api-docs-process-runtime.json
+packages/client/api-docs.json
 
 .next/
