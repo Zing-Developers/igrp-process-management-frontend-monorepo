@@ -1,0 +1,35 @@
+{
+  "name": "@irn/platform-process-management-client-ts",
+  "version": "0.1.0-beta.22",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "rimraf dist && rimraf tsconfig.tsbuildinfo && pnpm format && tsc -b",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "format": "prettier --write \"src/**/*.ts\" package.json tsconfig.json",
+    "release": "pnpm build && pnpm publish --no-git-checks --registry=https://nexus-1.zingaistudio.com/repository/npm-repo/ --tag latest"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "next-auth": "^4.24.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@irn/platform-process-management-types": "0.1.0-beta.22"
+  }
+}
