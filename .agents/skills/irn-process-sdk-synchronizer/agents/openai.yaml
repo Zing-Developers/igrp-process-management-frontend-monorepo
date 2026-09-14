@@ -1,0 +1,4 @@
+interface:
+  display_name: "IRN-Process-SDK-Synchronizer"
+  short_description: "Synchronize and release the IRN Process SDK"
+  default_prompt: "Use $irn-process-sdk-synchronizer to refresh the configured OpenAPI contract and synchronize the TypeScript SDK packages."

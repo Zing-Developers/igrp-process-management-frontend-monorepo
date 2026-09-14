@@ -299,7 +299,7 @@ RELEASE
 Illustration only; the guide above is the general procedure.
 
 ```text
-CONTRACT      packages/client/api-docs-process-runtime.json — OpenAPI 3.1
+CONTRACT      packages/client/api-docs.json — OpenAPI 3.1
               51 operations; tags: TaskInstances, Activities, ProcessInstance,
               Areas, ProcessDefinition, m-2m-key-controller
 

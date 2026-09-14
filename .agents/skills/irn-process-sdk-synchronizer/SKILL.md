@@ -1,15 +1,17 @@
 ---
-name: process-runtime-sdk-sync
+name: irn-process-sdk-synchronizer
 description: Refresh the Process Runtime OpenAPI contract, synchronize the hand-maintained TypeScript types and client packages, verify the SDK, and prepare or perform a production release. Use for Process Runtime API/SDK synchronization and release work in this repository.
 ---
 
-# Process Runtime SDK Sync
+# IRN-Process-SDK-Synchronizer
 
 Synchronize this repository's SDK with the live Process Runtime contract while preserving its public API where possible.
 
 ## Contract refresh
 
-Run `scripts/fetch-openapi.sh` from this skill directory. It fetches the live document from `https://apisix.zingdevelopers.com/process-runtime/v3/api-docs`, validates that it is an OpenAPI document, formats it deterministically, and atomically replaces `packages/client/api-docs-process-runtime.json` only when content changed.
+Run `scripts/fetch-openapi.sh` from this skill directory. It reads the complete OpenAPI JSON endpoint from `OPENAPI_URL` in the repository-root `.env`, validates the downloaded document, formats it deterministically, and atomically replaces `packages/client/api-docs.json` only when content changed. Never embed an environment-specific endpoint in the skill or script.
+
+If `.env` is absent, `OPENAPI_URL` is absent, or its value is empty, stop and ask the user for the complete OpenAPI JSON endpoint. Once supplied, add or update only `OPENAPI_URL` in the repository-root `.env` without displaying or changing unrelated environment values. Do not guess the endpoint or silently fall back to a fixed URL.
 
 If network access is denied, request approval to run the fetch with network access. Stop if the endpoint is unavailable or the downloaded JSON fails validation; never replace the checked-in snapshot with an error response or partial file.
 
@@ -19,7 +21,7 @@ Review the contract diff before changing source. Treat unexpected contract remov
 
 Read `OPENAPI_SYNC_GUIDELINE.md` at the repository root completely and follow it as the authoritative synchronization and verification procedure. Apply it specifically to:
 
-- Contract: `packages/client/api-docs-process-runtime.json`
+- Contract: `packages/client/api-docs.json`
 - Types: `packages/types`
 - HTTP client: `packages/client`
 
