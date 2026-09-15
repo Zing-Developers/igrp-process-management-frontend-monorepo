@@ -51,7 +51,7 @@ export type TaskInstanceListDTO = Partial<Task>;
 export type TaskInstanceEvent = AuditMetadata & {
   id: string;
   eventType: string;
-  status: string;
+  status: TaskStatus;
   performedAt: string;
   performedBy: string;
   obs?: string;

@@ -1,14 +1,21 @@
 import type {
   ApiResponse,
   EmailAccessMapping,
+  EmailAccessMappingQuery,
   EmailAccessMappingRequest,
+  PaginatedResponse,
 } from "@irn/platform-process-management-types";
 import { BaseApiClient } from "./base-client.js";
 
 export class EmailAccessMappingClient extends BaseApiClient {
   /** GET /email-access-mappings. */
-  async getEmailAccessMappings(): Promise<ApiResponse<EmailAccessMapping[]>> {
-    return this.get<EmailAccessMapping[]>("/email-access-mappings");
+  async getEmailAccessMappings(
+    params?: EmailAccessMappingQuery,
+  ): Promise<ApiResponse<PaginatedResponse<EmailAccessMapping>>> {
+    return this.get<PaginatedResponse<EmailAccessMapping>>(
+      "/email-access-mappings",
+      params,
+    );
   }
 
   /** POST /email-access-mappings. */

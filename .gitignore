@@ -44,6 +44,10 @@ Thumbs.db
 # Optional npm cache directory
 .npm
 
+# Local package npm registry/auth configuration
+/apps/**/.npmrc
+/packages/**/.npmrc
+
 # Optional eslint cache
 .eslintcache
 

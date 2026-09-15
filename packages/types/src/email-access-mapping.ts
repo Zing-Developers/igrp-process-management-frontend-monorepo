@@ -1,4 +1,5 @@
 import type { AuditMetadata, UserProfileDTO } from "./shared.js";
+import type { PaginatedResponse } from "./response.js";
 
 /** EmailAccessMappingDTO. */
 export interface EmailAccessMapping extends AuditMetadata {
@@ -23,5 +24,15 @@ export interface EmailAccessMappingRequest {
   expiresAt?: string;
 }
 
+/** Query parameters for GET /email-access-mappings. */
+export interface EmailAccessMappingQuery {
+  email?: string;
+  status?: string;
+  page?: number;
+  size?: number;
+}
+
 export type EmailAccessMappingDTO = EmailAccessMapping;
 export type EmailAccessMappingRequestDTO = EmailAccessMappingRequest;
+export type EmailAccessMappingListPageDTO =
+  PaginatedResponse<EmailAccessMappingDTO>;
