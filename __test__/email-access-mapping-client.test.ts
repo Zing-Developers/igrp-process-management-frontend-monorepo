@@ -1,5 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { EmailAccessMappingClient } from "../packages/client/src/client/email-access-mapping-client";
+import type {
+  EmailAccessMapping,
+  PaginatedResponse,
+} from "../packages/types/src";
 
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -31,12 +35,30 @@ describe("EmailAccessMappingClient contract", () => {
   });
 
   it("lists and creates email access mappings", async () => {
-    mockFetch.mockResolvedValueOnce(jsonResponse([]));
-    await client.getEmailAccessMappings();
+    const page = {
+      content: [],
+      pageNumber: 1,
+      pageSize: 25,
+      totalElements: 0,
+      totalPages: 0,
+      first: false,
+      last: true,
+    };
+    mockFetch.mockResolvedValueOnce(jsonResponse(page));
+    const result = await client.getEmailAccessMappings({
+      email: "developer+sdk@example.com",
+      status: "active",
+      page: 1,
+      size: 25,
+    });
     expect(mockFetch).toHaveBeenLastCalledWith(
-      "https://api.example.com/email-access-mappings",
+      "https://api.example.com/email-access-mappings?email=developer%2Bsdk%40example.com&status=active&page=1&size=25",
       expect.objectContaining({ method: "GET" }),
     );
+    expect(result.data).toEqual(page);
+    expectTypeOf(result.data).toEqualTypeOf<
+      PaginatedResponse<EmailAccessMapping>
+    >();
 
     const body = {
       email: "developer@example.com",
