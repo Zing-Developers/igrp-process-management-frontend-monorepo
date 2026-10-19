@@ -5,6 +5,7 @@ import { AreaClient } from "./area-client.js";
 import { ActivityClient } from "./activity-client.js";
 import { M2MKeyClient } from "./m2m-key-client.js";
 import { EmailAccessMappingClient } from "./email-access-mapping-client.js";
+import { FailedJobClient } from "./failed-job-client.js";
 
 /**
  * Main Process Management API Client
@@ -17,6 +18,7 @@ export class ProcessManagementClient {
   public readonly activities: ActivityClient;
   public readonly m2mKeys: M2MKeyClient;
   public readonly emailAccessMappings: EmailAccessMappingClient;
+  public readonly failedJobs: FailedJobClient;
 
   constructor(config: ApiClientConfig) {
     this.processes = new ProcessClient(config);
@@ -25,6 +27,7 @@ export class ProcessManagementClient {
     this.activities = new ActivityClient(config);
     this.m2mKeys = new M2MKeyClient(config);
     this.emailAccessMappings = new EmailAccessMappingClient(config);
+    this.failedJobs = new FailedJobClient(config);
   }
 
   /**
