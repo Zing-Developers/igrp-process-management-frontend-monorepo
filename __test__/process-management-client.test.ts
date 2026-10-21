@@ -6,6 +6,7 @@ import { AreaClient } from "../packages/client/src/client/area-client";
 import { ActivityClient } from "../packages/client/src/client/activity-client";
 import { M2MKeyClient } from "../packages/client/src/client/m2m-key-client";
 import { EmailAccessMappingClient } from "../packages/client/src/client/email-access-mapping-client";
+import { FailedJobClient } from "../packages/client/src/client/failed-job-client";
 import type { ApiClientConfig } from "../packages/types/src/response";
 
 // Mock all client classes
@@ -15,6 +16,7 @@ vi.mock("../packages/client/src/client/area-client");
 vi.mock("../packages/client/src/client/activity-client");
 vi.mock("../packages/client/src/client/m2m-key-client");
 vi.mock("../packages/client/src/client/email-access-mapping-client");
+vi.mock("../packages/client/src/client/failed-job-client");
 
 describe("ProcessManagementClient", () => {
   let client: ProcessManagementClient;
@@ -39,6 +41,7 @@ describe("ProcessManagementClient", () => {
       expect(ActivityClient).toHaveBeenCalledWith(mockConfig);
       expect(M2MKeyClient).toHaveBeenCalledWith(mockConfig);
       expect(EmailAccessMappingClient).toHaveBeenCalledWith(mockConfig);
+      expect(FailedJobClient).toHaveBeenCalledWith(mockConfig);
     });
 
     it("should expose client instances as public properties", () => {
@@ -50,6 +53,7 @@ describe("ProcessManagementClient", () => {
       expect(client.emailAccessMappings).toBeInstanceOf(
         EmailAccessMappingClient,
       );
+      expect(client.failedJobs).toBeInstanceOf(FailedJobClient);
     });
   });
 
@@ -66,6 +70,7 @@ describe("ProcessManagementClient", () => {
       expect(newClient.emailAccessMappings).toBeInstanceOf(
         EmailAccessMappingClient,
       );
+      expect(newClient.failedJobs).toBeInstanceOf(FailedJobClient);
     });
 
     it("should pass configuration to all sub-clients", () => {
@@ -77,6 +82,7 @@ describe("ProcessManagementClient", () => {
       expect(ActivityClient).toHaveBeenCalledWith(mockConfig);
       expect(M2MKeyClient).toHaveBeenCalledWith(mockConfig);
       expect(EmailAccessMappingClient).toHaveBeenCalledWith(mockConfig);
+      expect(FailedJobClient).toHaveBeenCalledWith(mockConfig);
     });
   });
 

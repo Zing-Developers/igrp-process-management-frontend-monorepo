@@ -39,6 +39,11 @@ export interface ActivityProgress {
   variables?: TaskVariables[];
   forms?: TaskVariables[];
   userProfileAssignee?: UserProfile;
+  jobId?: string;
+  errorMessage?: string;
+  attempts?: number;
+  firstFailedAt?: string;
+  lastFailedAt?: string;
 }
 
 export type ActivityProgressDTO = ActivityProgress;
