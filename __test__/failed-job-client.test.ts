@@ -31,7 +31,15 @@ describe("FailedJobClient contract", () => {
 
   it("lists failed jobs with serialized query parameters", async () => {
     const page = {
-      content: [],
+      content: [
+        {
+          jobId: "job-1",
+          attempts: 8,
+          reprocessCount: 2,
+          lastReprocessedAt: "2026-10-25T12:00:00Z",
+          lastReprocessedBy: "user-1",
+        },
+      ],
       pageNumber: 0,
       pageSize: 20,
       totalElements: 0,
@@ -52,6 +60,9 @@ describe("FailedJobClient contract", () => {
     );
     expect(result.data).toEqual(page);
     expectTypeOf(result.data).toEqualTypeOf<PaginatedResponse<FailedJob>>();
+    expectTypeOf(result.data.content[0]?.reprocessCount).toEqualTypeOf<
+      number | undefined
+    >();
   });
 
   it("retries an encoded job ID with an optional body and fetches its stack trace", async () => {
