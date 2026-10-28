@@ -14,6 +14,10 @@ export interface FailedJob {
   attempts?: number;
   firstFailedAt?: string;
   lastFailedAt?: string;
+  /** Number of manual reprocessings. `attempts` remains the cumulative total. */
+  reprocessCount?: number;
+  lastReprocessedAt?: string;
+  lastReprocessedBy?: string;
 }
 
 /** FailedJobRetryRequestDTO — optional retry count for a requeued job. */
@@ -24,6 +28,7 @@ export interface FailedJobRetryRequest {
 /** Query parameters for GET /failed-jobs. */
 export interface FailedJobQuery {
   processInstanceId?: string;
+  businessKey?: string;
   page?: number;
   size?: number;
 }

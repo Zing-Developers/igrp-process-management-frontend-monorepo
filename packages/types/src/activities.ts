@@ -16,6 +16,12 @@ export interface ActivityEvent {
 
 export type ActivityDTO = ActivityEvent;
 
+/** States emitted when a failed activity is waiting to run again. */
+export type ActivityProgressStatus =
+  | "REPROCESSING"
+  | "RETRYING"
+  | (string & {});
+
 /** ActivityProgressDTO */
 export interface ActivityProgress {
   activityId?: string;
@@ -30,7 +36,7 @@ export interface ActivityProgress {
   endTime?: string;
   executionId?: string;
   processInstanceId?: string;
-  status?: string;
+  status?: ActivityProgressStatus;
   type?: string;
   treeNumber?: string;
   assignee?: string;
@@ -44,6 +50,8 @@ export interface ActivityProgress {
   attempts?: number;
   firstFailedAt?: string;
   lastFailedAt?: string;
+  reprocessCount?: number;
+  lastReprocessedAt?: string;
 }
 
 export type ActivityProgressDTO = ActivityProgress;
