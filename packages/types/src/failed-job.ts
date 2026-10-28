@@ -28,6 +28,7 @@ export interface FailedJobRetryRequest {
 /** Query parameters for GET /failed-jobs. */
 export interface FailedJobQuery {
   processInstanceId?: string;
+  businessKey?: string;
   page?: number;
   size?: number;
 }

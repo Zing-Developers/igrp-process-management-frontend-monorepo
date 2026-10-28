@@ -50,12 +50,13 @@ describe("FailedJobClient contract", () => {
     mockFetch.mockResolvedValueOnce(jsonResponse(page));
     const result = await client.getFailedJobs({
       processInstanceId: "process/id",
+      businessKey: "case 42",
       page: 0,
       size: 20,
     });
 
     expect(mockFetch).toHaveBeenLastCalledWith(
-      "https://api.example.com/failed-jobs?processInstanceId=process%2Fid&page=0&size=20",
+      "https://api.example.com/failed-jobs?processInstanceId=process%2Fid&businessKey=case+42&page=0&size=20",
       expect.objectContaining({ method: "GET" }),
     );
     expect(result.data).toEqual(page);
